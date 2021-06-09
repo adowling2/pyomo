@@ -58,6 +58,10 @@ def _object_from_string(instance, vstr):
     NOTE: We need to deal with blocks
           and with indexes that might really be strings or ints
     """
+    
+    print("Calling function _object_from_string")
+    print("\t vstr="+vstr)
+    
     # pull off the index
     l = vstr.find('[')
     if l == -1:
@@ -82,6 +86,19 @@ def _object_from_string(instance, vstr):
     except:
         pass
     return retval[indexstr]
+
+def _process_name_string(vstr):
+    """
+    Process the name of a Var or Param (e.g. "pp.Keq_a[2]")
+    
+    args:
+        vstr: a particular Var or Param (e.g. "pp.Keq_a[2]")
+    return:
+        str: updated string
+    
+    """
+
+
 
 #=============================================
 def _ef_ROOT_node_Object_from_string(efinstance, vstr):
