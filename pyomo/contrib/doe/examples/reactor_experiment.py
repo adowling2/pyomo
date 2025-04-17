@@ -134,6 +134,7 @@ class ReactorExperiment(Experiment):
         # Update model time `t` with time range and control time points
         m.t.update(self.data["t_range"])
         m.t.update(control_points)
+        m.t.set_changed(True)
 
         # Fix the unknown parameter values
         m.A1.fix(self.data["A1"])
