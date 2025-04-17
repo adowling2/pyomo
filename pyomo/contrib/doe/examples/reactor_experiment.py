@@ -132,9 +132,10 @@ class ReactorExperiment(Experiment):
         m.CB[0].fix(self.data["CB0"])
 
         # Update model time `t` with time range and control time points
+        m.t.set_changed(True)
         m.t.update(self.data["t_range"])
         m.t.update(control_points)
-        m.t.set_changed(True)
+        
 
         # Fix the unknown parameter values
         m.A1.fix(self.data["A1"])
