@@ -8,6 +8,11 @@
 #  rights in this software.
 #  This software is distributed under the 3-clause BSD License.
 #  ___________________________________________________________________________
+
+# Note: This is a temporary copy of the exisiting example to verify the new
+# symbolic gradient method works as expected. 
+# Once this works, we will remove this file and update the test suite.
+
 from pyomo.common.dependencies import numpy as np, pathlib
 
 from pyomo.contrib.doe.examples.reactor_experiment import ReactorExperiment
@@ -16,6 +21,7 @@ from pyomo.contrib.doe import DesignOfExperiments
 import pyomo.environ as pyo
 
 import json
+
 
 # Example for sensitivity analysis on the reactor experiment
 # After sensitivity analysis is done, we perform optimal DoE
@@ -36,9 +42,6 @@ def run_reactor_doe():
     # of the constructor of this object
     experiment = ReactorExperiment(data=data_ex, nfe=10, ncp=3)
 
-    # Use a central difference, with step size 1e-3
-    gradient_method = "central"
-    step_size = 1e-3
 
     # Use the determinant objective with scaled sensitivity matrix
     objective_option = "determinant"
@@ -50,9 +53,9 @@ def run_reactor_doe():
     # call of ``run_doe`` perform model initialization.
     doe_obj = DesignOfExperiments(
         experiment,
-        gradient_method=gradient_method,
-        fd_formula=None, # This arguement has been deprecated in favor of gradient_method
-        step=step_size,
+        gradient_method="symbolic",
+        fd_formula=None,
+        step=None,
         objective_option=objective_option,
         scale_constant_value=1,
         scale_nominal_param_value=scale_nominal_param_value,

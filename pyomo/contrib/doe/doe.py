@@ -69,16 +69,18 @@ class ObjectiveLib(Enum):
     zero = "zero"
 
 
-class FiniteDifferenceStep(Enum):
+class GradientMethod(Enum):
     forward = "forward"
     central = "central"
     backward = "backward"
+    symbolic = "symbolic"
 
 
 class DesignOfExperiments:
     def __init__(
         self,
         experiment=None,
+        gradient_method=None,
         fd_formula="central",
         step=1e-3,
         objective_option="determinant",
@@ -108,9 +110,15 @@ class DesignOfExperiments:
             Experiment object that holds the model and labels all the components. The object
             should have a ``get_labeled_model`` where a model is returned with the following
             labeled sets: ``unknown_parameters``, ``experimental_inputs``, ``experimental_outputs``
+        gradient_method:
+            Method to use for computing the gradient of the model. Must be one of
+            [``forward``, ``central``, ``backward``, ``symbolic``, None], default: None.
+            If None, will fall back to catch the legacy optional input of fd_formula.
         fd_formula:
             Finite difference formula for computing the sensitivity matrix. Must be one of
             [``central``, ``forward``, ``backward``], default: ``central``
+            This option will be deprecated in the future, and the user should
+            use the ``gradient_method`` option instead.
         step:
             Relative step size for the finite difference formula.
             default: 1e-3
@@ -170,8 +178,16 @@ class DesignOfExperiments:
         # Set the experiment object from the user
         self.experiment = experiment
 
-        # Set the finite difference and subsequent step size
-        self.fd_formula = FiniteDifferenceStep(fd_formula)
+        # Set the gradient method
+        if gradient_method is None:
+
+            # Throw a deprecation warning
+            # TODO: Need to add a deprecation warning here
+
+            self._gradient_method = GradientMethod(fd_formula)
+        else:
+            self._gradient_method = GradientMethod(gradient_method)
+
         self.step = step
 
         # Set the objective type and scaling options:
@@ -262,7 +278,7 @@ class DesignOfExperiments:
             # model.add_component(doe_block_name, doe_block)
             pass
 
-        # ToDo: potentially work with this for more complicated models
+        # TODO: potentially work with this for more complicated models
         # Create the full DoE model (build scenarios for F.D. scheme)
         if not self._built_scenarios:
             self.create_doe_model(model=model)
@@ -416,7 +432,7 @@ class DesignOfExperiments:
         self.results["Wall-clock Time"] = build_time + initialization_time + solve_time
 
         # Settings used to generate the optimal DoE
-        self.results["Finite Difference Scheme"] = str(self.fd_formula).split(".")[-1]
+        self.results["Gradient Method"] = str(self._gradient_method).split(".")[-1]
         self.results["Finite Difference Step"] = self.step
         self.results["Nominal Parameter Scaling"] = self.scale_nominal_param_value
 
@@ -522,7 +538,7 @@ class DesignOfExperiments:
         model.parameter_scenarios = pyo.Suffix(direction=pyo.Suffix.LOCAL)
 
         # Populate parameter scenarios, and scenario inds based on finite difference scheme
-        if self.fd_formula == FiniteDifferenceStep.central:
+        if self._gradient_method == GradientMethod.central:
             model.parameter_scenarios.update(
                 (2 * ind, k) for ind, k in enumerate(model.unknown_parameters.keys())
             )
@@ -531,9 +547,9 @@ class DesignOfExperiments:
                 for ind, k in enumerate(model.unknown_parameters.keys())
             )
             model.scenarios = range(len(model.unknown_parameters) * 2)
-        elif self.fd_formula in [
-            FiniteDifferenceStep.forward,
-            FiniteDifferenceStep.backward,
+        elif self._gradient_method in [
+            GradientMethod.forward,
+            GradientMethod.backward,
         ]:
             model.parameter_scenarios.update(
                 (ind + 1, k) for ind, k in enumerate(model.unknown_parameters.keys())
@@ -541,7 +557,7 @@ class DesignOfExperiments:
             model.scenarios = range(len(model.unknown_parameters) + 1)
         else:
             raise AttributeError(
-                "Finite difference option not recognized. Please contact the developers as you should not see this error."
+                "Gradient method option not recognized. Please contact the developers as you should not see this error."
             )
 
         # Fix design variables
@@ -553,21 +569,21 @@ class DesignOfExperiments:
         # Calculate measurement values for each scenario
         for s in model.scenarios:
             # Perturbation to be (1 + diff) * param_value
-            if self.fd_formula == FiniteDifferenceStep.central:
+            if self._gradient_method == GradientMethod.central:
                 diff = self.step * (
                     (-1) ** s
                 )  # Positive perturbation, even; negative, odd
-            elif self.fd_formula == FiniteDifferenceStep.backward:
+            elif self._gradient_method == GradientMethod.backward:
                 diff = (
                     self.step * -1 * (s != 0)
                 )  # Backward always negative perturbation; 0 at s = 0
-            elif self.fd_formula == FiniteDifferenceStep.forward:
+            elif self._gradient_method == GradientMethod.forward:
                 diff = self.step * (s != 0)  # Forward always positive; 0 at s = 0
 
             # If we are doing forward/backward, no change for s=0
             skip_param_update = (
-                self.fd_formula
-                in [FiniteDifferenceStep.forward, FiniteDifferenceStep.backward]
+                self._gradient_method
+                in [GradientMethod.forward, GradientMethod.backward]
             ) and (s == 0)
             if not skip_param_update:
                 param = model.parameter_scenarios[s]
@@ -613,14 +629,14 @@ class DesignOfExperiments:
         for k, v in model.unknown_parameters.items():
             curr_step = v * self.step
 
-            if self.fd_formula == FiniteDifferenceStep.central:
+            if self._gradient_method == GradientMethod.central:
                 col_1 = 2 * i
                 col_2 = 2 * i + 1
                 curr_step *= 2
-            elif self.fd_formula == FiniteDifferenceStep.forward:
+            elif self._gradient_method == GradientMethod.forward:
                 col_1 = i
                 col_2 = 0
-            elif self.fd_formula == FiniteDifferenceStep.backward:
+            elif self._gradient_method == GradientMethod.backward:
                 col_1 = 0
                 col_2 = i
 
@@ -779,8 +795,20 @@ class DesignOfExperiments:
                 "Cannot compute determinant with explicit formula if only_compute_fim_lower is True."
             )
 
-        # Generate scenarios for finite difference formulae
-        self._generate_scenario_blocks(model=model)
+
+        if self._gradient_method == GradientMethod.symbolic:
+            self._built_scenarios = True
+
+            # TODO: What else goes here?
+            # - Add symbolic gradient computation
+
+        else:
+            # Generate scenarios for finite difference formulae
+            self._generate_scenario_blocks(model=model)
+
+
+        # TODO: If this indexing code correct for symbolic gradients if we keep 
+        # "scenario_blocks[0]"?
 
         # Set names for indexing sensitivity matrix (jacobian) and FIM
         scen_block_ind = min(
@@ -808,6 +836,9 @@ class DesignOfExperiments:
             else:
                 return 0
 
+        # TODO: Replace this Jacobian initialization with automatic differentiation
+        # Let's work on this AFTER the symbolic differentiation is implemented and tested
+
         ### Initialize the Jacobian if provided by the user
 
         # If the user provides an initial Jacobian, convert it to a dictionary
@@ -833,6 +864,9 @@ class DesignOfExperiments:
             model.output_names, model.parameter_names, initialize=initialize_jac
         )
 
+        # TODO: We can initialize the FIM more robustly once we initialize the Jacobian
+        # using automatic differentiation.
+
         # Initialize the FIM
         if self.fim_initial is not None:
             dict_fim_initialize = {
@@ -853,7 +887,7 @@ class DesignOfExperiments:
                 model.parameter_names, model.parameter_names, initialize=identity_matrix
             )
 
-        # To-Do: Look into this functionality.....
+        # TODO: Look into this functionality.....
         # if cholesky, define L elements as variables
         if self.Cholesky_option and self.objective_option == ObjectiveLib.determinant:
             model.L = pyo.Var(
@@ -871,6 +905,9 @@ class DesignOfExperiments:
                         if c == d:
                             model.L[c, d].setlb(self.L_diagonal_lower_bound)
 
+
+        # TODO: This code changes for symbolic gradients
+
         # jacobian rule
         def jacobian_rule(m, n, p):
             """
@@ -883,14 +920,14 @@ class DesignOfExperiments:
             param_ind = m.parameter_names.data().index(p)
 
             # Different FD schemes lead to different scenarios for the computation
-            if self.fd_formula == FiniteDifferenceStep.central:
+            if self._gradient_method == GradientMethod.central:
                 s1 = param_ind * 2
                 s2 = param_ind * 2 + 1
                 fd_step_mult = 2
-            elif self.fd_formula == FiniteDifferenceStep.forward:
+            elif self._gradient_method == GradientMethod.forward:
                 s1 = param_ind + 1
                 s2 = 0
-            elif self.fd_formula == FiniteDifferenceStep.backward:
+            elif self._gradient_method == GradientMethod.backward:
                 s1 = 0
                 s2 = param_ind + 1
 
@@ -1041,7 +1078,7 @@ class DesignOfExperiments:
         model.parameter_scenarios = pyo.Suffix(direction=pyo.Suffix.LOCAL)
 
         # Populate parameter scenarios, and scenario inds based on finite difference scheme
-        if self.fd_formula == FiniteDifferenceStep.central:
+        if self._gradient_method == GradientMethod.central:
             model.parameter_scenarios.update(
                 (2 * ind, k)
                 for ind, k in enumerate(model.base_model.unknown_parameters.keys())
@@ -1051,9 +1088,9 @@ class DesignOfExperiments:
                 for ind, k in enumerate(model.base_model.unknown_parameters.keys())
             )
             model.scenarios = range(len(model.base_model.unknown_parameters) * 2)
-        elif self.fd_formula in [
-            FiniteDifferenceStep.forward,
-            FiniteDifferenceStep.backward,
+        elif self._gradient_method in [
+            GradientMethod.forward,
+            GradientMethod.backward,
         ]:
             model.parameter_scenarios.update(
                 (ind + 1, k)
@@ -1062,7 +1099,7 @@ class DesignOfExperiments:
             model.scenarios = range(len(model.base_model.unknown_parameters) + 1)
         else:
             raise AttributeError(
-                "Finite difference option not recognized. Please contact the developers as you should not see this error."
+                "Gradient method option not recognized. Please contact the developers as you should not see this error."
             )
 
         # TODO: Allow Params for `unknown_parameters` and `experiment_inputs`
@@ -1092,9 +1129,9 @@ class DesignOfExperiments:
             b.transfer_attributes_from(m.base_model.clone())
 
             # Forward/Backward difference have a stationary case (s == 0), no parameter to perturb
-            if self.fd_formula in [
-                FiniteDifferenceStep.forward,
-                FiniteDifferenceStep.backward,
+            if self._gradient_method in [
+                GradientMethod.forward,
+                GradientMethod.backward,
             ]:
                 if s == 0:
                     return
@@ -1102,13 +1139,13 @@ class DesignOfExperiments:
             param = m.parameter_scenarios[s]
 
             # Perturbation to be (1 + diff) * param_value
-            if self.fd_formula == FiniteDifferenceStep.central:
+            if self._gradient_method == GradientMethod.central:
                 diff = self.step * (
                     (-1) ** s
                 )  # Positive perturbation, even; negative, odd
-            elif self.fd_formula == FiniteDifferenceStep.backward:
+            elif self._gradient_method == GradientMethod.backward:
                 diff = self.step * -1  # Backward always negative perturbation
-            elif self.fd_formula == FiniteDifferenceStep.forward:
+            elif self._gradient_method == GradientMethod.forward:
                 diff = self.step  # Forward always positive
             else:
                 # To-Do: add an error message for this as not being implemented yet
@@ -1156,7 +1193,7 @@ class DesignOfExperiments:
         # Clean up the base model used to generate the scenarios
         model.del_component(model.base_model)
 
-        # ToDo: consider this logic? Multi-block systems need something more fancy
+        # TODO: consider this logic? Multi-block systems need something more fancy
         self._built_scenarios = True
 
     # Create objective function

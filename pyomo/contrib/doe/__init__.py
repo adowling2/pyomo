@@ -8,7 +8,7 @@
 #  rights in this software.
 #  This software is distributed under the 3-clause BSD License.
 #  ___________________________________________________________________________
-from .doe import DesignOfExperiments, ObjectiveLib, FiniteDifferenceStep
+from .doe import DesignOfExperiments, ObjectiveLib, GradientMethod
 from .utils import rescale_FIM
 
 # Deprecation errors for old Pyomo.DoE interface classes and structures
@@ -43,5 +43,12 @@ class DesignVariables:
     "Use of ModelOptionLib in Pyomo.DoE is no longer supported.", version='6.8.0'
 )
 class ModelOptionLib:
+    def __init__(self, *args):
+        raise RuntimeError(deprecation_message)
+
+@deprecated(
+    "Use of FiniteDifferenceStep in Pyomo.DoE is no longer supported. Use GradientMethod instead.", version='6.9.4'
+)
+class FiniteDifferenceStep:
     def __init__(self, *args):
         raise RuntimeError(deprecation_message)
