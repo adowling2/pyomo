@@ -795,6 +795,8 @@ class DesignOfExperiments:
                 "Cannot compute determinant with explicit formula if only_compute_fim_lower is True."
             )
 
+        # NOTES: Instead, always call _generate_scenario_blocks(model=model)
+        # And make changes in that function
 
         if self._gradient_method == GradientMethod.symbolic:
             self._built_scenarios = True
@@ -1060,6 +1062,10 @@ class DesignOfExperiments:
 
         self.logger.info("Experiment output and measurement error lengths match.")
 
+        # TODO: If we keep the Jacobain the same (e.g., same indexing), this
+        # code probably does not change. If we use different indexing for finite
+        # difference versus symbolic gradients, this code will need to change.
+
         # Check that the user input FIM and Jacobian are the correct dimension
         if self.prior_FIM is not None:
             self.check_model_FIM(FIM=self.prior_FIM)
@@ -1077,8 +1083,16 @@ class DesignOfExperiments:
         # Make a new Suffix to hold which scenarios are associated with parameters
         model.parameter_scenarios = pyo.Suffix(direction=pyo.Suffix.LOCAL)
 
+        # TODO: Update this for symbolic gradients. Main idea:
+        # - Keep scenario_blocks[0] as the base model (just rename?)
+        # - Do not create other scenarios
+        # - Exit
+
         # Populate parameter scenarios, and scenario inds based on finite difference scheme
-        if self._gradient_method == GradientMethod.central:
+        if self._gradient_method == GradientMethod.symbolic:
+            # TODO: Or do we need to update this with 0?
+            pass 
+        elif self._gradient_method == GradientMethod.central:
             model.parameter_scenarios.update(
                 (2 * ind, k)
                 for ind, k in enumerate(model.base_model.unknown_parameters.keys())
@@ -1158,31 +1172,39 @@ class DesignOfExperiments:
             ).set_value(m.base_model.unknown_parameters[param] * (1 + diff))
             res = self.solver.solve(b, tee=self.tee)
 
+        # TODO: This will change for symbolic gradients. Rename the base_model as 
+        # scenario_blocks[0] and do not create other scenarios.
         model.scenario_blocks = pyo.Block(model.scenarios, rule=build_block_scenarios)
 
         # To-Do: this might have to change if experiment inputs have
         # a different value in the Suffix (currently it is the CUID)
         design_vars = [k for k, v in model.scenario_blocks[0].experiment_inputs.items()]
 
-        # Add constraints to equate block design with global design:
-        for ind, d in enumerate(design_vars):
-            con_name = "global_design_eq_con_" + str(ind)
+        # TODO: Do not need this for symbolic gradients
+        if self._gradient_method == GradientMethod.symbolic:
+            pass
+        else:
+            # Add constraints to equate block design with global design:
+            for ind, d in enumerate(design_vars):
+                con_name = "global_design_eq_con_" + str(ind)
 
-            # Constraint rule for global design constraints
-            def global_design_fixing(m, s):
-                if s == 0:
-                    return pyo.Constraint.Skip
-                block_design_var = pyo.ComponentUID(
-                    d, context=m.scenario_blocks[0]
-                ).find_component_on(m.scenario_blocks[s])
-                return d == block_design_var
+                # Constraint rule for global design constraints
+                def global_design_fixing(m, s):
+                    if s == 0:
+                        return pyo.Constraint.Skip
+                    block_design_var = pyo.ComponentUID(
+                        d, context=m.scenario_blocks[0]
+                    ).find_component_on(m.scenario_blocks[s])
+                    return d == block_design_var
 
-            model.add_component(
-                con_name, pyo.Constraint(model.scenarios, rule=global_design_fixing)
-            )
+                model.add_component(
+                    con_name, pyo.Constraint(model.scenarios, rule=global_design_fixing)
+                )
 
-        # Clean up the base model used to generate the scenarios
-        model.del_component(model.base_model)
+            # TODO: Confirm this does not need to be deleted for symbolic gradients
+
+            # Clean up the base model used to generate the scenarios
+            model.del_component(model.base_model)
 
         # TODO: consider this logic? Multi-block systems need something more fancy
         self._built_scenarios = True
