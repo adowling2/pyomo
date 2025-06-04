@@ -657,11 +657,13 @@ class TestReactorExampleErrors(unittest.TestCase):
 
         doe_obj = DesignOfExperiments(**DoE_args)
 
+        # We are modifying doe_obj._gradient_method to an invalid value to test error handling.
+        # The user should never modify doe_obj._gradient_method on their own
         with self.assertRaisesRegex(
             AttributeError,
-            "Finite difference option not recognized. Please contact the developers as you should not see this error.",
+            "Gradient method option not recognized. Please contact the developers as you should not see this error.",
         ):
-            doe_obj.fd_formula = "bad things"
+            doe_obj._gradient_method = "bad things"
             doe_obj._generate_scenario_blocks()
 
     @unittest.skipIf(not ipopt_available, "The 'ipopt' command is not available")
@@ -680,9 +682,9 @@ class TestReactorExampleErrors(unittest.TestCase):
 
         with self.assertRaisesRegex(
             AttributeError,
-            "Finite difference option not recognized. Please contact the developers as you should not see this error.",
+            "Gradient method option not recognized. Please contact the developers as you should not see this error.",
         ):
-            doe_obj.fd_formula = "bad things"
+            doe_obj._gradient_method = "bad things"
             doe_obj.compute_FIM(method="sequential")
 
     def test_bad_objective(self):

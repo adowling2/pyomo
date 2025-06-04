@@ -184,9 +184,9 @@ class DesignOfExperiments:
             # Throw a deprecation warning
             # TODO: Need to add a deprecation warning here
 
-            self.gradient_method = GradientMethod(fd_formula)
+            self._gradient_method = GradientMethod(fd_formula)
         else:
-            self.gradient_method = GradientMethod(gradient_method)
+            self._gradient_method = GradientMethod(gradient_method)
 
         self.step = step
 
@@ -432,7 +432,7 @@ class DesignOfExperiments:
         self.results["Wall-clock Time"] = build_time + initialization_time + solve_time
 
         # Settings used to generate the optimal DoE
-        self.results["Gradient Method"] = str(self.gradient_method).split(".")[-1]
+        self.results["Gradient Method"] = str(self._gradient_method).split(".")[-1]
         self.results["Finite Difference Step"] = self.step
         self.results["Nominal Parameter Scaling"] = self.scale_nominal_param_value
 
@@ -538,7 +538,7 @@ class DesignOfExperiments:
         model.parameter_scenarios = pyo.Suffix(direction=pyo.Suffix.LOCAL)
 
         # Populate parameter scenarios, and scenario inds based on finite difference scheme
-        if self.gradient_method == GradientMethod.central:
+        if self._gradient_method == GradientMethod.central:
             model.parameter_scenarios.update(
                 (2 * ind, k) for ind, k in enumerate(model.unknown_parameters.keys())
             )
@@ -547,7 +547,7 @@ class DesignOfExperiments:
                 for ind, k in enumerate(model.unknown_parameters.keys())
             )
             model.scenarios = range(len(model.unknown_parameters) * 2)
-        elif self.gradient_method in [
+        elif self._gradient_method in [
             GradientMethod.forward,
             GradientMethod.backward,
         ]:
@@ -557,7 +557,7 @@ class DesignOfExperiments:
             model.scenarios = range(len(model.unknown_parameters) + 1)
         else:
             raise AttributeError(
-                "Finite difference option not recognized. Please contact the developers as you should not see this error."
+                "Gradient method option not recognized. Please contact the developers as you should not see this error."
             )
 
         # Fix design variables
@@ -569,20 +569,20 @@ class DesignOfExperiments:
         # Calculate measurement values for each scenario
         for s in model.scenarios:
             # Perturbation to be (1 + diff) * param_value
-            if self.gradient_method == GradientMethod.central:
+            if self._gradient_method == GradientMethod.central:
                 diff = self.step * (
                     (-1) ** s
                 )  # Positive perturbation, even; negative, odd
-            elif self.gradient_method == GradientMethod.backward:
+            elif self._gradient_method == GradientMethod.backward:
                 diff = (
                     self.step * -1 * (s != 0)
                 )  # Backward always negative perturbation; 0 at s = 0
-            elif self.gradient_method == GradientMethod.forward:
+            elif self._gradient_method == GradientMethod.forward:
                 diff = self.step * (s != 0)  # Forward always positive; 0 at s = 0
 
             # If we are doing forward/backward, no change for s=0
             skip_param_update = (
-                self.gradient_method
+                self._gradient_method
                 in [GradientMethod.forward, GradientMethod.backward]
             ) and (s == 0)
             if not skip_param_update:
@@ -629,14 +629,14 @@ class DesignOfExperiments:
         for k, v in model.unknown_parameters.items():
             curr_step = v * self.step
 
-            if self.gradient_method == GradientMethod.central:
+            if self._gradient_method == GradientMethod.central:
                 col_1 = 2 * i
                 col_2 = 2 * i + 1
                 curr_step *= 2
-            elif self.gradient_method == GradientMethod.forward:
+            elif self._gradient_method == GradientMethod.forward:
                 col_1 = i
                 col_2 = 0
-            elif self.gradient_method == GradientMethod.backward:
+            elif self._gradient_method == GradientMethod.backward:
                 col_1 = 0
                 col_2 = i
 
@@ -899,14 +899,14 @@ class DesignOfExperiments:
             param_ind = m.parameter_names.data().index(p)
 
             # Different FD schemes lead to different scenarios for the computation
-            if self.gradient_method == GradientMethod.central:
+            if self._gradient_method == GradientMethod.central:
                 s1 = param_ind * 2
                 s2 = param_ind * 2 + 1
                 fd_step_mult = 2
-            elif self.gradient_method == GradientMethod.forward:
+            elif self._gradient_method == GradientMethod.forward:
                 s1 = param_ind + 1
                 s2 = 0
-            elif self.gradient_method == GradientMethod.backward:
+            elif self._gradient_method == GradientMethod.backward:
                 s1 = 0
                 s2 = param_ind + 1
 
@@ -1057,7 +1057,7 @@ class DesignOfExperiments:
         model.parameter_scenarios = pyo.Suffix(direction=pyo.Suffix.LOCAL)
 
         # Populate parameter scenarios, and scenario inds based on finite difference scheme
-        if self.gradient_method == GradientMethod.central:
+        if self._gradient_method == GradientMethod.central:
             model.parameter_scenarios.update(
                 (2 * ind, k)
                 for ind, k in enumerate(model.base_model.unknown_parameters.keys())
@@ -1067,7 +1067,7 @@ class DesignOfExperiments:
                 for ind, k in enumerate(model.base_model.unknown_parameters.keys())
             )
             model.scenarios = range(len(model.base_model.unknown_parameters) * 2)
-        elif self.gradient_method in [
+        elif self._gradient_method in [
             GradientMethod.forward,
             GradientMethod.backward,
         ]:
@@ -1078,7 +1078,7 @@ class DesignOfExperiments:
             model.scenarios = range(len(model.base_model.unknown_parameters) + 1)
         else:
             raise AttributeError(
-                "Finite difference option not recognized. Please contact the developers as you should not see this error."
+                "Gradient method option not recognized. Please contact the developers as you should not see this error."
             )
 
         # TODO: Allow Params for `unknown_parameters` and `experiment_inputs`
@@ -1108,7 +1108,7 @@ class DesignOfExperiments:
             b.transfer_attributes_from(m.base_model.clone())
 
             # Forward/Backward difference have a stationary case (s == 0), no parameter to perturb
-            if self.gradient_method in [
+            if self._gradient_method in [
                 GradientMethod.forward,
                 GradientMethod.backward,
             ]:
@@ -1118,13 +1118,13 @@ class DesignOfExperiments:
             param = m.parameter_scenarios[s]
 
             # Perturbation to be (1 + diff) * param_value
-            if self.gradient_method == GradientMethod.central:
+            if self._gradient_method == GradientMethod.central:
                 diff = self.step * (
                     (-1) ** s
                 )  # Positive perturbation, even; negative, odd
-            elif self.gradient_method == GradientMethod.backward:
+            elif self._gradient_method == GradientMethod.backward:
                 diff = self.step * -1  # Backward always negative perturbation
-            elif self.gradient_method == GradientMethod.forward:
+            elif self._gradient_method == GradientMethod.forward:
                 diff = self.step  # Forward always positive
             else:
                 # To-Do: add an error message for this as not being implemented yet
