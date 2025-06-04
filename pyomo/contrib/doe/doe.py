@@ -278,7 +278,7 @@ class DesignOfExperiments:
             # model.add_component(doe_block_name, doe_block)
             pass
 
-        # ToDo: potentially work with this for more complicated models
+        # TODO: potentially work with this for more complicated models
         # Create the full DoE model (build scenarios for F.D. scheme)
         if not self._built_scenarios:
             self.create_doe_model(model=model)
@@ -795,8 +795,20 @@ class DesignOfExperiments:
                 "Cannot compute determinant with explicit formula if only_compute_fim_lower is True."
             )
 
-        # Generate scenarios for finite difference formulae
-        self._generate_scenario_blocks(model=model)
+
+        if self._gradient_method == GradientMethod.symbolic:
+            self._built_scenarios = True
+
+            # TODO: What else goes here?
+            # - Add symbolic gradient computation
+
+        else:
+            # Generate scenarios for finite difference formulae
+            self._generate_scenario_blocks(model=model)
+
+
+        # TODO: If this indexing code correct for symbolic gradients if we keep 
+        # "scenario_blocks[0]"?
 
         # Set names for indexing sensitivity matrix (jacobian) and FIM
         scen_block_ind = min(
@@ -824,6 +836,9 @@ class DesignOfExperiments:
             else:
                 return 0
 
+        # TODO: Replace this Jacobian initialization with automatic differentiation
+        # Let's work on this AFTER the symbolic differentiation is implemented and tested
+
         ### Initialize the Jacobian if provided by the user
 
         # If the user provides an initial Jacobian, convert it to a dictionary
@@ -849,6 +864,9 @@ class DesignOfExperiments:
             model.output_names, model.parameter_names, initialize=initialize_jac
         )
 
+        # TODO: We can initialize the FIM more robustly once we initialize the Jacobian
+        # using automatic differentiation.
+
         # Initialize the FIM
         if self.fim_initial is not None:
             dict_fim_initialize = {
@@ -869,7 +887,7 @@ class DesignOfExperiments:
                 model.parameter_names, model.parameter_names, initialize=identity_matrix
             )
 
-        # To-Do: Look into this functionality.....
+        # TODO: Look into this functionality.....
         # if cholesky, define L elements as variables
         if self.Cholesky_option and self.objective_option == ObjectiveLib.determinant:
             model.L = pyo.Var(
@@ -886,6 +904,9 @@ class DesignOfExperiments:
                     if self.L_diagonal_lower_bound:
                         if c == d:
                             model.L[c, d].setlb(self.L_diagonal_lower_bound)
+
+
+        # TODO: This code changes for symbolic gradients
 
         # jacobian rule
         def jacobian_rule(m, n, p):
@@ -1163,7 +1184,7 @@ class DesignOfExperiments:
         # Clean up the base model used to generate the scenarios
         model.del_component(model.base_model)
 
-        # ToDo: consider this logic? Multi-block systems need something more fancy
+        # TODO: consider this logic? Multi-block systems need something more fancy
         self._built_scenarios = True
 
     # Create objective function
