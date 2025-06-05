@@ -501,7 +501,13 @@ class DesignOfExperiments:
         # TODO: Add a check to see if the model has an objective and deactivate it.
         #       This solve should only be a square solve without any obj function.
 
-        if method == "sequential":
+        if self._gradient_method == GradientMethod.symbolic:
+            print("Need to implement symbolic gradients for FIM computation.")
+
+            # Assiging a placeholder for now
+            self._computed_FIM = np.identity(len(model.unknown_parameters))
+            
+        elif method == "sequential":
             self._sequential_FIM(model=model)
             self._computed_FIM = self.seq_FIM
         elif method == "kaug":
@@ -1090,6 +1096,14 @@ class DesignOfExperiments:
         # Populate parameter scenarios, and scenario inds based on finite difference scheme
         if self._gradient_method == GradientMethod.symbolic:
             # TODO: Or do we need to update this with 0?
+
+            # Is it okay to just keep this empty?
+            # Create a base scenario
+            # model.parameter_scenarios.update(0, None)
+
+            # Only one scenario for symbolic gradients
+            model.scenarios = range(1)  
+
             pass 
         elif self._gradient_method == GradientMethod.central:
             model.parameter_scenarios.update(
@@ -1140,6 +1154,11 @@ class DesignOfExperiments:
             # Generate model for the finite difference scenario
             m = b.model()
             b.transfer_attributes_from(m.base_model.clone())
+
+            if self._gradient_method == GradientMethod.symbolic:
+                # If symbolic gradients, we do not need to perturb parameters
+                # Just use the base model as the scenario block
+                return
 
             # Forward/Backward difference have a stationary case (s == 0), no parameter to perturb
             if self._gradient_method in [
@@ -1200,10 +1219,10 @@ class DesignOfExperiments:
                     con_name, pyo.Constraint(model.scenarios, rule=global_design_fixing)
                 )
 
-            # TODO: Confirm this does not need to be deleted for symbolic gradients
+        # TODO: For symbolic gradients, there is probably a performance gain by not cloning the base model or deleting it.
 
-            # Clean up the base model used to generate the scenarios
-            model.del_component(model.base_model)
+        # Clean up the base model used to generate the scenarios
+        model.del_component(model.base_model)
 
         # TODO: consider this logic? Multi-block systems need something more fancy
         self._built_scenarios = True
@@ -1526,7 +1545,8 @@ class DesignOfExperiments:
         model: model to perform the full factorial exploration on
         design_ranges: dict of lists, of the form {<var_name>: [start, stop, numsteps]}
         method: string to specify which method should be used
-                options are ``kaug`` and ``sequential``
+                options are ``kaug`` and ``sequential``. If the gradient method is
+                "symbolic", this option is ignored.
 
         """
         # Start timer
