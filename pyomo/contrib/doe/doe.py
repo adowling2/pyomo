@@ -501,18 +501,17 @@ class DesignOfExperiments:
         # TODO: Add a check to see if the model has an objective and deactivate it.
         #       This solve should only be a square solve without any obj function.
 
-        if self._gradient_method == GradientMethod.symbolic:
-            print("Need to implement symbolic gradients for FIM computation.")
 
-            # Assiging a placeholder for now
-            self._computed_FIM = np.identity(len(model.unknown_parameters))
-            
+        if method == "kaug" or self._gradient_method == GradientMethod.symbolic:
+
+            # The calculation with kaug and symbolic gradients are similar.
+            # This function skips using kaug if the gradient method is symbolic.
+
+            self._kaug_FIM(model=model)
+            self._computed_FIM = self.kaug_FIM
         elif method == "sequential":
             self._sequential_FIM(model=model)
             self._computed_FIM = self.seq_FIM
-        elif method == "kaug":
-            self._kaug_FIM(model=model)
-            self._computed_FIM = self.kaug_FIM
         else:
             raise ValueError(
                 "The method provided, {}, must be either `sequential` or `kaug`".format(
@@ -673,8 +672,8 @@ class DesignOfExperiments:
     # Use kaug to get FIM
     def _kaug_FIM(self, model=None):
         """
-        Used to compute the FIM using kaug, a sensitivity-based
-        approach that directly computes the FIM.
+        Used to compute the FIM using symbolic/automatic differentiation
+        implemented in kaug or PyNumero
 
         Parameters
         ----------
@@ -699,50 +698,53 @@ class DesignOfExperiments:
 
         self.solver.solve(model, tee=self.tee)
 
-        # Probe the solved model for dsdp results (sensitivities s.t. parameters)
-        params_dict = {k.name: v for k, v in model.unknown_parameters.items()}
-        params_names = list(params_dict.keys())
+        if self._gradient_method == GradientMethod.symbolic:
+            pass
+        else:
+            # Probe the solved model for dsdp results (sensitivities s.t. parameters)
+            params_dict = {k.name: v for k, v in model.unknown_parameters.items()}
+            params_names = list(params_dict.keys())
 
-        dsdp_re, col = get_dsdp(model, params_names, params_dict, tee=self.tee)
+            dsdp_re, col = get_dsdp(model, params_names, params_dict, tee=self.tee)
 
-        # analyze result
-        dsdp_array = dsdp_re.toarray().T
+            # analyze result
+            dsdp_array = dsdp_re.toarray().T
 
-        # store dsdp returned
-        dsdp_extract = []
-        # get right lines from results
-        measurement_index = []
+            # store dsdp returned
+            dsdp_extract = []
+            # get right lines from results
+            measurement_index = []
 
-        # loop over measurement variables and their time points
-        for k, v in model.experiment_outputs.items():
-            name = k.name
-            try:
-                kaug_no = col.index(name)
-                measurement_index.append(kaug_no)
-                # get right line of dsdp
-                dsdp_extract.append(dsdp_array[kaug_no])
-            except:
-                # k_aug does not provide value for fixed variables
-                self.logger.debug("The variable is fixed:  %s", name)
-                # produce the sensitivity for fixed variables
-                zero_sens = np.zeros(len(params_names))
-                # for fixed variables, the sensitivity are a zero vector
-                dsdp_extract.append(zero_sens)
+            # loop over measurement variables and their time points
+            for k, v in model.experiment_outputs.items():
+                name = k.name
+                try:
+                    kaug_no = col.index(name)
+                    measurement_index.append(kaug_no)
+                    # get right line of dsdp
+                    dsdp_extract.append(dsdp_array[kaug_no])
+                except:
+                    # k_aug does not provide value for fixed variables
+                    self.logger.debug("The variable is fixed:  %s", name)
+                    # produce the sensitivity for fixed variables
+                    zero_sens = np.zeros(len(params_names))
+                    # for fixed variables, the sensitivity are a zero vector
+                    dsdp_extract.append(zero_sens)
 
-        # Extract and calculate sensitivity if scaled by constants or parameters.
-        jac = [[] for k in params_names]
+            # Extract and calculate sensitivity if scaled by constants or parameters.
+            jac = [[] for k in params_names]
 
-        for d in range(len(dsdp_extract)):
-            for k, v in model.unknown_parameters.items():
-                p = params_names.index(k.name)  # Index of parameter in np array
-                # if scaled by parameter value or constant value
-                sensi = dsdp_extract[d][p] * self.scale_constant_value
-                if self.scale_nominal_param_value:
-                    sensi *= v
-                jac[p].append(sensi)
+            for d in range(len(dsdp_extract)):
+                for k, v in model.unknown_parameters.items():
+                    p = params_names.index(k.name)  # Index of parameter in np array
+                    # if scaled by parameter value or constant value
+                    sensi = dsdp_extract[d][p] * self.scale_constant_value
+                    if self.scale_nominal_param_value:
+                        sensi *= v
+                    jac[p].append(sensi)
 
-        # record kaug jacobian
-        self.kaug_jac = np.array(jac).T
+            # record kaug jacobian
+            self.kaug_jac = np.array(jac).T
 
         # Compute FIM
         if self.prior_FIM is None:
@@ -758,7 +760,7 @@ class DesignOfExperiments:
             cov_y[count, count] = 1 / v
             count += 1
 
-        # ToDo: need to add a covariance matrix for measurements (sigma inverse)
+        # TODO: need to add a covariance matrix for measurements (sigma inverse)
         # i.e., cov_y = self.cov_y or model.cov_y
         # Still deciding where this would be best.
 
