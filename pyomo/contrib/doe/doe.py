@@ -795,21 +795,11 @@ class DesignOfExperiments:
                 "Cannot compute determinant with explicit formula if only_compute_fim_lower is True."
             )
 
-        # NOTES: Instead, always call _generate_scenario_blocks(model=model)
-        # And make changes in that function
-
-        if self._gradient_method == GradientMethod.symbolic:
-            self._built_scenarios = True
-
-            # TODO: What else goes here?
-            # - Add symbolic gradient computation
-
-        else:
-            # Generate scenarios for finite difference formulae
-            self._generate_scenario_blocks(model=model)
+        # Generate scenarios for computing the gradients/sensitivities
+        self._generate_scenario_blocks(model=model)
 
 
-        # TODO: If this indexing code correct for symbolic gradients if we keep 
+        # TODO: Is this indexing code correct for symbolic gradients if we keep 
         # "scenario_blocks[0]"?
 
         # Set names for indexing sensitivity matrix (jacobian) and FIM
@@ -910,50 +900,61 @@ class DesignOfExperiments:
 
         # TODO: This code changes for symbolic gradients
 
-        # jacobian rule
-        def jacobian_rule(m, n, p):
-            """
-            m: Pyomo model
-            n: experimental output
-            p: unknown parameter
-            """
-            fd_step_mult = 1
-            cuid = pyo.ComponentUID(n)
-            param_ind = m.parameter_names.data().index(p)
+        if self._gradient_method == GradientMethod.symbolic:
+            print("TODO: Need to implement symbolic gradients for the FIM computation.")
+            pass
 
-            # Different FD schemes lead to different scenarios for the computation
-            if self._gradient_method == GradientMethod.central:
-                s1 = param_ind * 2
-                s2 = param_ind * 2 + 1
-                fd_step_mult = 2
-            elif self._gradient_method == GradientMethod.forward:
-                s1 = param_ind + 1
-                s2 = 0
-            elif self._gradient_method == GradientMethod.backward:
-                s1 = 0
-                s2 = param_ind + 1
+        else:
 
-            var_up = cuid.find_component_on(m.scenario_blocks[s1])
-            var_lo = cuid.find_component_on(m.scenario_blocks[s2])
+            # jacobian rule
+            def jacobian_rule(m, n, p):
+                """
+                m: Pyomo model
+                n: experimental output
+                p: unknown parameter
+                """
+                fd_step_mult = 1
+                cuid = pyo.ComponentUID(n)
+                param_ind = m.parameter_names.data().index(p)
 
-            param = m.parameter_scenarios[max(s1, s2)]
-            param_loc = pyo.ComponentUID(param).find_component_on(m.scenario_blocks[0])
-            param_val = m.scenario_blocks[0].unknown_parameters[param_loc]
-            param_diff = param_val * fd_step_mult * self.step
+                # Different FD schemes lead to different scenarios for the computation
+                if self._gradient_method == GradientMethod.central:
+                    s1 = param_ind * 2
+                    s2 = param_ind * 2 + 1
+                    fd_step_mult = 2
+                elif self._gradient_method == GradientMethod.forward:
+                    s1 = param_ind + 1
+                    s2 = 0
+                elif self._gradient_method == GradientMethod.backward:
+                    s1 = 0
+                    s2 = param_ind + 1
 
-            if self.scale_nominal_param_value:
-                return (
-                    m.sensitivity_jacobian[n, p]
-                    == (var_up - var_lo)
-                    / param_diff
-                    * param_val
-                    * self.scale_constant_value
-                )
-            else:
-                return (
-                    m.sensitivity_jacobian[n, p]
-                    == (var_up - var_lo) / param_diff * self.scale_constant_value
-                )
+                var_up = cuid.find_component_on(m.scenario_blocks[s1])
+                var_lo = cuid.find_component_on(m.scenario_blocks[s2])
+
+                param = m.parameter_scenarios[max(s1, s2)]
+                param_loc = pyo.ComponentUID(param).find_component_on(m.scenario_blocks[0])
+                param_val = m.scenario_blocks[0].unknown_parameters[param_loc]
+                param_diff = param_val * fd_step_mult * self.step
+
+                if self.scale_nominal_param_value:
+                    return (
+                        m.sensitivity_jacobian[n, p]
+                        == (var_up - var_lo)
+                        / param_diff
+                        * param_val
+                        * self.scale_constant_value
+                    )
+                else:
+                    return (
+                        m.sensitivity_jacobian[n, p]
+                        == (var_up - var_lo) / param_diff * self.scale_constant_value
+                    )
+                
+            model.jacobian_constraint = pyo.Constraint(
+                model.output_names, model.parameter_names, rule=jacobian_rule
+            )            
+        
 
         # A constraint to calculate elements in Hessian matrix
         # transfer prior FIM to be Expressions
@@ -1003,9 +1004,7 @@ class DesignOfExperiments:
                     + m.prior_FIM[p, q]
                 )
 
-        model.jacobian_constraint = pyo.Constraint(
-            model.output_names, model.parameter_names, rule=jacobian_rule
-        )
+
         model.fim_constraint = pyo.Constraint(
             model.parameter_names, model.parameter_names, rule=fim_rule
         )
