@@ -155,9 +155,13 @@ class ExperimentGradients:
 
         model = self.model
 
-        # TODO:
-        # - fix unknown model parameters
-        # - fix model inputs
+        # Loop over the design variables and fix them
+        for v in model.experiment_inputs:
+            v.fix()
+
+        # Loop over the unknown parameters and fix them
+        for v in model.unknown_parameters.keys():
+            v.fix()
 
         # Parameters
         # Create an empty component set
