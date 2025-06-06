@@ -209,6 +209,8 @@ class ExperimentGradients:
         for p in model.unknown_parameters.keys():
             var_set.add(p)
 
+        # TODO: Keep track of measurements that are fixed
+
         # Assemble into lists
         con_list = list(con_set)
         var_list = list(var_set)
@@ -379,6 +381,8 @@ class ExperimentGradients:
         )
 
         # print(f"Jacobian of all variables with respect to parameters:\n{jac_vars_wrt_param}")
+
+        # TODO: What about measurements that are fixed? They should be insensitive to changes in the model parameters.
 
         jac_measurements_wrt_param = jac_vars_wrt_param[measurement_index, :]
 

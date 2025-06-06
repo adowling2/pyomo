@@ -716,6 +716,11 @@ class DesignOfExperiments:
             for i in model.experiment_inputs:
                 i.pprint()
 
+            # TODO: There is a potential logic mistake here. How do we ensure the order of the measurements and parameters in this
+            # Jacobian match the order in the measurement covariance matrix?
+            # - Is this something we get for free?
+            # - How to handle the edge case of fixed experiment outputs?
+
             self.kaug_jac = experiment_grad.compute_gradient_outputs_wrt_unknown_parameters().transpose()
 
         else:
