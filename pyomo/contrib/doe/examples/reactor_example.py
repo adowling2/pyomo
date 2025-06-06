@@ -60,12 +60,14 @@ def run_reactor_doe():
         jac_initial=None,
         fim_initial=None,
         L_diagonal_lower_bound=1e-7,
-        solver=None,
-        tee=False,
+        solver=pyo.SolverFactory('ipopt'), # If none, use default in Pyomo.DoE (ipopt with ma57)
+        tee=True,
         get_labeled_model_args=None,
         _Cholesky_option=True,
         _only_compute_fim_lower=True,
     )
+
+    '''
 
     # Make design ranges to compute the full factorial design
     design_ranges = {"CA[0]": [1, 5, 9], "T[0]": [300, 700, 9]}
@@ -92,6 +94,7 @@ def run_reactor_doe():
         figure_file_name="example_reactor_compute_FIM",
         log_scale=False,
     )
+    '''
 
     ###########################
     # End sensitivity analysis

@@ -63,7 +63,7 @@ def run_reactor_doe():
         jac_initial=None,
         fim_initial=None,
         L_diagonal_lower_bound=1e-7,
-        solver=None,
+        solver=pyo.SolverFactory('ipopt'), # If none, use default in Pyomo.DoE (ipopt with ma57)
         tee=False,
         get_labeled_model_args=None,
         _Cholesky_option=True,

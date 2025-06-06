@@ -155,6 +155,10 @@ class ExperimentGradients:
 
         model = self.model
 
+        # TODO:
+        # - fix unknown model parameters
+        # - fix model inputs
+
         # Parameters
         # Create an empty component set
         param_set = ComponentSet()
