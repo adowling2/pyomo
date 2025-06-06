@@ -704,6 +704,14 @@ class DesignOfExperiments:
             
             experiment_grad = ExperimentGradients(model, automatic=True, symbolic=False)
 
+            print("AD gradient:\n")
+            df = experiment_grad.get_numeric_sensitivity_as_df()
+            print(df)
+
+            print("\nExperiment outputs:")
+            for o in model.experiment_outputs:
+                o.pprint()
+
             self.kaug_jac = experiment_grad.compute_gradient_outputs_wrt_unknown_parameters().transpose()
 
         else:
