@@ -48,6 +48,8 @@ import pyomo.environ as pyo
 
 from pyomo.opt import SolverStatus
 
+from pyomo.contrib.doe.utils import ExperimentGradients
+
 # This small and positive tolerance is used when checking
 # if the prior is negative definite or approximately
 # indefinite. It is defined as a tolerance here to ensure
@@ -699,7 +701,11 @@ class DesignOfExperiments:
         self.solver.solve(model, tee=self.tee)
 
         if self._gradient_method == GradientMethod.symbolic:
-            pass
+            
+            experiment_grad = ExperimentGradients(model, automatic=True, symbolic=False)
+
+            self.kaug_jac = experiment_grad.compute_gradient_outputs_wrt_unknown_parameters().transpose()
+
         else:
             # Probe the solved model for dsdp results (sensitivities s.t. parameters)
             params_dict = {k.name: v for k, v in model.unknown_parameters.items()}
@@ -763,6 +769,10 @@ class DesignOfExperiments:
         # TODO: need to add a covariance matrix for measurements (sigma inverse)
         # i.e., cov_y = self.cov_y or model.cov_y
         # Still deciding where this would be best.
+
+        print("Dimensions of kaug_jac = ",self.kaug_jac.shape)
+        print("Dimensions of cov_y", cov_y.shape)
+        print("Dimensions of prior_FIM", self.prior_FIM.shape)
 
         self.kaug_FIM = self.kaug_jac.T @ cov_y @ self.kaug_jac + self.prior_FIM
 

@@ -9,7 +9,7 @@
 #  This software is distributed under the 3-clause BSD License.
 #  ___________________________________________________________________________
 from .doe import DesignOfExperiments, ObjectiveLib, GradientMethod
-from .utils import rescale_FIM
+from .utils import rescale_FIM, ExperimentGradients
 
 # Deprecation errors for old Pyomo.DoE interface classes and structures
 from pyomo.common.deprecation import deprecated
