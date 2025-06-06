@@ -712,6 +712,10 @@ class DesignOfExperiments:
             for o in model.experiment_outputs:
                 o.pprint()
 
+            print("\n Experiment inputs:")
+            for i in model.experiment_inputs:
+                i.pprint()
+
             self.kaug_jac = experiment_grad.compute_gradient_outputs_wrt_unknown_parameters().transpose()
 
         else:
