@@ -384,6 +384,14 @@ class ExperimentGradients:
 
         # TODO: What about measurements that are fixed? They should be insensitive to changes in the model parameters.
 
+        # TODO: Need to convert the order of measurement here (corresponds to var_set) with the order in experiment_outputs
+        # If the experiment_output is NOT in var_set, then it's row should be all zeros
+        # Pseudocode:
+        # 1. Look over experiment_outputs
+        # 2. Find index for element in var_set
+        # 3. Grab the row correspond to the index from jac_vars_wrt_param
+        # 4. Store in numpy array for Jacobian
+
         jac_measurements_wrt_param = jac_vars_wrt_param[measurement_index, :]
 
         # print(f"Jacobian of measurements with respect to parameters:\n{jac_measurements_wrt_param}")
