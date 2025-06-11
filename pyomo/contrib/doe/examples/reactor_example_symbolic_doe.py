@@ -77,7 +77,7 @@ def run_reactor_doe():
     design_ranges = {"CA[0]": [1, 5, 9], "T[0]": [300, 700, 9]}
 
     # Compute the full factorial design with the sequential FIM calculation
-    doe_obj.compute_FIM_full_factorial(design_ranges=design_ranges, method="sequential")
+    doe_obj.compute_FIM_full_factorial(design_ranges=design_ranges, method="kaug")
 
     # Plot the results
     doe_obj.draw_factorial_figure(
