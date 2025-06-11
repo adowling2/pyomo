@@ -638,6 +638,8 @@ class DesignOfExperiments:
 
         # Loop over parameter values and grab correct columns for finite difference calculation
 
+        # TODO: Does this assume the nominal parameter value is stored in the suffix? What if the suffix was
+        # contains None?
         for k, v in model.unknown_parameters.items():
             curr_step = v * self.step
 
@@ -721,14 +723,27 @@ class DesignOfExperiments:
             for i in model.experiment_inputs:
                 i.pprint()
 
-            # TODO: There is a potential logic mistake here. How do we ensure the order of the measurements and parameters in this
-            # Jacobian match the order in the measurement covariance matrix?
-            # - Is this something we get for free?
-            # - How to handle the edge case of fixed experiment outputs?
-
             # Transpose is not needed here, as the Jacobian is already in the right shape
             # (measurements x parameters)
             self.kaug_jac = experiment_grad.compute_gradient_outputs_wrt_unknown_parameters()
+
+            # TODO: Need to account for the scaling of the sensitivities
+            if self.scale_nominal_param_value:
+                # Scale the sensitivities by the nominal parameter values
+                '''
+                for i, p in enumerate(model.unknown_parameters.keys()):
+                    # Scale by the nominal parameter value taken from the Pyomo model
+                    self.kaug_jac[:, i] *= pyo.value(p)
+                '''
+
+                for i, (k, v) in enumerate(model.unknown_parameters.items()):
+                    # Scale by the nominal parameter value taken from the suffix (?)
+                    self.kaug_jac[:,i] *= v
+                    
+            # Scale the sensitivities by the constant value
+            if self.scale_constant_value:
+                # Skip scaling if the value is None
+                self.kaug_jac *= self.scale_constant_value
 
         else:
             # Probe the solved model for dsdp results (sensitivities s.t. parameters)

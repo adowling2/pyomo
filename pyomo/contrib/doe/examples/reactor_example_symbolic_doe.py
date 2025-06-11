@@ -45,7 +45,7 @@ def run_reactor_doe():
 
     # Use the determinant objective with scaled sensitivity matrix
     objective_option = "determinant"
-    scale_nominal_param_value = False
+    scale_nominal_param_value = True
 
     # Create the DesignOfExperiments object
     # We will not be passing any prior information in this example
@@ -53,7 +53,7 @@ def run_reactor_doe():
     # call of ``run_doe`` perform model initialization.
     doe_obj = DesignOfExperiments(
         experiment,
-        gradient_method="central",  # Use finite difference method for gradient calculation
+        gradient_method="symbolic",  # Use finite difference method for gradient calculation
         fd_formula=None,
         step=1e-3,
         objective_option=objective_option,

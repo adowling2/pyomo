@@ -476,14 +476,8 @@ class ExperimentGradients:
         measurement_index = self.measurement_index
         param_index = self.param_index
 
-
-        # row_names = [str(var_list[y]) for y in measurement_index]
-        # col_names = [str(var_list[p]) for p in param_index]
         row_names = [str(o) for o in self.model.experiment_outputs.keys()]
         col_names = [str(p) for p in self.model.unknown_parameters.keys()]
-
-        print("len(row_names), len(col_names), jac.shape[0], jac.shape[1])  # Debugging line")
-        print(len(row_names), len(col_names), jac.shape[0], jac.shape[1])
 
         return pd.DataFrame(jac, index=row_names, columns=col_names)
 
