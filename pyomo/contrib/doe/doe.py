@@ -892,6 +892,7 @@ class DesignOfExperiments:
 
         # TODO: Replace this Jacobian initialization with automatic differentiation
         # Let's work on this AFTER the symbolic differentiation is implemented and tested
+        
 
         ### Initialize the Jacobian if provided by the user
 
@@ -965,6 +966,13 @@ class DesignOfExperiments:
         if self._gradient_method == GradientMethod.symbolic:
             print("TODO: Need to implement symbolic gradients for the FIM computation.")
             pass
+
+            # Notes for next steps:
+            # 1. Add variables for all elements in the Jacobian matrix (all variables)
+            # 2. Add constraints to compute the Jacobian elements
+            # 3. Add expressions to link the computed Jacobian elements using symbolic differentiation
+            # with the model. Need to be careful about the indexing of the variables
+
 
         else:
 

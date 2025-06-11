@@ -22,6 +22,8 @@ import pyomo.environ as pyo
 
 import json
 
+import logging
+
 
 # Example for sensitivity analysis on the reactor experiment
 # After sensitivity analysis is done, we perform optimal DoE
@@ -53,7 +55,7 @@ def run_reactor_doe():
     # call of ``run_doe`` perform model initialization.
     doe_obj = DesignOfExperiments(
         experiment,
-        gradient_method="symbolic",  # Use finite difference method for gradient calculation
+        gradient_method="central",  # Use finite difference method for gradient calculation
         fd_formula=None,
         step=1e-3,
         objective_option=objective_option,
@@ -65,12 +67,13 @@ def run_reactor_doe():
         L_diagonal_lower_bound=1e-7,
         solver=pyo.SolverFactory('ipopt'), # If none, use default in Pyomo.DoE (ipopt with ma57)
         tee=False,
+        logger_level=logging.INFO,
         get_labeled_model_args=None,
         _Cholesky_option=True,
         _only_compute_fim_lower=True,
     )
 
-    doe_obj.compute_FIM(method="kaug")
+    doe_obj.compute_FIM(method="sequential")
 
     
     # Make design ranges to compute the full factorial design
