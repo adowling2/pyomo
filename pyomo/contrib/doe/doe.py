@@ -800,6 +800,11 @@ class DesignOfExperiments:
 
         self.kaug_FIM = self.kaug_jac.T @ cov_y @ self.kaug_jac + self.prior_FIM
 
+        print("kaug_jac\n:", self.kaug_jac)
+        print("\n\ncov_y\n:", cov_y)
+        print("\n\nkaug_FIM\n:", self.kaug_FIM)
+        print("\n\nprior_FIM\n:", self.prior_FIM)
+
     # Create the DoE model (with ``scenarios`` from finite differencing scheme)
     def create_doe_model(self, model=None):
         """
