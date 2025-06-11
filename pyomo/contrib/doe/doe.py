@@ -721,7 +721,9 @@ class DesignOfExperiments:
             # - Is this something we get for free?
             # - How to handle the edge case of fixed experiment outputs?
 
-            self.kaug_jac = experiment_grad.compute_gradient_outputs_wrt_unknown_parameters().transpose()
+            # Transpose is not needed here, as the Jacobian is already in the right shape
+            # (measurements x parameters)
+            self.kaug_jac = experiment_grad.compute_gradient_outputs_wrt_unknown_parameters()
 
         else:
             # Probe the solved model for dsdp results (sensitivities s.t. parameters)
