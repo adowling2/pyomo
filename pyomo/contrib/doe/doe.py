@@ -893,6 +893,11 @@ class DesignOfExperiments:
         # TODO: Replace this Jacobian initialization with automatic differentiation
         # Let's work on this AFTER the symbolic differentiation is implemented and tested
         
+        # Create object for computing gradients
+        experiment_grad = ExperimentGradients(model.scenario_blocks[0], # Always analyze scenario 0
+                                              automatic=True, 
+                                              symbolic=self._gradient_method == GradientMethod.symbolic)
+
 
         ### Initialize the Jacobian if provided by the user
 
@@ -973,6 +978,31 @@ class DesignOfExperiments:
             # 3. Add expressions to link the computed Jacobian elements using symbolic differentiation
             # with the model. Need to be careful about the indexing of the variables
 
+            # Add constraints to compute the Jacobian elements
+            # These constraints are added on scenario_blocks[0]
+            experiment_grad.construct_sensitivity_constraints()
+
+            # Add expressions to link the computed Jacobian elements using symbolic differentiation
+            # with the model. Need to be careful about the indexing of the variables
+
+            def jacobian_rule(m, n, p):
+                """
+                m: Pyomo model
+                n: experimental output
+                p: unknown parameter
+                """
+
+                # This may or may not be needed
+                cuid = pyo.ComponentUID(n)
+                param_ind = m.parameter_names.data().index(p)
+
+                # Need to look up the index here
+
+                # Get the variable from the scenario block
+                var = cuid.find_component_on(m.scenario_blocks[0])
+
+                # Get the sensitivity jacobian value
+                return m.sensitivity_jacobian[n, p] == var
 
         else:
 

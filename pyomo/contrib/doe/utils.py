@@ -505,7 +505,7 @@ class ExperimentGradients:
         
         return self._package_jac_as_df(jac)
 
-    def construct_sensitivity_constraints(self):
+    def construct_sensitivity_constraints(self, model=None):
 
         if self.jac_dict_sd is None:
             # Perform symbolic differentiation if not already done
@@ -513,7 +513,8 @@ class ExperimentGradients:
 
         # Decision: Build these constraints in the model. Pyomo.DoE can look into scenarion[0]
 
-        model = self.model
+        if model is None:
+            model = self.model
 
         # Using the lists of indices to create Pyomo Sets
         model.param_index = pyo.Set(initialize=self.param_index)
