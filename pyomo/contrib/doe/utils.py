@@ -211,9 +211,11 @@ class ExperimentGradients:
                 # If the parameter is not in the variable set, add it
                 var_set.add(p)
 
+        # TODO: This may not be needed, likely remove
         # Keep track of outputs that are fixed
         outputs_fixed = ComponentSet()
 
+        '''
         # Make sure all outputs are in the variable set
         for o in model.experiment_outputs.keys():
             if o not in var_set:
@@ -225,6 +227,7 @@ class ExperimentGradients:
                 var_set.add(o)
 
                 outputs_fixed.add(o)
+        '''
 
         # TODO: Keep track of measurements that are fixed -- work in progress
 
@@ -270,6 +273,8 @@ class ExperimentGradients:
         num_constraints = len(con_set)
         num_vars = len(var_set)
         num_inputs = len(model.experiment_inputs)
+
+        # TODO: This is likely not needed, likely remove
         num_fixed_measurements = len(outputs_fixed)
 
         if self.verbose:
@@ -377,6 +382,7 @@ class ExperimentGradients:
         # (this keeps variable names shorter below)
         num_constraints = self.num_constraints
         num_params = self.num_params
+        num_measurements = self.num_measurements
         param_index = self.param_index
         model_var_index = self.model_var_index
         jac_dict_ad = self.jac_dict_ad
@@ -400,6 +406,8 @@ class ExperimentGradients:
             jac_con_wrt_vars, -jac_con_wrt_param
         )
 
+        jac_measurements_wrt_param = np.zeros((num_measurements, num_params))
+
         # print(f"Jacobian of all variables with respect to parameters:\n{jac_vars_wrt_param}")
 
         # TODO: What about measurements that are fixed? They should be insensitive to changes in the model parameters.
@@ -407,9 +415,14 @@ class ExperimentGradients:
         # TODO: Need to convert the order of measurement here (corresponds to var_set) with the order in experiment_outputs
         # If the experiment_output is NOT in var_set, then it's row should be all zeros
         # Pseudocode:
-        for m in self.model.experiment_outputs.keys():
+        for ind, m in enumerate(self.model.experiment_outputs.keys()):
             if m not in self.var_set:
-                print('Measurement {} is not in the variable list.'.format(m))
+                if self.verbose:
+                    # If the measurement is not in the variable set, print a message
+                    # and skip it
+                    print('Measurement {} is not in the variable list.'.format(m))
+                # Set the row in jac_measurements_wrt_param to all zeros
+                jac_measurements_wrt_param[ind, :] = 0.0
             else:
                 # Find the index of the measurement in the variable list
 
@@ -423,8 +436,12 @@ class ExperimentGradients:
                         # This is needed to get the row in jac_vars_wrt_param
                         # that corresponds to this measurement
                         i = j
-                        print(f"Measurement {m} is at index {i} in the variable list.")
                         break
+
+                if self.verbose:
+                        print(f"Measurement {m} found at index {i} in variable set.")
+                
+                jac_measurements_wrt_param[ind, :] = jac_vars_wrt_param[i, :]
                 
                 
         # The measurement_index is the index of the measurement in the var_set
@@ -434,7 +451,7 @@ class ExperimentGradients:
         # 3. Grab the row correspond to the index from jac_vars_wrt_param
         # 4. Store in numpy array for Jacobian
 
-        jac_measurements_wrt_param = jac_vars_wrt_param[measurement_index, :]
+        # jac_measurements_wrt_param = jac_vars_wrt_param[measurement_index, :]
 
         # print(f"Jacobian of measurements with respect to parameters:\n{jac_measurements_wrt_param}")
 
@@ -459,8 +476,14 @@ class ExperimentGradients:
         measurement_index = self.measurement_index
         param_index = self.param_index
 
-        row_names = [str(var_list[y]) for y in measurement_index]
-        col_names = [str(var_list[p]) for p in param_index]
+
+        # row_names = [str(var_list[y]) for y in measurement_index]
+        # col_names = [str(var_list[p]) for p in param_index]
+        row_names = [str(o) for o in self.model.experiment_outputs.keys()]
+        col_names = [str(p) for p in self.model.unknown_parameters.keys()]
+
+        print("len(row_names), len(col_names), jac.shape[0], jac.shape[1])  # Debugging line")
+        print(len(row_names), len(col_names), jac.shape[0], jac.shape[1])
 
         return pd.DataFrame(jac, index=row_names, columns=col_names)
 
