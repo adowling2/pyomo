@@ -45,7 +45,7 @@ def run_reactor_doe():
 
     # Use the determinant objective with scaled sensitivity matrix
     objective_option = "determinant"
-    scale_nominal_param_value = True
+    scale_nominal_param_value = False
 
     # Create the DesignOfExperiments object
     # We will not be passing any prior information in this example
