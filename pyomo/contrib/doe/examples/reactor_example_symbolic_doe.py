@@ -72,7 +72,7 @@ def run_reactor_doe():
 
     doe_obj.compute_FIM(method="kaug")
 
-    '''
+    
     # Make design ranges to compute the full factorial design
     design_ranges = {"CA[0]": [1, 5, 9], "T[0]": [300, 700, 9]}
 
@@ -101,7 +101,6 @@ def run_reactor_doe():
 
     ###########################
     # End sensitivity analysis
-    '''
     
 
     '''
