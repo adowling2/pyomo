@@ -207,9 +207,26 @@ class ExperimentGradients:
         # recall that the parameters are fixed, so we did not
         # get them above. Let's add them now.
         for p in model.unknown_parameters.keys():
-            var_set.add(p)
+            if p not in var_set:
+                # If the parameter is not in the variable set, add it
+                var_set.add(p)
 
-        # TODO: Keep track of measurements that are fixed
+        # Keep track of outputs that are fixed
+        outputs_fixed = ComponentSet()
+
+        # Make sure all outputs are in the variable set
+        for o in model.experiment_outputs.keys():
+            if o not in var_set:
+                # if the output is not in the variable set,
+                # it was fixed. Let's keep track of it
+                outputs_fixed.add(o)
+
+                # And let's add it to the variable set
+                var_set.add(o)
+
+                outputs_fixed.add(o)
+
+        # TODO: Keep track of measurements that are fixed -- work in progress
 
         # Assemble into lists
         con_list = list(con_set)
@@ -253,6 +270,7 @@ class ExperimentGradients:
         num_constraints = len(con_set)
         num_vars = len(var_set)
         num_inputs = len(model.experiment_inputs)
+        num_fixed_measurements = len(outputs_fixed)
 
         if self.verbose:
             print("Experiment model size:")
@@ -263,7 +281,7 @@ class ExperimentGradients:
             print(f"  {num_params} unknown parameters")
             print(f"  {num_constraints} constraints\n")
 
-        if num_vars - num_params != num_constraints:
+        if num_vars - num_params - num_fixed_measurements != num_constraints:
             raise ValueError("The model is not square: the number of variables minus unknown parameters does not equal the number of constraints.\n" \
             "This is required for the (automatic) differentiation to work correctly.")
 
@@ -282,6 +300,8 @@ class ExperimentGradients:
         self.num_params = num_params
         self.num_constraints = num_constraints
         self.num_vars = num_vars
+
+        self.var_set = var_set
 
     def _perform_differentiation(self, symbolic=True, automatic=True):
     
@@ -387,6 +407,28 @@ class ExperimentGradients:
         # TODO: Need to convert the order of measurement here (corresponds to var_set) with the order in experiment_outputs
         # If the experiment_output is NOT in var_set, then it's row should be all zeros
         # Pseudocode:
+        for m in self.model.experiment_outputs.keys():
+            if m not in self.var_set:
+                print('Measurement {} is not in the variable list.'.format(m))
+            else:
+                # Find the index of the measurement in the variable list
+
+                i = None
+
+                # Pyomo team: Is there a better way to do this?
+                for j, v in enumerate(self.var_set):
+                    if v is m:
+                        # Found the measurement in the variable set
+                        # Get the index of the measurement in the variable list
+                        # This is needed to get the row in jac_vars_wrt_param
+                        # that corresponds to this measurement
+                        i = j
+                        print(f"Measurement {m} is at index {i} in the variable list.")
+                        break
+                
+                
+        # The measurement_index is the index of the measurement in the var_set
+
         # 1. Look over experiment_outputs
         # 2. Find index for element in var_set
         # 3. Grab the row correspond to the index from jac_vars_wrt_param
