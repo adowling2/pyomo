@@ -190,6 +190,11 @@ class DesignOfExperiments:
         else:
             self._gradient_method = GradientMethod(gradient_method)
 
+        if self._gradient_method is not GradientMethod.symbolic:
+            if step is None:
+                raise ValueError(
+                    "If the gradient method is not symbolic, a step size must be provided."
+                )
         self.step = step
 
         # Set the objective type and scaling options:

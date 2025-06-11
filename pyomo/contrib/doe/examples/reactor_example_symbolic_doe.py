@@ -53,9 +53,9 @@ def run_reactor_doe():
     # call of ``run_doe`` perform model initialization.
     doe_obj = DesignOfExperiments(
         experiment,
-        gradient_method="symbolic",
+        gradient_method="central",  # Use finite difference method for gradient calculation
         fd_formula=None,
-        step=None,
+        step=1e-3,
         objective_option=objective_option,
         scale_constant_value=1,
         scale_nominal_param_value=scale_nominal_param_value,
