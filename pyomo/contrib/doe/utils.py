@@ -156,7 +156,7 @@ class ExperimentGradients:
         model = self.model
 
         # Loop over the design variables and fix them
-        for v in model.experiment_inputs:
+        for v in model.experiment_inputs.keys():
             v.fix()
 
         # Loop over the unknown parameters and fix them
@@ -324,7 +324,7 @@ class ExperimentGradients:
         var_list = self.var_list
 
         # Enumerate over the constraints
-        for i,c in enumerate(con_list):
+        for i, c in enumerate(con_list):
             # Check we only have equality constraints... otherwise this gets more complicated
             assert c.equality, "This function only works with equality constraints"
             
@@ -337,7 +337,7 @@ class ExperimentGradients:
 
             # Loop over the Pyomo variables, which includes 
             # parameters, measurements, control decisions
-            for j,v in enumerate(var_list):
+            for j, v in enumerate(var_list):
 
                 # Symbolic differentiation
                 if symbolic:
