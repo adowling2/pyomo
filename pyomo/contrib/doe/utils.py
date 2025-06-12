@@ -231,6 +231,18 @@ class ExperimentGradients:
 
         # TODO: Keep track of measurements that are fixed -- work in progress
 
+        # TODO: Keep track of mappings between measurement output and index
+        # This is needed to assemble the Jacobian correctly
+        # 1. Suffix. key = experiment outputs (parameters), value is position in list of variables
+        # 2. Suffix. key = parameters , value is measurement error
+        # 3. Use these two suffixes 
+        
+        # Keep track of the mapping from measurements to their index in the variable set
+        measurement_mapping = pyo.Suffix(direction=pyo.Suffix.LOCAL)
+
+        # Keep track of the mapping from parameters to their index in the variable set
+        parameter_mapping = pyo.Suffix(direction=pyo.Suffix.LOCAL)
+
         # Assemble into lists
         con_list = list(con_set)
         var_list = list(var_set)
@@ -239,6 +251,8 @@ class ExperimentGradients:
         param_index = []
         model_var_index = []
         measurement_index = []
+
+        # TODO: This is no longer needed, likely remove
         # Adding a `included` suffix to only
         # take outputs that are unfixed. This
         # makes indices match.
@@ -255,6 +269,9 @@ class ExperimentGradients:
             if v in param_set:
                 # If yes, record its index
                 param_index.append(i)
+
+                parameter_mapping[v] = i
+
             else:
                 # Otherwise, it is a model variable
                 model_var_index.append(i)
@@ -264,6 +281,17 @@ class ExperimentGradients:
                     # If yes, record its index
                     measurement_index.append(i)
                     measurement_error_included[v] = model.measurement_error[v]
+
+                    measurement_mapping[v] = i
+
+        # Take care of measurements that were fixed
+        for o in model.experiment_outputs.keys():
+            if o not in var_set:
+                # if the output is not in the variable set,
+                # it was fixed.
+
+                # Store the index as None
+                measurement_mapping[o] = None
 
         # TODO: Check lengths here. The experiment model should be square if
         # the experiment inputs and unknown parameters are fixed.
@@ -307,6 +335,9 @@ class ExperimentGradients:
         self.num_vars = num_vars
 
         self.var_set = var_set
+
+        self.measurement_mapping = measurement_mapping
+        self.parameter_mapping = parameter_mapping
 
     def _perform_differentiation(self, symbolic=True, automatic=True):
     
@@ -360,7 +391,7 @@ class ExperimentGradients:
                         # Otherwise, record 0
                         deriv = 0
                     # Save results in the Jacobian dictionary
-                    jac_dict_ad[(i, j)] = deriv
+                    jac_dict_ad[(i, j)] = deriv        
 
         if symbolic:
             self.jac_dict_sd = jac_dict_sd
