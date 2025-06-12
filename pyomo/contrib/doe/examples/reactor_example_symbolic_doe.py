@@ -55,7 +55,7 @@ def run_reactor_doe():
     # call of ``run_doe`` perform model initialization.
     doe_obj = DesignOfExperiments(
         experiment,
-        gradient_method="central",  # Use finite difference method for gradient calculation
+        gradient_method="symbolic",  # Use finite difference method for gradient calculation
         fd_formula=None,
         step=1e-3,
         objective_option=objective_option,
@@ -66,7 +66,7 @@ def run_reactor_doe():
         fim_initial=None,
         L_diagonal_lower_bound=1e-7,
         solver=pyo.SolverFactory('ipopt'), # If none, use default in Pyomo.DoE (ipopt with ma57)
-        tee=False,
+        tee=True,
         logger_level=logging.INFO,
         get_labeled_model_args=None,
         _Cholesky_option=True,

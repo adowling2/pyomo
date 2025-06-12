@@ -270,6 +270,7 @@ class ExperimentGradients:
                 # If yes, record its index
                 param_index.append(i)
 
+                # Problem with this approach is that v is `scenario[0].<param>` instead of just `<param>`.
                 parameter_mapping[v] = i
 
             else:

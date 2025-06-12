@@ -985,7 +985,15 @@ class DesignOfExperiments:
             # Add expressions to link the computed Jacobian elements using symbolic differentiation
             # with the model. Need to be careful about the indexing of the variables
 
-            @pyo.Constraint(model.output_names, model.parameter_names)
+            print("\nMeasurement Mapping:")
+            for k,v in experiment_grad.measurement_mapping.items():
+                print("key :", k, "value:", v)
+
+            print("\nParameter Mapping:")
+            for k,v in experiment_grad.parameter_mapping.items():
+                print("key :", k, "value:", v)
+
+            @model.Constraint(model.output_names, model.parameter_names)
             def jacobian_rule(m, n, p):
                 """
                 m: Pyomo model
@@ -996,8 +1004,10 @@ class DesignOfExperiments:
                 # Will this run or do I need to use the ComponentUID?
 
                 # Look up positions in the jacobian matrix
-                i = experiment_grad.measurement_mapping[n]
-                j = experiment_grad.parameter_mapping[p]
+                output_cuid = pyo.ComponentUID(n)
+                parameter_cuid = pyo.ComponentUID(p)
+                i = experiment_grad.measurement_mapping[output_cuid]
+                j = experiment_grad.parameter_mapping[parameter_cuid]
 
 
                 if i is None:
