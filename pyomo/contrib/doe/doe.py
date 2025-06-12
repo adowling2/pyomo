@@ -969,8 +969,8 @@ class DesignOfExperiments:
         # TODO: This code changes for symbolic gradients
 
         if self._gradient_method == GradientMethod.symbolic:
-            print("TODO: Need to implement symbolic gradients for the FIM computation.")
-            pass
+            #print("TODO: Need to implement symbolic gradients for the FIM computation.")
+            #pass
 
             # Notes for next steps:
             # 1. Add variables for all elements in the Jacobian matrix (all variables)
@@ -985,6 +985,7 @@ class DesignOfExperiments:
             # Add expressions to link the computed Jacobian elements using symbolic differentiation
             # with the model. Need to be careful about the indexing of the variables
 
+            @pyo.Constraint(model.output_names, model.parameter_names)
             def jacobian_rule(m, n, p):
                 """
                 m: Pyomo model
@@ -992,15 +993,22 @@ class DesignOfExperiments:
                 p: unknown parameter
                 """
 
-                # This may or may not be needed
-                cuid = pyo.ComponentUID(n)
-                param_ind = m.parameter_names.data().index(p)
+                # Will this run or do I need to use the ComponentUID?
 
-                # Need to look up the index here
+                # Look up positions in the jacobian matrix
+                i = experiment_grad.measurement_mapping[n]
+                j = experiment_grad.parameter_mapping[p]
 
-                # Get the variable from the scenario block
-                var = cuid.find_component_on(m.scenario_blocks[0])
 
+                if i is None:
+                    # Measurement (experiment output) was fixed and thus it is not in
+                    # the jacobian matrix, so we set the value to 0
+                    var = 0
+                else:
+                    # Grab the variable. This was created by construct_sensitivity_constraints()
+                    var = m.scenario_blocks[0].jac_variables_wrt_param[i,j]
+
+                # TODO: Make this an expression instead of a constraint?
                 # Get the sensitivity jacobian value
                 return m.sensitivity_jacobian[n, p] == var
 

@@ -106,8 +106,6 @@ def run_reactor_doe():
     # End sensitivity analysis
     
 
-    '''
-
     # Begin optimal DoE
     ####################
     doe_obj.run_doe()
@@ -146,8 +144,6 @@ def run_reactor_doe():
 
     ###################
     # End optimal DoE
-
-'''
 
 
 if __name__ == "__main__":
