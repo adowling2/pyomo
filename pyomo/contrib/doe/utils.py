@@ -447,6 +447,9 @@ class ExperimentGradients:
         # If the experiment_output is NOT in var_set, then it's row should be all zeros
         # Pseudocode:
         for ind, m in enumerate(self.model.experiment_outputs.keys()):
+
+            '''
+
             if m not in self.var_set:
                 if self.verbose:
                     # If the measurement is not in the variable set, print a message
@@ -472,6 +475,16 @@ class ExperimentGradients:
                 if self.verbose:
                         print(f"Measurement {m} found at index {i} in variable set.")
                 
+                jac_measurements_wrt_param[ind, :] = jac_vars_wrt_param[i, :]
+
+                '''
+
+            i = self.measurement_mapping[m]
+
+            if i is None:
+                jac_measurements_wrt_param[ind, :] = 0.0
+            else:
+                # If the measurement is in the variable set, get the row
                 jac_measurements_wrt_param[ind, :] = jac_vars_wrt_param[i, :]
                 
                 
