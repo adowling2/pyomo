@@ -727,7 +727,6 @@ class DesignOfExperiments:
             # (measurements x parameters)
             self.kaug_jac = experiment_grad.compute_gradient_outputs_wrt_unknown_parameters()
 
-            # TODO: Need to account for the scaling of the sensitivities
             if self.scale_nominal_param_value:
                 # Scale the sensitivities by the nominal parameter values
                 '''
@@ -1000,12 +999,16 @@ class DesignOfExperiments:
                 n: experimental output
                 p: unknown parameter
                 """
-                
+
                 # Look up positions in the jacobian matrix
                 output_cuid = pyo.ComponentUID(n)
+                output_var = output_cuid.find_component_on(model.scenario_blocks[0])
+
                 parameter_cuid = pyo.ComponentUID(p)
-                i = experiment_grad.measurement_mapping[output_cuid.find_component_on(model.scenario_blocks[0])]
-                j = experiment_grad.parameter_mapping[parameter_cuid.find_component_on(model.scenario_blocks[0])]
+                parameter_var = parameter_cuid.find_component_on(model.scenario_blocks[0])
+                
+                i = experiment_grad.measurement_mapping[output_var]
+                j = experiment_grad.parameter_mapping[parameter_var]
 
 
                 if i is None:
@@ -1016,9 +1019,14 @@ class DesignOfExperiments:
                     # Grab the variable. This was created by construct_sensitivity_constraints()
                     var = m.scenario_blocks[0].jac_variables_wrt_param[i,j]
 
+                if self.scale_nominal_param_value:
+                    scale = parameter_var
+                else:
+                    scale = 1
+
                 # TODO: Make this an expression instead of a constraint?
                 # Get the sensitivity jacobian value
-                return m.sensitivity_jacobian[n, p] == var
+                return m.sensitivity_jacobian[n, p] == var * self.scale_constant_value * scale
 
         else:
 
