@@ -1000,14 +1000,12 @@ class DesignOfExperiments:
                 n: experimental output
                 p: unknown parameter
                 """
-
-                # Will this run or do I need to use the ComponentUID?
-
+                
                 # Look up positions in the jacobian matrix
                 output_cuid = pyo.ComponentUID(n)
                 parameter_cuid = pyo.ComponentUID(p)
-                i = experiment_grad.measurement_mapping[output_cuid]
-                j = experiment_grad.parameter_mapping[parameter_cuid]
+                i = experiment_grad.measurement_mapping[output_cuid.find_component_on(model.scenario_blocks[0])]
+                j = experiment_grad.parameter_mapping[parameter_cuid.find_component_on(model.scenario_blocks[0])]
 
 
                 if i is None:
