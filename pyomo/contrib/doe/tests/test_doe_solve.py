@@ -219,66 +219,35 @@ class TestReactorExampleSolving(unittest.TestCase):
     # This test ensure that compute FIM runs without error using the
     # `sequential` option with central finite differences
 
-    # TODO: Parameterize this test to run with different gradient methods
-    def test_compute_FIM_seq_centr(self):
-        fd_method = "central"
-        obj_used = "determinant"
-
-        experiment = FullReactorExperiment(data_ex, 10, 3)
-
-        DoE_args = get_standard_args(experiment, fd_method, obj_used)
-
-        doe_obj = DesignOfExperiments(**DoE_args)
-
-        doe_obj.compute_FIM(method="sequential")
-
-    # This test ensure that compute FIM runs without error using the
-    # `sequential` option with forward finite differences
-    def test_compute_FIM_seq_forward(self):
-        fd_method = "forward"
-        obj_used = "determinant"
-
-        experiment = FullReactorExperiment(data_ex, 10, 3)
-
-        DoE_args = get_standard_args(experiment, fd_method, obj_used)
-
-        doe_obj = DesignOfExperiments(**DoE_args)
-
-        doe_obj.compute_FIM(method="sequential")
-
-    # This test ensure that compute FIM runs without error using the
-    # `kaug` option. kaug computes the FIM directly so no finite difference
-    # scheme is needed.
-    @unittest.skipIf(not scipy_available, "Scipy is not available")
-    @unittest.skipIf(
-        not k_aug_available.available(False), "The 'k_aug' command is not available"
+    @parameterized.expand(
+        [
+            ("central"),
+            ("forward"),
+            ("backward"),
+            ("kaug"),
+            ("pynumero")
+        ]
     )
-    def test_compute_FIM_kaug(self):
-        fd_method = "forward"
-        obj_used = "determinant"
+    def test_compute_FIM(self, gradient_method):
+
+        if gradient_method == "kaug":
+            if not scipy_available:
+                self.skipTest("Scipy is not available")
+            if not k_aug_available.available(False):
+                self.skipTest("The 'k_aug' command is not available")
+
+
+        obj_used = "zero"
 
         experiment = FullReactorExperiment(data_ex, 10, 3)
 
-        DoE_args = get_standard_args(experiment, fd_method, obj_used)
+        DoE_args = get_standard_args(experiment, gradient_method, obj_used)
 
         doe_obj = DesignOfExperiments(**DoE_args)
 
-        doe_obj.compute_FIM(method="kaug")
+        doe_obj.compute_FIM()
 
-    # This test ensure that compute FIM runs without error using the
-    # `sequential` option with backward finite differences
-    def test_compute_FIM_seq_backward(self):
-        fd_method = "backward"
-        obj_used = "determinant"
-
-        experiment = FullReactorExperiment(data_ex, 10, 3)
-
-        DoE_args = get_standard_args(experiment, fd_method, obj_used)
-
-        doe_obj = DesignOfExperiments(**DoE_args)
-
-        doe_obj.compute_FIM(method="sequential")
-
+    
     @unittest.skipIf(not pandas_available, "pandas is not available")
     def test_reactor_grid_search(self):
         fd_method = "central"
@@ -293,7 +262,7 @@ class TestReactorExampleSolving(unittest.TestCase):
         design_ranges = {"CA[0]": [1, 5, 3], "T[0]": [300, 700, 3]}
 
         doe_obj.compute_FIM_full_factorial(
-            design_ranges=design_ranges, method="sequential"
+            design_ranges=design_ranges
         )
 
         # Check to make sure the lengths of the inputs in results object are indeed correct

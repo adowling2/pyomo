@@ -685,7 +685,7 @@ class TestReactorExampleErrors(unittest.TestCase):
             "Gradient method option not recognized. Please contact the developers as you should not see this error.",
         ):
             doe_obj._gradient_method = "bad things"
-            doe_obj.compute_FIM(method="sequential")
+            doe_obj.compute_FIM()
 
     def test_bad_objective(self):
         fd_method = "central"
@@ -725,29 +725,6 @@ class TestReactorExampleErrors(unittest.TestCase):
             "Model provided does not have variable `fim`. Please make sure the model is built properly before creating the objective.",
         ):
             doe_obj.create_objective_function()
-
-    @unittest.skipIf(not ipopt_available, "The 'ipopt' command is not available")
-    def test_bad_compute_FIM_option(self):
-        fd_method = "central"
-        obj_used = "trace"
-        flag_val = (
-            0  # Value for faulty model build mode - 5: Mismatch error and output length
-        )
-
-        experiment = FullReactorExperiment(data_ex, 10, 3)
-
-        DoE_args = get_standard_args(experiment, fd_method, obj_used, flag_val)
-
-        doe_obj = DesignOfExperiments(**DoE_args)
-
-        with self.assertRaisesRegex(
-            ValueError,
-            "The method provided, {}, must be either `sequential` or `kaug`".format(
-                "Bad Method"
-            ),
-        ):
-            doe_obj.compute_FIM(method="Bad Method")
-
 
 if __name__ == "__main__":
     unittest.main()
