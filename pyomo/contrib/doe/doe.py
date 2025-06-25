@@ -75,11 +75,12 @@ class ObjectiveLib(Enum):
 
 
 class GradientMethod(Enum):
-    forward = "forward" # finite difference forward method
-    central = "central" # finite difference central method
-    backward = "backward" # finite difference backward method
-    pynumero = "pynumero" # automatic/symbolic differentiation using PyNumero
-    kaug = "kaug" # automatic differentiation using kaug
+    forward = "forward"  # finite difference forward method
+    central = "central"  # finite difference central method
+    backward = "backward"  # finite difference backward method
+    pynumero = "pynumero"  # automatic/symbolic differentiation using PyNumero
+    kaug = "kaug"  # automatic differentiation using kaug
+
 
 class DesignOfExperiments:
     def __init__(
@@ -269,7 +270,7 @@ class DesignOfExperiments:
 
         if self._gradient_method is GradientMethod.kaug:
             raise ValueError(
-                "Cannot use kaug automatic differential method for DoE optimization." \
+                "Cannot use kaug automatic differential method for DoE optimization."
                 "Instead use GradientMethod.pynumero for symbolic differentiation."
             )
 
@@ -489,8 +490,9 @@ class DesignOfExperiments:
 
         if method is not None:
             deprecation_warning(
-                "The method keyword is not longer supported. Instead, this function will" \
-                "use the GradientMethod specified when creating this object.", version='6.9.4'
+                "The method keyword is not longer supported. Instead, this function will"
+                "use the GradientMethod specified when creating this object.",
+                version='6.9.4',
             )
 
             if method == "sequential" and self._gradient_method not in [
@@ -504,7 +506,7 @@ class DesignOfExperiments:
                         method, self._gradient_method
                     )
                 )
-            
+
             if method == "kaug" and self._gradient_method is not GradientMethod.kaug:
                 raise ValueError(
                     "The method provided, {}, is not compatible with the gradient method {}. "
@@ -544,7 +546,6 @@ class DesignOfExperiments:
 
         # TODO: Add a check to see if the model has an objective and deactivate it.
         #       This solve should only be a square solve without any obj function.
-
 
         if self._gradient_method in [GradientMethod.kaug, GradientMethod.pynumero]:
             self._analytic_FIM(model=model)
@@ -586,10 +587,7 @@ class DesignOfExperiments:
                 for ind, k in enumerate(model.unknown_parameters.keys())
             )
             model.scenarios = range(len(model.unknown_parameters) * 2)
-        elif self._gradient_method in [
-            GradientMethod.forward,
-            GradientMethod.backward,
-        ]:
+        elif self._gradient_method in [GradientMethod.forward, GradientMethod.backward]:
             model.parameter_scenarios.update(
                 (ind + 1, k) for ind, k in enumerate(model.unknown_parameters.keys())
             )
@@ -735,7 +733,7 @@ class DesignOfExperiments:
         self.solver.solve(model, tee=self.tee)
 
         if self._gradient_method == GradientMethod.pynumero:
-            
+
             experiment_grad = ExperimentGradients(model, automatic=True, symbolic=False)
 
             print("AD gradient:\n")
@@ -752,7 +750,9 @@ class DesignOfExperiments:
 
             # Transpose is not needed here, as the Jacobian is already in the right shape
             # (measurements x parameters)
-            self.kaug_jac = experiment_grad.compute_gradient_outputs_wrt_unknown_parameters()
+            self.kaug_jac = (
+                experiment_grad.compute_gradient_outputs_wrt_unknown_parameters()
+            )
 
             if self.scale_nominal_param_value:
                 # Scale the sensitivities by the nominal parameter values
@@ -764,8 +764,8 @@ class DesignOfExperiments:
 
                 for i, (k, v) in enumerate(model.unknown_parameters.items()):
                     # Scale by the nominal parameter value taken from the suffix (?)
-                    self.kaug_jac[:,i] *= v
-                    
+                    self.kaug_jac[:, i] *= v
+
             # Scale the sensitivities by the constant value
             if self.scale_constant_value:
                 # Skip scaling if the value is None
@@ -835,7 +835,7 @@ class DesignOfExperiments:
         # i.e., cov_y = self.cov_y or model.cov_y
         # Still deciding where this would be best.
 
-        print("Dimensions of kaug_jac = ",self.kaug_jac.shape)
+        print("Dimensions of kaug_jac = ", self.kaug_jac.shape)
         print("Dimensions of cov_y", cov_y.shape)
         print("Dimensions of prior_FIM", self.prior_FIM.shape)
 
@@ -886,8 +886,7 @@ class DesignOfExperiments:
         # Generate scenarios for computing the gradients/sensitivities
         self._generate_scenario_blocks(model=model)
 
-
-        # TODO: Is this indexing code correct for symbolic gradients if we keep 
+        # TODO: Is this indexing code correct for symbolic gradients if we keep
         # "scenario_blocks[0]"?
 
         # Set names for indexing sensitivity matrix (jacobian) and FIM
@@ -918,12 +917,13 @@ class DesignOfExperiments:
 
         # TODO: Replace this Jacobian initialization with automatic differentiation
         # Let's work on this AFTER the symbolic differentiation is implemented and tested
-        
-        # Create object for computing gradients
-        experiment_grad = ExperimentGradients(model.scenario_blocks[0], # Always analyze scenario 0
-                                              automatic=True, 
-                                              symbolic=self._gradient_method == GradientMethod.pynumero)
 
+        # Create object for computing gradients
+        experiment_grad = ExperimentGradients(
+            model.scenario_blocks[0],  # Always analyze scenario 0
+            automatic=True,
+            symbolic=self._gradient_method == GradientMethod.pynumero,
+        )
 
         ### Initialize the Jacobian if provided by the user
 
@@ -991,12 +991,11 @@ class DesignOfExperiments:
                         if c == d:
                             model.L[c, d].setlb(self.L_diagonal_lower_bound)
 
-
         # TODO: This code changes for symbolic gradients
 
         if self._gradient_method == GradientMethod.pynumero:
-            #print("TODO: Need to implement symbolic gradients for the FIM computation.")
-            #pass
+            # print("TODO: Need to implement symbolic gradients for the FIM computation.")
+            # pass
 
             # Notes for next steps:
             # 1. Add variables for all elements in the Jacobian matrix (all variables)
@@ -1012,11 +1011,11 @@ class DesignOfExperiments:
             # with the model. Need to be careful about the indexing of the variables
 
             print("\nMeasurement Mapping:")
-            for k,v in experiment_grad.measurement_mapping.items():
+            for k, v in experiment_grad.measurement_mapping.items():
                 print("key :", k, "value:", v)
 
             print("\nParameter Mapping:")
-            for k,v in experiment_grad.parameter_mapping.items():
+            for k, v in experiment_grad.parameter_mapping.items():
                 print("key :", k, "value:", v)
 
             @model.Constraint(model.output_names, model.parameter_names)
@@ -1032,11 +1031,12 @@ class DesignOfExperiments:
                 output_var = output_cuid.find_component_on(model.scenario_blocks[0])
 
                 parameter_cuid = pyo.ComponentUID(p)
-                parameter_var = parameter_cuid.find_component_on(model.scenario_blocks[0])
-                
+                parameter_var = parameter_cuid.find_component_on(
+                    model.scenario_blocks[0]
+                )
+
                 i = experiment_grad.measurement_mapping[output_var]
                 j = experiment_grad.parameter_mapping[parameter_var]
-
 
                 if i is None:
                     # Measurement (experiment output) was fixed and thus it is not in
@@ -1044,7 +1044,7 @@ class DesignOfExperiments:
                     var = 0
                 else:
                     # Grab the variable. This was created by construct_sensitivity_constraints()
-                    var = m.scenario_blocks[0].jac_variables_wrt_param[i,j]
+                    var = m.scenario_blocks[0].jac_variables_wrt_param[i, j]
 
                 if self.scale_nominal_param_value:
                     scale = parameter_var
@@ -1053,7 +1053,10 @@ class DesignOfExperiments:
 
                 # TODO: Make this an expression instead of a constraint?
                 # Get the sensitivity jacobian value
-                return m.sensitivity_jacobian[n, p] == var * self.scale_constant_value * scale
+                return (
+                    m.sensitivity_jacobian[n, p]
+                    == var * self.scale_constant_value * scale
+                )
 
         else:
 
@@ -1084,7 +1087,9 @@ class DesignOfExperiments:
                 var_lo = cuid.find_component_on(m.scenario_blocks[s2])
 
                 param = m.parameter_scenarios[max(s1, s2)]
-                param_loc = pyo.ComponentUID(param).find_component_on(m.scenario_blocks[0])
+                param_loc = pyo.ComponentUID(param).find_component_on(
+                    m.scenario_blocks[0]
+                )
                 param_val = m.scenario_blocks[0].unknown_parameters[param_loc]
                 param_diff = param_val * fd_step_mult * self.step
 
@@ -1101,11 +1106,10 @@ class DesignOfExperiments:
                         m.sensitivity_jacobian[n, p]
                         == (var_up - var_lo) / param_diff * self.scale_constant_value
                     )
-                
+
             model.jacobian_constraint = pyo.Constraint(
                 model.output_names, model.parameter_names, rule=jacobian_rule
-            )            
-        
+            )
 
         # A constraint to calculate elements in Hessian matrix
         # transfer prior FIM to be Expressions
@@ -1154,7 +1158,6 @@ class DesignOfExperiments:
                     )
                     + m.prior_FIM[p, q]
                 )
-
 
         model.fim_constraint = pyo.Constraint(
             model.parameter_names, model.parameter_names, rule=fim_rule
@@ -1247,9 +1250,9 @@ class DesignOfExperiments:
             # model.parameter_scenarios.update(0, None)
 
             # Only one scenario for symbolic gradients
-            model.scenarios = range(1)  
+            model.scenarios = range(1)
 
-            pass 
+            pass
         elif self._gradient_method == GradientMethod.central:
             model.parameter_scenarios.update(
                 (2 * ind, k)
@@ -1260,10 +1263,7 @@ class DesignOfExperiments:
                 for ind, k in enumerate(model.base_model.unknown_parameters.keys())
             )
             model.scenarios = range(len(model.base_model.unknown_parameters) * 2)
-        elif self._gradient_method in [
-            GradientMethod.forward,
-            GradientMethod.backward,
-        ]:
+        elif self._gradient_method in [GradientMethod.forward, GradientMethod.backward]:
             model.parameter_scenarios.update(
                 (ind + 1, k)
                 for ind, k in enumerate(model.base_model.unknown_parameters.keys())
@@ -1344,7 +1344,7 @@ class DesignOfExperiments:
             for comp in b.experiment_inputs:
                 comp.unfix()
 
-        # TODO: This will change for symbolic gradients. Rename the base_model as 
+        # TODO: This will change for symbolic gradients. Rename the base_model as
         # scenario_blocks[0] and do not create other scenarios.
         model.scenario_blocks = pyo.Block(model.scenarios, rule=build_block_scenarios)
 
@@ -1685,9 +1685,7 @@ class DesignOfExperiments:
         )
 
     # Evaluates FIM and statistics for a full factorial space (same as run_grid_search)
-    def compute_FIM_full_factorial(
-        self, model=None, design_ranges=None, method=None,
-    ):
+    def compute_FIM_full_factorial(self, model=None, design_ranges=None, method=None):
         """
         Will run a simulation-based full factorial exploration of
         the experimental input space (i.e., a ``grid search`` or
@@ -1701,7 +1699,6 @@ class DesignOfExperiments:
         method: (depreciated), specify gradient_method when creating the DoE object
 
         """
-
 
         # Start timer
         sp_timer = TicTocTimer()

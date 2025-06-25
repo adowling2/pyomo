@@ -220,13 +220,7 @@ class TestReactorExampleSolving(unittest.TestCase):
     # `sequential` option with central finite differences
 
     @parameterized.expand(
-        [
-            ("central"),
-            ("forward"),
-            ("backward"),
-            ("kaug"),
-            ("pynumero")
-        ]
+        [("central"), ("forward"), ("backward"), ("kaug"), ("pynumero")]
     )
     def test_compute_FIM(self, gradient_method):
 
@@ -235,7 +229,6 @@ class TestReactorExampleSolving(unittest.TestCase):
                 self.skipTest("Scipy is not available")
             if not k_aug_available.available(False):
                 self.skipTest("The 'k_aug' command is not available")
-
 
         obj_used = "zero"
 
@@ -247,7 +240,6 @@ class TestReactorExampleSolving(unittest.TestCase):
 
         doe_obj.compute_FIM()
 
-    
     @unittest.skipIf(not pandas_available, "pandas is not available")
     def test_reactor_grid_search(self):
         fd_method = "central"
@@ -261,9 +253,7 @@ class TestReactorExampleSolving(unittest.TestCase):
 
         design_ranges = {"CA[0]": [1, 5, 3], "T[0]": [300, 700, 3]}
 
-        doe_obj.compute_FIM_full_factorial(
-            design_ranges=design_ranges
-        )
+        doe_obj.compute_FIM_full_factorial(design_ranges=design_ranges)
 
         # Check to make sure the lengths of the inputs in results object are indeed correct
         CA_vals = doe_obj.fim_factorial_results["CA[0]"]

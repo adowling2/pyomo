@@ -17,6 +17,7 @@ import pyomo.environ as pyo
 
 import json
 
+
 # Example for sensitivity analysis on the reactor experiment
 # After sensitivity analysis is done, we perform optimal DoE
 def run_reactor_doe():
@@ -52,7 +53,7 @@ def run_reactor_doe():
     doe_obj = DesignOfExperiments(
         experiment,
         gradient_method=gradient_method,
-        fd_formula=None, # This arguement has been deprecated in favor of gradient_method
+        fd_formula=None,  # This arguement has been deprecated in favor of gradient_method
         step=step_size,
         objective_option=objective_option,
         scale_constant_value=1,
@@ -61,7 +62,9 @@ def run_reactor_doe():
         jac_initial=None,
         fim_initial=None,
         L_diagonal_lower_bound=1e-7,
-        solver=pyo.SolverFactory('ipopt'), # If none, use default in Pyomo.DoE (ipopt with ma57)
+        solver=pyo.SolverFactory(
+            'ipopt'
+        ),  # If none, use default in Pyomo.DoE (ipopt with ma57)
         tee=True,
         get_labeled_model_args=None,
         _Cholesky_option=True,
@@ -127,17 +130,20 @@ def run_reactor_doe():
             )
         )
 
-        # This code demonstrates how to access the DoE results, 
+        # This code demonstrates how to access the DoE results,
         # store in a Pandas DataFrame, and print it out in a readable format.
         import pandas as pd
+
         print("\n***Optimal Experiment Design***")
-        
+
         design_names = doe_obj.results["Experiment Design Names"]
         design_values = doe_obj.results["Experiment Design"]
-        df = pd.DataFrame({
-            "Decision Var": design_names,
-            "Value": [round(val, 2) for val in design_values]
-        })
+        df = pd.DataFrame(
+            {
+                "Decision Var": design_names,
+                "Value": [round(val, 2) for val in design_values],
+            }
+        )
         print(df)
 
     ###################

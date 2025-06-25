@@ -10,7 +10,7 @@
 #  ___________________________________________________________________________
 
 # Note: This is a temporary copy of the exisiting example to verify the new
-# symbolic gradient method works as expected. 
+# symbolic gradient method works as expected.
 # Once this works, we will remove this file and update the test suite.
 
 from pyomo.common.dependencies import numpy as np, pathlib
@@ -59,14 +59,14 @@ class PolynomialExperiment(Experiment):
         # Define model variables
 
         # Input variables (independent variables)
-        m.x1 = pyo.Var(bounds=(-5,5), initialize=1) 
-        m.x2 = pyo.Var(bounds=(-5,5), initialize=1)
+        m.x1 = pyo.Var(bounds=(-5, 5), initialize=1)
+        m.x2 = pyo.Var(bounds=(-5, 5), initialize=1)
 
         # Model coefficients (unknown parameters)
-        m.a = pyo.Var(bounds=(-5,5), initialize=2)
-        m.b = pyo.Var(bounds=(-5,5), initialize=-1)
-        m.c = pyo.Var(bounds=(-5,5), initialize=0.5)
-        m.d = pyo.Var(bounds=(-5,5), initialize=-1)
+        m.a = pyo.Var(bounds=(-5, 5), initialize=2)
+        m.b = pyo.Var(bounds=(-5, 5), initialize=-1)
+        m.c = pyo.Var(bounds=(-5, 5), initialize=0.5)
+        m.d = pyo.Var(bounds=(-5, 5), initialize=-1)
 
         # Model output (dependent variable)
         m.y = pyo.Var(initialize=0)
@@ -76,7 +76,6 @@ class PolynomialExperiment(Experiment):
         @m.Constraint()
         def output_equation(m):
             return m.y == m.a * m.x1 + m.b * m.x2 + m.c * m.x1 * m.x2 + m.d
-
 
     def finalize_model(self):
         """
@@ -97,12 +96,12 @@ class PolynomialExperiment(Experiment):
 
         # Set measurement labels
         m.experiment_outputs = pyo.Suffix(direction=pyo.Suffix.LOCAL)
-        m.experiment_outputs[m.y] =  None
-        
+        m.experiment_outputs[m.y] = None
+
         # Adding error for measurement values (assuming no covariance and constant error for all measurements)
         m.measurement_error = pyo.Suffix(direction=pyo.Suffix.LOCAL)
         m.measurement_error[m.y] = 1
-        
+
         # Identify design variables (experiment inputs) for the model
         m.experiment_inputs = pyo.Suffix(direction=pyo.Suffix.LOCAL)
         m.experiment_inputs[m.x1] = None
@@ -110,9 +109,8 @@ class PolynomialExperiment(Experiment):
 
         # Add unknown parameter labels (using nominal values from the model)
         m.unknown_parameters = pyo.Suffix(direction=pyo.Suffix.LOCAL)
-        m.unknown_parameters.update(
-            (k, pyo.value(k)) for k in [m.a, m.b, m.c, m.d]
-        )
+        m.unknown_parameters.update((k, pyo.value(k)) for k in [m.a, m.b, m.c, m.d])
+
 
 def run_polynomial_doe():
 
@@ -139,7 +137,9 @@ def run_polynomial_doe():
         jac_initial=None,
         fim_initial=None,
         L_diagonal_lower_bound=1e-7,
-        solver=pyo.SolverFactory('ipopt'), # If none, use default in Pyomo.DoE (ipopt with ma57)
+        solver=pyo.SolverFactory(
+            'ipopt'
+        ),  # If none, use default in Pyomo.DoE (ipopt with ma57)
         tee=False,
         get_labeled_model_args=None,
         _Cholesky_option=True,
@@ -147,6 +147,7 @@ def run_polynomial_doe():
     )
 
     doe_obj.compute_FIM()
+
 
 if __name__ == "__main__":
     run_polynomial_doe()

@@ -39,6 +39,7 @@ from pyomo.common.collections import ComponentSet
 import numpy as np
 import pandas as pd
 
+
 # Rescale FIM (a scaling function to help rescale FIM from parameter values)
 def rescale_FIM(FIM, param_vals):
     """
@@ -107,6 +108,7 @@ def rescale_FIM(FIM, param_vals):
 #
 #     return param_list
 
+
 class ExperimentGradients:
     def __init__(self, experiment_model, symbolic=True, automatic=True, verbose=False):
         """
@@ -119,7 +121,7 @@ class ExperimentGradients:
             If True, perform symbolic differentiation. Default is True.
         automatic : bool, optional
             If True, perform automatic differentiation. Default is True.
-        
+
         Performance tip:
         - If you are only interested in one type of differentiation (symbolic or automatic),
         you can set the other to False to save computation time.
@@ -128,7 +130,7 @@ class ExperimentGradients:
         - This implementation assumes the experiment model will not be modified after this class is initialized.
 
         """
-        
+
         self.model = experiment_model
 
         self.verbose = verbose
@@ -138,7 +140,7 @@ class ExperimentGradients:
         self.jac_dict_sd = None
         self.jac_dict_ad = None
         self.jac_measurements_wrt_param = None
-        
+
         if symbolic or automatic:
             # Analyze the experiment model to get the constraints and variables
             self._perform_differentiation(symbolic, automatic)
@@ -172,7 +174,7 @@ class ExperimentGradients:
             param_set.add(p)
 
         # Assemble into a list
-        
+
         param_list = list(param_set)
 
         # Measurements (outputs)
@@ -188,11 +190,13 @@ class ExperimentGradients:
 
         # Constraints and Variables
         # Create empty component sets
-        con_set = ComponentSet() # These will be all constraints in the Pyomo model
-        var_set = ComponentSet() # These will be all Pyomo variables in the Pyomo model
+        con_set = ComponentSet()  # These will be all constraints in the Pyomo model
+        var_set = ComponentSet()  # These will be all Pyomo variables in the Pyomo model
 
         # Loop over the active model constraints
-        for c in model.component_data_objects(pyo.Constraint, descend_into=True, active=True):
+        for c in model.component_data_objects(
+            pyo.Constraint, descend_into=True, active=True
+        ):
 
             # Add constraint c to the constraint set
             con_set.add(c)
@@ -235,8 +239,8 @@ class ExperimentGradients:
         # This is needed to assemble the Jacobian correctly
         # 1. Suffix. key = experiment outputs (parameters), value is position in list of variables
         # 2. Suffix. key = parameters , value is measurement error
-        # 3. Use these two suffixes 
-        
+        # 3. Use these two suffixes
+
         # Keep track of the mapping from measurements to their index in the variable set
         measurement_mapping = pyo.Suffix(direction=pyo.Suffix.LOCAL)
 
@@ -258,8 +262,8 @@ class ExperimentGradients:
         # makes indices match.
         measurement_error_included = pyo.Suffix(direction=pyo.Suffix.LOCAL)
 
-        # Loop over the variables and determine which ones 
-        # (and associated indices) are (a) parameters or 
+        # Loop over the variables and determine which ones
+        # (and associated indices) are (a) parameters or
         # (b) measurements
         # TODO: Does this considered fixed variables?
         # How does that change things? We fix all of our
@@ -316,8 +320,10 @@ class ExperimentGradients:
             print(f"  {num_constraints} constraints\n")
 
         if num_vars - num_params - num_fixed_measurements != num_constraints:
-            raise ValueError("The model is not square: the number of variables minus unknown parameters does not equal the number of constraints.\n" \
-            "This is required for the (automatic) differentiation to work correctly.")
+            raise ValueError(
+                "The model is not square: the number of variables minus unknown parameters does not equal the number of constraints.\n"
+                "This is required for the (automatic) differentiation to work correctly."
+            )
 
         # Save terms that are needed for later
         self.con_list = con_list
@@ -327,9 +333,9 @@ class ExperimentGradients:
         self.param_index = param_index
         self.model_var_index = model_var_index
         self.measurement_index = measurement_index
-        
+
         self.measurement_error_included = measurement_error_included
-        
+
         self.num_measurements = num_measurements
         self.num_params = num_params
         self.num_constraints = num_constraints
@@ -341,7 +347,7 @@ class ExperimentGradients:
         self.parameter_mapping = parameter_mapping
 
     def _perform_differentiation(self, symbolic=True, automatic=True):
-    
+
         # Initialize dictionaries to hold the Jacobian entries
         if symbolic:
             jac_dict_sd = {}
@@ -349,7 +355,9 @@ class ExperimentGradients:
             jac_dict_ad = {}
 
         if not symbolic and not automatic:
-            raise ValueError("At least one differentiation method must be selected: symbolic or automatic.")
+            raise ValueError(
+                "At least one differentiation method must be selected: symbolic or automatic."
+            )
 
         # Grab data needed for the differentiation
         con_list = self.con_list
@@ -359,15 +367,15 @@ class ExperimentGradients:
         for i, c in enumerate(con_list):
             # Check we only have equality constraints... otherwise this gets more complicated
             assert c.equality, "This function only works with equality constraints"
-            
+
             # Perform symbolic differentiation
             if symbolic:
                 der_map_sd = reverse_sd(c.body)
-            
+
             if automatic:
                 der_map_ad = reverse_ad(c.body)
 
-            # Loop over the Pyomo variables, which includes 
+            # Loop over the Pyomo variables, which includes
             # parameters, measurements, control decisions
             for j, v in enumerate(var_list):
 
@@ -375,7 +383,7 @@ class ExperimentGradients:
                 if symbolic:
                     # Check if the variable is in the derivative map
                     if v in der_map_sd:
-                        # Record the expression 
+                        # Record the expression
                         deriv = der_map_sd[v]
                     else:
                         # Otherwise, record 0
@@ -386,13 +394,13 @@ class ExperimentGradients:
                 # Automatic differentiation
                 if automatic:
                     if v in der_map_ad:
-                        # Record the expression 
+                        # Record the expression
                         deriv = der_map_ad[v]
                     else:
                         # Otherwise, record 0
                         deriv = 0
                     # Save results in the Jacobian dictionary
-                    jac_dict_ad[(i, j)] = deriv        
+                    jac_dict_ad[(i, j)] = deriv
 
         if symbolic:
             self.jac_dict_sd = jac_dict_sd
@@ -400,10 +408,10 @@ class ExperimentGradients:
             self.jac_dict_ad = jac_dict_ad
 
     def compute_gradient_outputs_wrt_unknown_parameters(self):
-        """ Perform automatic differentiation to compute the gradients of the outputs 
+        """Perform automatic differentiation to compute the gradients of the outputs
         with respect to the unknown parameters.
-        
-    
+
+
         """
 
         if self.jac_dict_ad is None:
@@ -419,7 +427,7 @@ class ExperimentGradients:
         model_var_index = self.model_var_index
         jac_dict_ad = self.jac_dict_ad
         measurement_index = self.measurement_index
-    
+
         jac_con_wrt_param = np.zeros((num_constraints, num_params))
         for i in range(num_constraints):
             for j, p in enumerate(param_index):
@@ -431,12 +439,14 @@ class ExperimentGradients:
                 jac_con_wrt_vars[i, j] = jac_dict_ad[(i, v)]
 
         if self.verbose:
-            print(f"Jacobian of constraints with respect to parameters shape: {jac_con_wrt_param.shape}")
-            print(f"Jacobian of constraints with respect to variables shape: {jac_con_wrt_vars.shape}")
+            print(
+                f"Jacobian of constraints with respect to parameters shape: {jac_con_wrt_param.shape}"
+            )
+            print(
+                f"Jacobian of constraints with respect to variables shape: {jac_con_wrt_vars.shape}"
+            )
 
-        jac_vars_wrt_param = np.linalg.solve(
-            jac_con_wrt_vars, -jac_con_wrt_param
-        )
+        jac_vars_wrt_param = np.linalg.solve(jac_con_wrt_vars, -jac_con_wrt_param)
 
         jac_measurements_wrt_param = np.zeros((num_measurements, num_params))
 
@@ -475,10 +485,10 @@ class ExperimentGradients:
 
                 if self.verbose:
                         print(f"Measurement {m} found at index {i} in variable set.")
-                
+
                 jac_measurements_wrt_param[ind, :] = jac_vars_wrt_param[i, :]
 
-                '''
+            '''
 
             i = self.measurement_mapping[m]
 
@@ -487,8 +497,7 @@ class ExperimentGradients:
             else:
                 # If the measurement is in the variable set, get the row
                 jac_measurements_wrt_param[ind, :] = jac_vars_wrt_param[i, :]
-                
-                
+
         # The measurement_index is the index of the measurement in the var_set
 
         # 1. Look over experiment_outputs
@@ -503,7 +512,7 @@ class ExperimentGradients:
         self.jac_measurements_wrt_param = jac_measurements_wrt_param
 
         return jac_measurements_wrt_param
-    
+
     def _package_jac_as_df(self, jac):
         """
         Convert a numpy array containing the Jacobian into a
@@ -531,7 +540,7 @@ class ExperimentGradients:
             self.compute_gradient_outputs_wrt_unknown_parameters()
 
         return self._package_jac_as_df(self.jac_measurements_wrt_param)
-    
+
     def get_sensitivities_from_symbolic_as_df(self):
 
         model = self.model
@@ -544,10 +553,10 @@ class ExperimentGradients:
 
         jac = np.zeros((len(model.measurement_index), len(model.param_index)))
 
-        for i,y in enumerate(model.measurement_index):
-            for j,p in enumerate(model.param_index):
-                jac[i,j] = model.jac_variables_wrt_param[y,p].value
-        
+        for i, y in enumerate(model.measurement_index):
+            for j, p in enumerate(model.param_index):
+                jac[i, j] = model.jac_variables_wrt_param[y, p].value
+
         return self._package_jac_as_df(jac)
 
     def construct_sensitivity_constraints(self, model=None):
@@ -567,9 +576,11 @@ class ExperimentGradients:
         model.constraint_index = pyo.Set(initialize=range(len(self.con_list)))
         model.var_index = pyo.Set(initialize=self.model_var_index)
 
-        # Define a Pyomo variable for the Jacobian of the model variables 
+        # Define a Pyomo variable for the Jacobian of the model variables
         # (everything except parameters) with respect to the model parameters
-        model.jac_variables_wrt_param = pyo.Var(model.var_index, model.param_index, initialize=0)
+        model.jac_variables_wrt_param = pyo.Var(
+            model.var_index, model.param_index, initialize=0
+        )
 
         # Calculate the Jacobian using the chain rule and total derivative definitions
         #
@@ -582,4 +593,7 @@ class ExperimentGradients:
         # I think this is okay
         @model.Constraint(model.constraint_index, model.param_index)
         def jacobian_constraint(model, i, j):
-            return self.jac_dict_sd[(i,j)] == -sum(model.jac_variables_wrt_param[k,j] * self.jac_dict_sd[(i,k)] for k in model.var_index)
+            return self.jac_dict_sd[(i, j)] == -sum(
+                model.jac_variables_wrt_param[k, j] * self.jac_dict_sd[(i, k)]
+                for k in model.var_index
+            )

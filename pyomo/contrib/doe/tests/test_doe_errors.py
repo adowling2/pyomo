@@ -726,5 +726,6 @@ class TestReactorExampleErrors(unittest.TestCase):
         ):
             doe_obj.create_objective_function()
 
+
 if __name__ == "__main__":
     unittest.main()
