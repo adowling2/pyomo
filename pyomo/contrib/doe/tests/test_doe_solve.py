@@ -123,6 +123,9 @@ def get_standard_args(experiment, fd_method, obj_used):
 class TestReactorExampleSolving(unittest.TestCase):
 
     # TODO: Parameterize these tests to run with different gradient methods
+    # From Shammah's PR:
+    #   https://github.com/Pyomo/pyomo/blob/67a0cbd11c766da9e8a92140cdaf93c84b4a379c/pyomo/contrib/parmest/tests/test_parmest.py#L49
+    #   https://github.com/Pyomo/pyomo/blob/67a0cbd11c766da9e8a92140cdaf93c84b4a379c/pyomo/contrib/parmest/tests/test_parmest.py#L309
     def test_reactor_fd_central_solve(self):
         fd_method = "central"
         obj_used = "trace"
