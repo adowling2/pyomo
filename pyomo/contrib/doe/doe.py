@@ -50,6 +50,9 @@ from pyomo.opt import SolverStatus
 
 from pyomo.contrib.doe.utils import ExperimentGradients
 
+# Deprecation errors for old Pyomo.DoE options and naming conventions
+from pyomo.common.deprecation import deprecation_warning
+
 # This small and positive tolerance is used when checking
 # if the prior is negative definite or approximately
 # indefinite. It is defined as a tolerance here to ensure
@@ -72,11 +75,11 @@ class ObjectiveLib(Enum):
 
 
 class GradientMethod(Enum):
-    forward = "forward"
-    central = "central"
-    backward = "backward"
-    symbolic = "symbolic"
-
+    forward = "forward" # finite difference forward method
+    central = "central" # finite difference central method
+    backward = "backward" # finite difference backward method
+    pynumero = "pynumero" # automatic/symbolic differentiation using PyNumero
+    kaug = "kaug" # automatic differentiation using kaug
 
 class DesignOfExperiments:
     def __init__(
@@ -190,10 +193,10 @@ class DesignOfExperiments:
         else:
             self._gradient_method = GradientMethod(gradient_method)
 
-        if self._gradient_method is not GradientMethod.symbolic:
+        if self._gradient_method not in [GradientMethod.pynumero, GradientMethod.kaug]:
             if step is None:
                 raise ValueError(
-                    "If the gradient method is not symbolic, a step size must be provided."
+                    "If the gradient method is not pynumero or kaug, a step size must be provided."
                 )
         self.step = step
 
@@ -460,7 +463,7 @@ class DesignOfExperiments:
         raise NotImplementedError("Multiple experiment optimization not yet supported.")
 
     # Compute FIM for the DoE object
-    def compute_FIM(self, model=None, method="sequential"):
+    def compute_FIM(self, model=None, method=None):
         """
         Computes the FIM for the experimental design that is
         initialized from the experiment`s ``get_labeled_model()``
@@ -476,6 +479,34 @@ class DesignOfExperiments:
         -------
         computed FIM: 2D numpy array of the FIM
         """
+
+        if method is not None:
+            # TODO: Add a deprecation warning here
+            deprecation_warning(
+                "The method keyword is not longer supported. Instead, this function will" \
+                "use the GradientMethod specified when creating this object.", version='6.9.4'
+            )
+
+            if method is "sequential" and self._gradient_method not in [
+                GradientMethod.central,
+                GradientMethod.forward,
+                GradientMethod.backward,
+            ]:
+                raise ValueError(
+                    "The method provided, {}, is not compatible with the gradient method {}. "
+                    "Please specify a finite difference method.".format(
+                        method, self._gradient_method
+                    )
+                )
+            
+            if method is "kaug" and self._gradient_method is not GradientMethod.kaug:
+                raise ValueError(
+                    "The method provided, {}, is not compatible with the gradient method {}. "
+                    "Please specify kaug as the gradient method.".format(
+                        method, self._gradient_method
+                    )
+                )
+
         if model is None:
             self.compute_FIM_model = self.experiment.get_labeled_model(
                 **self.get_labeled_model_args
@@ -509,22 +540,12 @@ class DesignOfExperiments:
         #       This solve should only be a square solve without any obj function.
 
 
-        if method == "kaug" or self._gradient_method == GradientMethod.symbolic:
-
-            # The calculation with kaug and symbolic gradients are similar.
-            # This function skips using kaug if the gradient method is symbolic.
-
-            self._kaug_FIM(model=model)
-            self._computed_FIM = self.kaug_FIM
-        elif method == "sequential":
+        if self._gradient_method in [GradientMethod.kaug, GradientMethod.pynumero]:
+            self._analytic_FIM(model=model)
+            self._computed_FIM = self.analytic_FIM
+        else:
             self._sequential_FIM(model=model)
             self._computed_FIM = self.seq_FIM
-        else:
-            raise ValueError(
-                "The method provided, {}, must be either `sequential` or `kaug`".format(
-                    method
-                )
-            )
 
         return self._computed_FIM
 
@@ -679,10 +700,10 @@ class DesignOfExperiments:
         self.seq_FIM = self.seq_jac.T @ cov_y @ self.seq_jac + self.prior_FIM
 
     # Use kaug to get FIM
-    def _kaug_FIM(self, model=None):
+    def _analytic_FIM(self, model=None):
         """
-        Used to compute the FIM using symbolic/automatic differentiation
-        implemented in kaug or PyNumero
+        Use symbolic/automatic differentiation implemented in kaug or PyNumero to
+        compute the FIM for the specified experimental design
 
         Parameters
         ----------
@@ -812,11 +833,11 @@ class DesignOfExperiments:
         print("Dimensions of cov_y", cov_y.shape)
         print("Dimensions of prior_FIM", self.prior_FIM.shape)
 
-        self.kaug_FIM = self.kaug_jac.T @ cov_y @ self.kaug_jac + self.prior_FIM
+        self.analytic_FIM = self.kaug_jac.T @ cov_y @ self.kaug_jac + self.prior_FIM
 
         print("kaug_jac\n:", self.kaug_jac)
         print("\n\ncov_y\n:", cov_y)
-        print("\n\nkaug_FIM\n:", self.kaug_FIM)
+        print("\n\nanalytic_FIM\n:", self.analytic_FIM)
         print("\n\nprior_FIM\n:", self.prior_FIM)
 
     # Create the DoE model (with ``scenarios`` from finite differencing scheme)
