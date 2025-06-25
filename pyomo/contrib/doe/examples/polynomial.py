@@ -9,10 +9,6 @@
 #  This software is distributed under the 3-clause BSD License.
 #  ___________________________________________________________________________
 
-# Note: This is a temporary copy of the exisiting example to verify the new
-# symbolic gradient method works as expected.
-# Once this works, we will remove this file and update the test suite.
-
 from pyomo.common.dependencies import numpy as np, pathlib
 
 from pyomo.contrib.doe import DesignOfExperiments

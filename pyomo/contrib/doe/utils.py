@@ -565,7 +565,7 @@ class ExperimentGradients:
             # Perform symbolic differentiation if not already done
             self._perform_differentiation(symbolic=True, automatic=False)
 
-        # Decision: Build these constraints in the model. Pyomo.DoE can look into scenarion[0]
+        # Decision: Build these constraints in the model. Pyomo.DoE can look into scenario[0]
 
         if model is None:
             model = self.model

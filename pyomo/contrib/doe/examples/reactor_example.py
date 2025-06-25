@@ -53,7 +53,7 @@ def run_reactor_doe():
     doe_obj = DesignOfExperiments(
         experiment,
         gradient_method=gradient_method,
-        fd_formula=None,  # This arguement has been deprecated in favor of gradient_method
+        fd_formula=None,  # This argument has been deprecated in favor of gradient_method
         step=step_size,
         objective_option=objective_option,
         scale_constant_value=1,
