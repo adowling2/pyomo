@@ -35,6 +35,8 @@ import pyomo.environ as pyo
 
 from pyomo.opt import SolverFactory
 
+from parameterized import parameterized
+
 
 ipopt_available = SolverFactory("ipopt").available()
 k_aug_available = SolverFactory('k_aug', solver_io='nl', validate=False)
@@ -101,7 +103,7 @@ def get_FIM_Q_L(doe_obj=None):
 def get_standard_args(experiment, fd_method, obj_used):
     args = {}
     args['experiment'] = experiment
-    args['fd_formula'] = fd_method
+    args['gradient_method'] = fd_method
     args['step'] = 1e-3
     args['objective_option'] = obj_used
     args['scale_constant_value'] = 1
@@ -126,13 +128,26 @@ class TestReactorExampleSolving(unittest.TestCase):
     # From Shammah's PR:
     #   https://github.com/Pyomo/pyomo/blob/67a0cbd11c766da9e8a92140cdaf93c84b4a379c/pyomo/contrib/parmest/tests/test_parmest.py#L49
     #   https://github.com/Pyomo/pyomo/blob/67a0cbd11c766da9e8a92140cdaf93c84b4a379c/pyomo/contrib/parmest/tests/test_parmest.py#L309
-    def test_reactor_fd_central_solve(self):
-        fd_method = "central"
-        obj_used = "trace"
+    # Pyomo team: This possibly adds parameterized as a dependency... can you recommend a better way?
+    @parameterized.expand(
+        [
+            ("central", "trace"),
+            ("central", "determinant"),
+            ("central", "zero"),
+            ("backward", "trace"),
+            ("backward", "determinant"),
+            ("forward", "trace"),
+            ("forward", "determinant"),
+            ("pynumero", "trace"),
+            ("pynumero", "determinant"),
+            ("pynumero", "zero"),
+        ]
+    )
+    def test_reactor_run_doe(self, gradient_method, objective_option):
 
         experiment = FullReactorExperiment(data_ex, 10, 3)
 
-        DoE_args = get_standard_args(experiment, fd_method, obj_used)
+        DoE_args = get_standard_args(experiment, gradient_method, objective_option)
 
         doe_obj = DesignOfExperiments(**DoE_args)
 
@@ -144,56 +159,14 @@ class TestReactorExampleSolving(unittest.TestCase):
         # assert that Q, F, and L are the same.
         FIM, Q, L, sigma_inv = get_FIM_Q_L(doe_obj=doe_obj)
 
-        # Since Trace is used, no comparison for FIM and L.T @ L
+        if objective_option == "determinant":
+            # Since Cholesky is used, there is comparison for FIM and L.T @ L
+            self.assertTrue(np.all(np.isclose(FIM, L @ L.T)))
 
         # Make sure FIM and Q.T @ sigma_inv @ Q are close (alternate definition of FIM)
         self.assertTrue(np.all(np.isclose(FIM, Q.T @ sigma_inv @ Q)))
 
-    def test_reactor_fd_forward_solve(self):
-        fd_method = "forward"
-        obj_used = "zero"
-
-        experiment = FullReactorExperiment(data_ex, 10, 3)
-
-        DoE_args = get_standard_args(experiment, fd_method, obj_used)
-
-        doe_obj = DesignOfExperiments(**DoE_args)
-
-        doe_obj.run_doe()
-
-        self.assertEqual(doe_obj.results["Solver Status"], "ok")
-
-        # assert that Q, F, and L are the same.
-        FIM, Q, L, sigma_inv = get_FIM_Q_L(doe_obj=doe_obj)
-
-        # Since Trace is used, no comparison for FIM and L.T @ L
-
-        # Make sure FIM and Q.T @ sigma_inv @ Q are close (alternate definition of FIM)
-        self.assertTrue(np.all(np.isclose(FIM, Q.T @ sigma_inv @ Q)))
-
-    def test_reactor_fd_backward_solve(self):
-        fd_method = "backward"
-        obj_used = "trace"
-
-        experiment = FullReactorExperiment(data_ex, 10, 3)
-
-        DoE_args = get_standard_args(experiment, fd_method, obj_used)
-
-        doe_obj = DesignOfExperiments(**DoE_args)
-
-        doe_obj.run_doe()
-
-        self.assertEqual(doe_obj.results["Solver Status"], "ok")
-
-        # assert that Q, F, and L are the same.
-        FIM, Q, L, sigma_inv = get_FIM_Q_L(doe_obj=doe_obj)
-
-        # Since Trace is used, no comparison for FIM and L.T @ L
-
-        # Make sure FIM and Q.T @ sigma_inv @ Q are close (alternate definition of FIM)
-        self.assertTrue(np.all(np.isclose(FIM, Q.T @ sigma_inv @ Q)))
-
-    def test_reactor_obj_det_solve(self):
+    def test_reactor_obj_det_without_Cholesky_solve(self):
         fd_method = "central"
         obj_used = "determinant"
 
@@ -211,29 +184,6 @@ class TestReactorExampleSolving(unittest.TestCase):
         doe_obj.run_doe()
 
         self.assertEqual(doe_obj.results['Solver Status'], "ok")
-
-    def test_reactor_obj_cholesky_solve(self):
-        fd_method = "central"
-        obj_used = "determinant"
-
-        experiment = FullReactorExperiment(data_ex, 10, 3)
-
-        DoE_args = get_standard_args(experiment, fd_method, obj_used)
-
-        doe_obj = DesignOfExperiments(**DoE_args)
-
-        doe_obj.run_doe()
-
-        self.assertEqual(doe_obj.results["Solver Status"], "ok")
-
-        # assert that Q, F, and L are the same.
-        FIM, Q, L, sigma_inv = get_FIM_Q_L(doe_obj=doe_obj)
-
-        # Since Cholesky is used, there is comparison for FIM and L.T @ L
-        self.assertTrue(np.all(np.isclose(FIM, L @ L.T)))
-
-        # Make sure FIM and Q.T @ sigma_inv @ Q are close (alternate definition of FIM)
-        self.assertTrue(np.all(np.isclose(FIM, Q.T @ sigma_inv @ Q)))
 
     def test_reactor_obj_cholesky_solve_bad_prior(self):
 
