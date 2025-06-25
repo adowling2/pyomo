@@ -55,7 +55,7 @@ def run_reactor_doe():
     # call of ``run_doe`` perform model initialization.
     doe_obj = DesignOfExperiments(
         experiment,
-        gradient_method="symbolic",  # Use finite difference method for gradient calculation
+        gradient_method="pynumero",  # Use finite difference method for gradient calculation
         fd_formula=None,
         step=1e-3,
         objective_option=objective_option,
@@ -73,14 +73,14 @@ def run_reactor_doe():
         _only_compute_fim_lower=True,
     )
 
-    doe_obj.compute_FIM(method="sequential")
+    doe_obj.compute_FIM()
 
     
     # Make design ranges to compute the full factorial design
     design_ranges = {"CA[0]": [1, 5, 9], "T[0]": [300, 700, 9]}
 
     # Compute the full factorial design with the sequential FIM calculation
-    doe_obj.compute_FIM_full_factorial(design_ranges=design_ranges, method="kaug")
+    doe_obj.compute_FIM_full_factorial(design_ranges=design_ranges)
 
     # Plot the results
     doe_obj.draw_factorial_figure(

@@ -488,13 +488,12 @@ class DesignOfExperiments:
         """
 
         if method is not None:
-            # TODO: Add a deprecation warning here
             deprecation_warning(
                 "The method keyword is not longer supported. Instead, this function will" \
                 "use the GradientMethod specified when creating this object.", version='6.9.4'
             )
 
-            if method is "sequential" and self._gradient_method not in [
+            if method == "sequential" and self._gradient_method not in [
                 GradientMethod.central,
                 GradientMethod.forward,
                 GradientMethod.backward,
@@ -506,7 +505,7 @@ class DesignOfExperiments:
                     )
                 )
             
-            if method is "kaug" and self._gradient_method is not GradientMethod.kaug:
+            if method == "kaug" and self._gradient_method is not GradientMethod.kaug:
                 raise ValueError(
                     "The method provided, {}, is not compatible with the gradient method {}. "
                     "Please specify kaug as the gradient method.".format(
@@ -1678,7 +1677,7 @@ class DesignOfExperiments:
 
     # Evaluates FIM and statistics for a full factorial space (same as run_grid_search)
     def compute_FIM_full_factorial(
-        self, model=None, design_ranges=None, method="sequential"
+        self, model=None, design_ranges=None, method=None,
     ):
         """
         Will run a simulation-based full factorial exploration of
@@ -1690,11 +1689,11 @@ class DesignOfExperiments:
         ----------
         model: model to perform the full factorial exploration on
         design_ranges: dict of lists, of the form {<var_name>: [start, stop, numsteps]}
-        method: string to specify which method should be used
-                options are ``kaug`` and ``sequential``. If the gradient method is
-                "symbolic", this option is ignored.
+        method: (depreciated), specify gradient_method when creating the DoE object
 
         """
+
+
         # Start timer
         sp_timer = TicTocTimer()
         sp_timer.tic(msg=None)
