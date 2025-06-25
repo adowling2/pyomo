@@ -129,7 +129,7 @@ def run_polynomial_doe():
     # call of ``run_doe`` perform model initialization.
     doe_obj = DesignOfExperiments(
         experiment,
-        gradient_method="symbolic",  # Use finite difference method for gradient calculation
+        gradient_method="pynumero",  # Use Pynumero symbolic gradient
         fd_formula=None,
         step=1e-3,
         objective_option=objective_option,
@@ -146,7 +146,7 @@ def run_polynomial_doe():
         _only_compute_fim_lower=True,
     )
 
-    doe_obj.compute_FIM(method="kaug")
+    doe_obj.compute_FIM()
 
 if __name__ == "__main__":
     run_polynomial_doe()
