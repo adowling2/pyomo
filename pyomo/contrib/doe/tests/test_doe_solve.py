@@ -121,6 +121,8 @@ def get_standard_args(experiment, fd_method, obj_used):
 @unittest.skipIf(not ipopt_available, "The 'ipopt' command is not available")
 @unittest.skipIf(not numpy_available, "Numpy is not available")
 class TestReactorExampleSolving(unittest.TestCase):
+
+    # TODO: Parameterize these tests to run with different gradient methods
     def test_reactor_fd_central_solve(self):
         fd_method = "central"
         obj_used = "trace"
@@ -263,6 +265,8 @@ class TestReactorExampleSolving(unittest.TestCase):
 
     # This test ensure that compute FIM runs without error using the
     # `sequential` option with central finite differences
+
+    # TODO: Parameterize this test to run with different gradient methods
     def test_compute_FIM_seq_centr(self):
         fd_method = "central"
         obj_used = "determinant"
