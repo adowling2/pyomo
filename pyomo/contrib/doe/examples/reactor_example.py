@@ -37,6 +37,7 @@ def run_reactor_doe():
     experiment = ReactorExperiment(data=data_ex, nfe=10, ncp=3)
 
     # Use a central difference, with step size 1e-3
+    # Other options are "forward", "backward", "kaug", and "pynumero".
     gradient_method = "central"
     step_size = 1e-3
 
@@ -67,13 +68,11 @@ def run_reactor_doe():
         _only_compute_fim_lower=True,
     )
 
-    '''
-
     # Make design ranges to compute the full factorial design
     design_ranges = {"CA[0]": [1, 5, 9], "T[0]": [300, 700, 9]}
 
     # Compute the full factorial design with the sequential FIM calculation
-    doe_obj.compute_FIM_full_factorial(design_ranges=design_ranges, method="sequential")
+    doe_obj.compute_FIM_full_factorial(design_ranges=design_ranges)
 
     # Plot the results
     doe_obj.draw_factorial_figure(
@@ -94,46 +93,52 @@ def run_reactor_doe():
         figure_file_name="example_reactor_compute_FIM",
         log_scale=False,
     )
-    '''
 
     ###########################
     # End sensitivity analysis
 
     # Begin optimal DoE
     ####################
-    doe_obj.run_doe()
+    if gradient_method == "kaug":
+        # Cannot run optimal DoE with kaug gradient method
+        # This is because the kaug method only computes the FIM
+        # at a specific design point, and does not support
+        # mathematical optimization.
+        pass
+    else:
+        doe_obj.run_doe()
 
-    # Print out a results summary
-    print("Optimal experiment values: ")
-    print(
-        "\tInitial concentration: {:.2f}".format(
-            doe_obj.results["Experiment Design"][0]
+        # Print out a results summary
+        print("Optimal experiment values: ")
+        print(
+            "\tInitial concentration: {:.2f}".format(
+                doe_obj.results["Experiment Design"][0]
+            )
         )
-    )
-    print(
-        ("\tTemperature values: [" + "{:.2f}, " * 8 + "{:.2f}]").format(
-            *doe_obj.results["Experiment Design"][1:]
+        print(
+            ("\tTemperature values: [" + "{:.2f}, " * 8 + "{:.2f}]").format(
+                *doe_obj.results["Experiment Design"][1:]
+            )
         )
-    )
-    print("FIM at optimal design:\n {}".format(np.array(doe_obj.results["FIM"])))
-    print(
-        "Objective value at optimal design: {:.2f}".format(
-            pyo.value(doe_obj.model.objective)
+        print("FIM at optimal design:\n {}".format(np.array(doe_obj.results["FIM"])))
+        print(
+            "Objective value at optimal design: {:.2f}".format(
+                pyo.value(doe_obj.model.objective)
+            )
         )
-    )
 
-    # This code demonstrates how to access the DoE results, 
-    # store in a Pandas DataFrame, and print it out in a readable format.
-    import pandas as pd
-    print("\n***Optimal Experiment Design***")
-    
-    design_names = doe_obj.results["Experiment Design Names"]
-    design_values = doe_obj.results["Experiment Design"]
-    df = pd.DataFrame({
-        "Decision Var": design_names,
-        "Value": [round(val, 2) for val in design_values]
-    })
-    print(df)
+        # This code demonstrates how to access the DoE results, 
+        # store in a Pandas DataFrame, and print it out in a readable format.
+        import pandas as pd
+        print("\n***Optimal Experiment Design***")
+        
+        design_names = doe_obj.results["Experiment Design Names"]
+        design_values = doe_obj.results["Experiment Design"]
+        df = pd.DataFrame({
+            "Decision Var": design_names,
+            "Value": [round(val, 2) for val in design_values]
+        })
+        print(df)
 
     ###################
     # End optimal DoE
