@@ -728,7 +728,7 @@ class DesignOfExperiments:
 
         self.solver.solve(model, tee=self.tee)
 
-        if self._gradient_method == GradientMethod.symbolic:
+        if self._gradient_method == GradientMethod.pynumero:
             
             experiment_grad = ExperimentGradients(model, automatic=True, symbolic=False)
 
@@ -916,7 +916,7 @@ class DesignOfExperiments:
         # Create object for computing gradients
         experiment_grad = ExperimentGradients(model.scenario_blocks[0], # Always analyze scenario 0
                                               automatic=True, 
-                                              symbolic=self._gradient_method == GradientMethod.symbolic)
+                                              symbolic=self._gradient_method == GradientMethod.pynumero)
 
 
         ### Initialize the Jacobian if provided by the user
@@ -988,7 +988,7 @@ class DesignOfExperiments:
 
         # TODO: This code changes for symbolic gradients
 
-        if self._gradient_method == GradientMethod.symbolic:
+        if self._gradient_method == GradientMethod.pynumero:
             #print("TODO: Need to implement symbolic gradients for the FIM computation.")
             #pass
 
@@ -1233,7 +1233,7 @@ class DesignOfExperiments:
         # - Exit
 
         # Populate parameter scenarios, and scenario inds based on finite difference scheme
-        if self._gradient_method == GradientMethod.symbolic:
+        if self._gradient_method == GradientMethod.pynumero:
             # TODO: Or do we need to update this with 0?
 
             # Is it okay to just keep this empty?
@@ -1294,7 +1294,7 @@ class DesignOfExperiments:
             m = b.model()
             b.transfer_attributes_from(m.base_model.clone())
 
-            if self._gradient_method == GradientMethod.symbolic:
+            if self._gradient_method == GradientMethod.pynumero:
                 # If symbolic gradients, we do not need to perturb parameters
                 # Just use the base model as the scenario block
                 return
@@ -1338,7 +1338,7 @@ class DesignOfExperiments:
         design_vars = [k for k, v in model.scenario_blocks[0].experiment_inputs.items()]
 
         # TODO: Do not need this for symbolic gradients
-        if self._gradient_method == GradientMethod.symbolic:
+        if self._gradient_method == GradientMethod.pynumero:
             pass
         else:
             # Add constraints to equate block design with global design:
