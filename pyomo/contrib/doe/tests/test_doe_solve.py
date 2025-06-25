@@ -341,7 +341,7 @@ class TestReactorExampleSolving(unittest.TestCase):
         design_ranges = {"CA[0]": [1, 5, 3], "T[0]": [300, 700, 3]}
 
         doe_obj.compute_FIM_full_factorial(
-            design_ranges=design_ranges, method="sequential"
+            design_ranges=design_ranges,
         )
 
         # Check to make sure the lengths of the inputs in results object are indeed correct
