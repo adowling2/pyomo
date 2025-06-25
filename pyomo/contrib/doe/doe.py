@@ -266,6 +266,13 @@ class DesignOfExperiments:
                       default: None --> don't save
 
         """
+
+        if self._gradient_method is GradientMethod.kaug:
+            raise ValueError(
+                "Cannot use kaug automatic differential method for DoE optimization." \
+                "Instead use GradientMethod.pynumero for symbolic differentiation."
+            )
+
         # Check results file name
         if results_file is not None:
             if type(results_file) not in [pathlib.Path, str]:
@@ -699,7 +706,7 @@ class DesignOfExperiments:
         # Compute and record FIM
         self.seq_FIM = self.seq_jac.T @ cov_y @ self.seq_jac + self.prior_FIM
 
-    # Use kaug to get FIM
+    # Use kaug or PyNumero to compute the FIM
     def _analytic_FIM(self, model=None):
         """
         Use symbolic/automatic differentiation implemented in kaug or PyNumero to
