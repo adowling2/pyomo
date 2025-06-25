@@ -709,7 +709,7 @@ class DesignOfExperiments:
     # Use kaug or PyNumero to compute the FIM
     def _analytic_FIM(self, model=None):
         """
-        Use symbolic/automatic differentiation implemented in kaug or PyNumero to
+        Use automatic differentiation implemented in kaug or PyNumero to
         compute the FIM for the specified experimental design
 
         Parameters
