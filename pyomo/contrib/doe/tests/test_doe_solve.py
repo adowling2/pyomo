@@ -10,6 +10,9 @@ import json
 import logging
 import os, os.path
 from glob import glob
+from io import StringIO
+
+from pyomo.common.log import LoggingIntercept
 
 from pyomo.common.dependencies import (
     numpy as np,
@@ -39,6 +42,7 @@ if scipy_available:
     )
     from pyomo.contrib.doe.tests.experiment_class_example_flags import (
         RooneyBieglerExperimentBad,
+        RooneyBieglerExperimentBoundedParam,
     )
     from pyomo.contrib.parmest.examples.rooney_biegler.rooney_biegler import (
         RooneyBieglerExperiment,
@@ -246,6 +250,58 @@ class TestRooneyBieglerExampleSolving(unittest.TestCase):
 
         # Make sure FIM and Q.T @ sigma_inv @ Q are close (alternate definition of FIM)
         self.assertTrue(np.all(np.isclose(FIM, Q.T @ sigma_inv @ Q)))
+
+    @unittest.skipIf(not pandas_available, "pandas is not available")
+    def test_fd_perturbation_widens_param_bounds_sequential(self):
+        # The rate_constant parameter's nominal value sits at its lower bound,
+        # so the central finite difference perturbation crosses the bound. The
+        # sequential FIM path should widen the bound and emit a single,
+        # informative warning rather than the low-level W1002 warning storm.
+        experiment = RooneyBieglerExperimentBoundedParam(
+            data=get_rooney_biegler_data(),
+            theta={'asymptote': 15, 'rate_constant': 0.5},
+            measure_error=0.1,
+        )
+
+        DoE_args = get_standard_args(experiment, "central", "trace")
+        doe_obj = DesignOfExperiments(**DoE_args)
+
+        OUTPUT = StringIO()
+        with LoggingIntercept(OUTPUT, "pyomo.contrib.doe", logging.WARNING):
+            doe_obj.compute_FIM(method="sequential")
+        output = OUTPUT.getvalue()
+
+        # Exactly one bound-widening warning for the affected parameter
+        self.assertEqual(output.count("falls outside its declared bounds"), 1)
+        self.assertIn("rate_constant", output)
+        self.assertIn("Widening the bounds", output)
+        self.assertIn(
+            "does not change the computed sensitivities or FIM", output
+        )
+
+    @unittest.skipIf(not pandas_available, "pandas is not available")
+    def test_fd_perturbation_widens_param_bounds_simultaneous(self):
+        # Same scenario as above, but exercising the simultaneous /
+        # scenario-block construction path via create_doe_model.
+        experiment = RooneyBieglerExperimentBoundedParam(
+            data=get_rooney_biegler_data(),
+            theta={'asymptote': 15, 'rate_constant': 0.5},
+            measure_error=0.1,
+        )
+
+        DoE_args = get_standard_args(experiment, "central", "trace")
+        doe_obj = DesignOfExperiments(**DoE_args)
+
+        OUTPUT = StringIO()
+        with LoggingIntercept(OUTPUT, "pyomo.contrib.doe", logging.WARNING):
+            doe_obj.create_doe_model()
+        output = OUTPUT.getvalue()
+
+        # One warning per affected parameter, regardless of the number of
+        # scenario blocks that share that parameter.
+        self.assertEqual(output.count("falls outside its declared bounds"), 1)
+        self.assertIn("rate_constant", output)
+        self.assertIn("Widening the bounds", output)
 
     @unittest.skipIf(not pandas_available, "pandas is not available")
     def test_rooney_biegler_obj_det_solve(self):
