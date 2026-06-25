@@ -55,6 +55,24 @@ class RooneyBieglerExperimentFlag(RooneyBieglerExperiment):
         return m
 
 
+class RooneyBieglerExperimentBoundedParam(RooneyBieglerExperiment):
+    """
+    A version of RooneyBieglerExperiment whose ``rate_constant`` unknown
+    parameter has its nominal value pinned to its lower bound. A finite
+    difference perturbation therefore falls outside the declared bounds,
+    exercising Pyomo.DoE's bound-widening / warning logic.
+    """
+
+    def get_labeled_model(self):
+        m = super().get_labeled_model()
+        # Nominal rate_constant is 0.5; pin the lower bound to the nominal
+        # value so that a negative finite difference perturbation crosses it.
+        nominal = pyo.value(m.rate_constant)
+        m.rate_constant.setlb(nominal)
+        m.rate_constant.setub(nominal * 2)
+        return m
+
+
 class RooneyBieglerExperimentBad(RooneyBieglerExperiment):
     """
     A bad version of RooneyBieglerExperiment with conflicting constraints
