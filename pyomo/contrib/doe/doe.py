@@ -647,6 +647,90 @@ class DesignOfExperiments:
 
         return self._computed_FIM
 
+    def _adjust_bounds_for_fd_perturbation(self, unknown_parameters):
+        """
+        Widen the declared bounds of unknown-parameter Vars when a finite
+        difference perturbation would fall outside them.
+
+        Pyomo.DoE estimates the sensitivity matrix (and FIM) by perturbing
+        each unknown parameter to ``nominal * (1 + diff)`` where ``diff`` is
+        ``+step`` and/or ``-step`` depending on the finite difference formula
+        (central perturbs both directions, forward only ``+step``, backward
+        only ``-step``). When a parameter's nominal value sits at or near one
+        of its declared Var bounds, the perturbed value can fall outside those
+        bounds. Because the unknown parameters are *fixed* during the finite
+        difference solves, the declared bounds have no mathematical effect on
+        the (square) solves -- but ``set_value`` would otherwise emit a
+        low-level ``W1002`` warning for every offending scenario.
+
+        To replace that warning storm with a single, intentional message, this
+        method widens the affected bounds just enough to contain every
+        perturbed value and logs one warning per affected parameter,
+        identifying the parameter, its original bounds, the perturbation
+        range, and the adjusted bounds. The computed sensitivities and FIM are
+        unchanged; only the bound bookkeeping and warning clarity differ.
+
+        Parameters
+        ----------
+        unknown_parameters: mapping (e.g. the ``unknown_parameters`` Suffix)
+            from each unknown-parameter Var to its nominal value.
+
+        Returns
+        -------
+        list
+            List of ``(param, lb, ub)`` tuples giving each adjusted Var and its
+            original bounds, so the caller may restore them after the finite
+            difference computation if appropriate.
+        """
+        original_bounds = []
+        for param, nominal in unknown_parameters.items():
+            lb, ub = param.lb, param.ub
+            # Nothing to violate if the Var is unbounded on both sides
+            if lb is None and ub is None:
+                continue
+
+            # Perturbed values this parameter will take across the FD scenarios
+            if self.fd_formula == FiniteDifferenceStep.central:
+                perturbed = [nominal * (1 + self.step), nominal * (1 - self.step)]
+            elif self.fd_formula == FiniteDifferenceStep.forward:
+                perturbed = [nominal * (1 + self.step)]
+            elif self.fd_formula == FiniteDifferenceStep.backward:
+                perturbed = [nominal * (1 - self.step)]
+            else:
+                continue
+
+            new_lb, new_ub = lb, ub
+            if lb is not None and min(perturbed) < lb:
+                new_lb = min(perturbed)
+            if ub is not None and max(perturbed) > ub:
+                new_ub = max(perturbed)
+
+            # No adjustment needed if every perturbation is within bounds
+            if new_lb == lb and new_ub == ub:
+                continue
+
+            self.logger.warning(
+                "Finite difference perturbation of unknown parameter '%s' "
+                "(perturbed range [%s, %s]) falls outside its declared bounds "
+                "(%s, %s). Widening the bounds to (%s, %s) for the finite "
+                "difference computation. The unknown parameters are fixed "
+                "during these solves, so this does not change the computed "
+                "sensitivities or FIM." % (
+                    param.name,
+                    min(perturbed),
+                    max(perturbed),
+                    lb,
+                    ub,
+                    new_lb,
+                    new_ub,
+                )
+            )
+            param.setlb(new_lb)
+            param.setub(new_ub)
+            original_bounds.append((param, lb, ub))
+
+        return original_bounds
+
     # Use a sequential method to get the FIM
     def _sequential_FIM(self, model=None):
         """
@@ -696,6 +780,13 @@ class DesignOfExperiments:
         # Fix design variables
         for comp in model.experiment_inputs:
             comp.fix()
+
+        # Widen any unknown-parameter bounds that the finite difference
+        # perturbations would violate (see _adjust_bounds_for_fd_perturbation).
+        # The original bounds are restored after the FD computation below.
+        original_param_bounds = self._adjust_bounds_for_fd_perturbation(
+            model.unknown_parameters
+        )
 
         measurement_vals = []
         # In a loop.....
@@ -747,6 +838,14 @@ class DesignOfExperiments:
             measurement_vals.append(
                 [pyo.value(k) for k, v in model.experiment_outputs.items()]
             )
+
+        # Restore any bounds that were widened for the finite difference
+        # perturbations. The parameter values have already been reset to their
+        # nominal (in-bounds) values within the loop above, so the model is
+        # left in a consistent state.
+        for param, lb, ub in original_param_bounds:
+            param.setlb(lb)
+            param.setub(ub)
 
         # Use the measurement outputs to make the Q matrix
         measurement_vals_np = np.array(measurement_vals).T
@@ -1292,6 +1391,15 @@ class DesignOfExperiments:
 
         for comp in model.base_model.experiment_inputs:
             comp.unfix()
+
+        # Widen any unknown-parameter bounds that the finite difference
+        # perturbations would violate (see _adjust_bounds_for_fd_perturbation).
+        # This is done on ``base_model`` *before* the scenario blocks are cloned
+        # from it, so each scenario block inherits the widened bounds and no
+        # per-scenario W1002 warnings are emitted. The bounds are intentionally
+        # not restored: each scenario block permanently holds its perturbed
+        # (fixed) parameter value, which must remain within bounds.
+        self._adjust_bounds_for_fd_perturbation(model.base_model.unknown_parameters)
 
         # Generate blocks for finite difference scenarios
         def build_block_scenarios(b, s):
