@@ -780,6 +780,23 @@ class TestFIMExternalGreyBox(unittest.TestCase):
         # assert that each component is close
         self.assertTrue(np.all(np.isclose(hess_gb, hess_FD, rtol=1e-4, atol=1e-4)))
 
+    def test_hessian_output_multiplier(self):
+        """The output multiplier scales its Hessian contribution."""
+        doe_obj, grey_box_object = make_greybox_and_doe_objects(
+            objective_option="trace"
+        )
+        grey_box_object.set_input_values(testing_matrix[masking_matrix > 0])
+
+        unscaled_hessian = grey_box_object.evaluate_hessian_outputs().toarray()
+
+        grey_box_object.set_output_constraint_multipliers(np.asarray([-2.5]))
+        scaled_hessian = grey_box_object.evaluate_hessian_outputs().toarray()
+
+        self.assertTrue(np.allclose(scaled_hessian, -2.5 * unscaled_hessian))
+
+        with self.assertRaises(AssertionError):
+            grey_box_object.set_output_constraint_multipliers(np.asarray([]))
+
     def test_pseudo_A_opt_greybox_build(self):
         """Validate pseudo-A-opt grey-box wiring and initialized values."""
         objective_option = "pseudo_trace"
