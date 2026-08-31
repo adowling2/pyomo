@@ -570,6 +570,9 @@ class DesignOfExperiments:
                     self.results["GreyBox Softmin Temperature"] = (
                         self.grey_box_softmin_temperature
                     )
+                self.results.update(
+                    self._grey_box_model.regularization_diagnostics()
+                )
 
         # TODO: Add more useful fields to the results object?
         # TODO: Add MetaData from the user to the results object? Or leave to the user?

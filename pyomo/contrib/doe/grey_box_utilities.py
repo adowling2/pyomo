@@ -356,6 +356,59 @@ class FIMExternalGreyBox(
             return 1.0
         return -1.0
 
+    def regularization_diagnostics(self):
+        """Return terminal softplus-shift activity and exact-penalty metrics."""
+        if not self.fim_formulation.startswith("softplus_"):
+            return None
+        raw_fim = self._get_raw_FIM()
+        shift, _, _ = self._shift_information(raw_fim, derivative_order=0)
+        effective_fim = raw_fim + shift * np.eye(self._n_params)
+        raw_eigenvalues = np.linalg.eigvalsh(raw_fim)
+        effective_eigenvalues = raw_eigenvalues + shift
+        argument = self.eigenvalue_floor
+        if self.fim_formulation == "softplus_exact":
+            spectral_minimum = raw_eigenvalues[0]
+        else:
+            spectral_minimum = -self.softmin_temperature * scipy.special.logsumexp(
+                -raw_eigenvalues / self.softmin_temperature
+            )
+        argument -= spectral_minimum
+        activity = scipy.special.expit(self.softplus_beta * argument)
+
+        from pyomo.contrib.doe import ObjectiveLib
+
+        if self.objective_option == ObjectiveLib.trace:
+            inverse = np.linalg.pinv(effective_fim)
+            shift_benefit_slope = np.trace(inverse @ inverse)
+        elif self.objective_option == ObjectiveLib.determinant:
+            shift_benefit_slope = np.trace(np.linalg.pinv(effective_fim))
+        elif self.objective_option == ObjectiveLib.minimum_eigenvalue:
+            shift_benefit_slope = 1.0
+        elif self.objective_option == ObjectiveLib.condition_number:
+            shift_benefit_slope = (
+                1.0 / effective_eigenvalues[0]
+                - 1.0 / effective_eigenvalues[-1]
+            )
+        else:
+            shift_benefit_slope = 0.0
+
+        return {
+            "Raw FIM": raw_fim.tolist(),
+            "Effective FIM": effective_fim.tolist(),
+            "Raw FIM Eigenvalues": raw_eigenvalues.tolist(),
+            "Effective FIM Eigenvalues": effective_eigenvalues.tolist(),
+            "GreyBox Spectral Minimum": float(spectral_minimum),
+            "GreyBox Diagonal Shift": float(shift),
+            "GreyBox Shift Activity": float(activity),
+            "GreyBox Shift Penalty Contribution": float(
+                self.shift_penalty * shift
+            ),
+            "GreyBox Shift Benefit Slope": float(shift_benefit_slope),
+            "GreyBox Shift Penalty Margin": float(
+                self.shift_penalty - shift_benefit_slope
+            ),
+        }
+
     def _reorder_pairs(self, i, j, k, l):
         # Reorders the pairs (i, j) and
         # (k, l) for considering only
