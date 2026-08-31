@@ -193,6 +193,29 @@ class TestGreyBoxSPDFormulations(unittest.TestCase):
         self.assertGreater(np.min(np.linalg.eigvalsh(shifted._get_FIM())), 0.1)
         self.assertTrue(np.isfinite(shifted.evaluate_outputs()[0]))
 
+    def test_regularization_diagnostics_report_shift_and_penalty_margin(self):
+        grey_box = FIMExternalGreyBox(
+            _SmallDoEObject(),
+            objective_option="minimum_eigenvalue",
+            fim_formulation="softplus_smooth",
+            eigenvalue_floor=0.1,
+            softplus_beta=10.0,
+            softmin_temperature=0.2,
+            shift_penalty=0.25,
+        )
+
+        diagnostics = grey_box.regularization_diagnostics()
+
+        self.assertGreater(diagnostics["GreyBox Diagonal Shift"], 0.0)
+        self.assertGreater(diagnostics["GreyBox Shift Activity"], 0.0)
+        self.assertEqual(diagnostics["GreyBox Shift Benefit Slope"], 1.0)
+        self.assertEqual(diagnostics["GreyBox Shift Penalty Margin"], -0.75)
+        self.assertTrue(
+            np.allclose(
+                np.asarray(diagnostics["Effective FIM"]), grey_box._get_FIM()
+            )
+        )
+
     def test_sensitivity_formulation_reconstructs_information_matrix(self):
         doe_object = _SmallDoEObject()
         grey_box = FIMExternalGreyBox(

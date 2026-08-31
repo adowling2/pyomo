@@ -88,3 +88,15 @@ GreyBox Hessian onto the positive semidefinite cone.
 ``gauss-newton-psd`` combines both operations. These modes safeguard only the
 GreyBox objective contribution; they do not modify curvature from the
 experiment model's dynamic or algebraic constraints.
+
+Softplus result diagnostics
+---------------------------
+
+Softplus formulations record both the raw and effective FIM, their
+eigenvalues, the terminal diagonal shift and its activity, the penalty
+contribution, and the local marginal objective benefit of an additional
+diagonal shift. The reported ``GreyBox Shift Penalty Margin`` is the configured
+penalty coefficient minus that marginal benefit. A negative margin indicates
+that the regularized criterion locally rewards additional shift more strongly
+than the objective penalizes it. Penalty adequacy is criterion- and
+scale-dependent; it should not be inferred from the shift magnitude alone.
