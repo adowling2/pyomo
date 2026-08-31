@@ -54,6 +54,7 @@ class FIMExternalGreyBox(
         softplus_beta=50.0,
         softmin_temperature=1e-2,
         shift_penalty=1e3,
+        hessian_mode="exact",
     ):
         """
         Grey box model for metrics on the FIM. This methodology reduces
@@ -84,6 +85,10 @@ class FIMExternalGreyBox(
            Positive spectral soft-min temperature for ``softplus_smooth``.
         shift_penalty:
            Nonnegative objective penalty on the diagonal shift.
+        hessian_mode:
+           One of ``exact``, ``gauss-newton``, ``projected-psd``, or
+           ``gauss-newton-psd``. Gauss-Newton modes are available only with
+           the sensitivity formulation.
         logger_level:
            logging level to be specified if different from doe_object's logging level.
            default: None, or equivalently, use the logging level of doe_object.
@@ -118,6 +123,25 @@ class FIMExternalGreyBox(
         self.softplus_beta = float(softplus_beta)
         self.softmin_temperature = float(softmin_temperature)
         self.shift_penalty = float(shift_penalty)
+        self.hessian_mode = str(hessian_mode)
+        valid_hessian_modes = {
+            "exact",
+            "gauss-newton",
+            "projected-psd",
+            "gauss-newton-psd",
+        }
+        if self.hessian_mode not in valid_hessian_modes:
+            raise ValueError(
+                "hessian_mode must be one of %s; received %r."
+                % (sorted(valid_hessian_modes), self.hessian_mode)
+            )
+        if (
+            self.hessian_mode.startswith("gauss-newton")
+            and self.fim_formulation != "sensitivity"
+        ):
+            raise ValueError(
+                "Gauss-Newton Hessian modes require fim_formulation='sensitivity'."
+            )
         if self.softplus_beta <= 0:
             raise ValueError("softplus_beta must be positive.")
         if self.softmin_temperature <= 0:
@@ -1086,23 +1110,27 @@ class FIMExternalGreyBox(
             if self.fim_formulation == "sensitivity":
                 derivative = self._sensitivity_to_fim_jacobian()
                 transformed_hessian = derivative.T @ packed_hessian @ derivative
-                for measurement, weight in enumerate(self._measurement_weights):
-                    block = np.zeros((self._n_params, self._n_params))
-                    for fim_index, (row_name, col_name) in enumerate(
-                        self._fim_input_names
-                    ):
-                        row = self._param_names.index(row_name)
-                        col = self._param_names.index(col_name)
-                        if row == col:
-                            block[row, row] += 2.0 * weight * packed_gradient[fim_index]
-                        else:
-                            value = weight * packed_gradient[fim_index]
-                            block[row, col] += value
-                            block[col, row] += value
-                    start = measurement * self._n_params
-                    transformed_hessian[
-                        start : start + self._n_params, start : start + self._n_params
-                    ] += block
+                if not self.hessian_mode.startswith("gauss-newton"):
+                    for measurement, weight in enumerate(self._measurement_weights):
+                        block = np.zeros((self._n_params, self._n_params))
+                        for fim_index, (row_name, col_name) in enumerate(
+                            self._fim_input_names
+                        ):
+                            row = self._param_names.index(row_name)
+                            col = self._param_names.index(col_name)
+                            if row == col:
+                                block[row, row] += (
+                                    2.0 * weight * packed_gradient[fim_index]
+                                )
+                            else:
+                                value = weight * packed_gradient[fim_index]
+                                block[row, col] += value
+                                block[col, row] += value
+                        start = measurement * self._n_params
+                        transformed_hessian[
+                            start : start + self._n_params,
+                            start : start + self._n_params,
+                        ] += block
             else:
                 _, shift_gradient, shift_hessian = self._shift_information(
                     self._get_raw_FIM()
@@ -1126,4 +1154,13 @@ class FIMExternalGreyBox(
 
         # The ExternalGreyBoxModel contract requires the multiplier-weighted
         # output contribution to the Hessian of the Lagrangian.
-        return self._output_con_mult_values[0] * output_hessian
+        weighted_hessian = self._output_con_mult_values[0] * output_hessian
+        if self.hessian_mode.endswith("projected-psd"):
+            lower = weighted_hessian.toarray()
+            full = lower + lower.T - np.diag(np.diag(lower))
+            eigenvalues, eigenvectors = np.linalg.eigh(full)
+            projected = (
+                eigenvectors * np.maximum(eigenvalues, 0.0)
+            ) @ eigenvectors.T
+            weighted_hessian = scipy.sparse.coo_matrix(np.tril(projected))
+        return weighted_hessian

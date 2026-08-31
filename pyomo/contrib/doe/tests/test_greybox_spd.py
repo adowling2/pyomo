@@ -119,6 +119,11 @@ def _finite_difference_hessian(grey_box, inputs, step=2e-4):
 
 
 class TestGreyBoxSPDFormulations(unittest.TestCase):
+    @staticmethod
+    def _full_hessian(grey_box):
+        lower = grey_box.evaluate_hessian_outputs().toarray()
+        return lower + lower.T - np.diag(np.diag(lower))
+
     def _assert_derivatives(self, formulation, objective):
         grey_box = FIMExternalGreyBox(
             _SmallDoEObject(),
@@ -199,6 +204,64 @@ class TestGreyBoxSPDFormulations(unittest.TestCase):
             + doe_object.prior_FIM
         )
         self.assertTrue(np.allclose(grey_box._get_FIM(), expected))
+
+    def test_sensitivity_gauss_newton_removes_map_curvature(self):
+        exact = FIMExternalGreyBox(
+            _SmallDoEObject(),
+            objective_option="trace",
+            fim_formulation="sensitivity",
+            hessian_mode="exact",
+        )
+        gauss_newton = FIMExternalGreyBox(
+            _SmallDoEObject(),
+            objective_option="trace",
+            fim_formulation="sensitivity",
+            hessian_mode="gauss-newton",
+        )
+
+        exact_hessian = self._full_hessian(exact)
+        gauss_newton_hessian = self._full_hessian(gauss_newton)
+
+        self.assertFalse(np.allclose(exact_hessian, gauss_newton_hessian))
+        self.assertGreaterEqual(
+            np.min(np.linalg.eigvalsh(gauss_newton_hessian)), -1e-10
+        )
+
+    def test_gauss_newton_respects_maximized_objective_multiplier(self):
+        grey_box = FIMExternalGreyBox(
+            _SmallDoEObject(),
+            objective_option="determinant",
+            fim_formulation="sensitivity",
+            hessian_mode="gauss-newton",
+        )
+        grey_box.set_output_constraint_multipliers(np.asarray([-1.0]))
+
+        hessian = self._full_hessian(grey_box)
+
+        self.assertGreaterEqual(np.min(np.linalg.eigvalsh(hessian)), -1e-10)
+
+    def test_projected_hessian_is_positive_semidefinite(self):
+        grey_box = FIMExternalGreyBox(
+            _SmallDoEObject(),
+            objective_option="trace",
+            fim_formulation="sensitivity",
+            hessian_mode="projected-psd",
+        )
+
+        hessian = self._full_hessian(grey_box)
+
+        self.assertGreaterEqual(np.min(np.linalg.eigvalsh(hessian)), -1e-10)
+
+    def test_gauss_newton_requires_sensitivity_formulation(self):
+        with self.assertRaisesRegex(
+            ValueError, "require fim_formulation='sensitivity'"
+        ):
+            FIMExternalGreyBox(
+                _SmallDoEObject(),
+                objective_option="trace",
+                fim_formulation="fim",
+                hessian_mode="gauss-newton",
+            )
 
     def test_smooth_shift_accepts_repeated_minimum_eigenvalue(self):
         grey_box = FIMExternalGreyBox(
