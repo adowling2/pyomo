@@ -76,6 +76,15 @@ class FiniteDifferenceStep(Enum):
     backward = "backward"
 
 
+class GreyBoxFIMFormulation(Enum):
+    """Inputs and positive-definiteness treatment for GreyBox FIM metrics."""
+
+    fim = "fim"
+    sensitivity = "sensitivity"
+    softplus_exact = "softplus_exact"
+    softplus_smooth = "softplus_smooth"
+
+
 class DesignOfExperiments:
     def __init__(
         self,
@@ -99,6 +108,11 @@ class DesignOfExperiments:
         improve_cholesky_roundoff_error=False,
         _Cholesky_option=True,
         _only_compute_fim_lower=True,
+        grey_box_fim_formulation="fim",
+        grey_box_eigenvalue_floor=1e-8,
+        grey_box_softplus_beta=50.0,
+        grey_box_softmin_temperature=1e-2,
+        grey_box_shift_penalty=1e3,
     ):
         """This package enables model-based design of experiments analysis
         with Pyomo.  Both direct optimization and enumeration modes are
@@ -138,6 +152,23 @@ class DesignOfExperiments:
             Boolean of whether or not to use the grey-box version of the objective
             function. True to use grey box, False to use standard.
             Default: False (do not use grey box)
+        grey_box_fim_formulation:
+            GreyBox input and regularization formulation. ``fim`` retains the
+            current lifted-FIM formulation; ``sensitivity`` constructs
+            ``J.T @ W @ J + prior_FIM`` inside the external model;
+            ``softplus_exact`` and ``softplus_smooth`` add a differentiable
+            diagonal shift to the lifted FIM based on the exact or smooth
+            minimum eigenvalue, respectively. Default: ``fim``.
+        grey_box_eigenvalue_floor:
+            Target minimum eigenvalue used by either softplus formulation.
+        grey_box_softplus_beta:
+            Positive sharpness parameter for the softplus diagonal shift.
+        grey_box_softmin_temperature:
+            Positive log-sum-exp temperature for ``softplus_smooth``.
+        grey_box_shift_penalty:
+            Nonnegative objective penalty on the diagonal shift used by either
+            softplus formulation. The penalty is subtracted from maximized
+            criteria and added to minimized criteria. Default: 1000.
         scale_constant_value:
             Constant scaling for the sensitivity matrix. Every element will be
             multiplied by this scaling factor.
@@ -206,6 +237,17 @@ class DesignOfExperiments:
         # Set the objective type and scaling options:
         self.objective_option = ObjectiveLib(objective_option)
         self.use_grey_box = use_grey_box_objective
+        self.grey_box_fim_formulation = GreyBoxFIMFormulation(grey_box_fim_formulation)
+        self.grey_box_eigenvalue_floor = float(grey_box_eigenvalue_floor)
+        self.grey_box_softplus_beta = float(grey_box_softplus_beta)
+        self.grey_box_softmin_temperature = float(grey_box_softmin_temperature)
+        self.grey_box_shift_penalty = float(grey_box_shift_penalty)
+        if self.grey_box_softplus_beta <= 0:
+            raise ValueError("grey_box_softplus_beta must be positive.")
+        if self.grey_box_softmin_temperature <= 0:
+            raise ValueError("grey_box_softmin_temperature must be positive.")
+        if self.grey_box_shift_penalty < 0:
+            raise ValueError("grey_box_shift_penalty must be nonnegative.")
 
         self.scale_constant_value = scale_constant_value
         self.scale_nominal_param_value = scale_nominal_param_value
@@ -363,39 +405,40 @@ class DesignOfExperiments:
         model.obj_cons.activate()
 
         if self.use_grey_box:
-            # Initialize grey box inputs to be fim values currently
-            for i in model.parameter_names:
-                for j in model.parameter_names:
-                    if list(model.parameter_names).index(i) >= list(
-                        model.parameter_names
-                    ).index(j):
-                        model.obj_cons.egb_fim_block.inputs[(j, i)].set_value(
-                            pyo.value(model.fim[(i, j)])
-                        )
-            # Set objective value
-            if self.objective_option == ObjectiveLib.trace:
-                trace_val = np.trace(np.linalg.pinv(self.get_FIM()))
-                model.obj_cons.egb_fim_block.outputs["A-opt"].set_value(trace_val)
-            elif self.objective_option == ObjectiveLib.pseudo_trace:
-                pseudo_trace_val = np.trace(np.array(self.get_FIM()))
-                model.obj_cons.egb_fim_block.outputs["pseudo-A-opt"].set_value(
-                    pseudo_trace_val
-                )
-            elif self.objective_option == ObjectiveLib.determinant:
-                det_val = np.linalg.det(np.array(self.get_FIM()))
-                model.obj_cons.egb_fim_block.outputs["log-D-opt"].set_value(
-                    np.log(det_val)
-                )
-            elif self.objective_option == ObjectiveLib.minimum_eigenvalue:
-                eig, _ = np.linalg.eig(np.array(self.get_FIM()))
-                model.obj_cons.egb_fim_block.outputs["E-opt"].set_value(np.min(eig))
-            elif self.objective_option == ObjectiveLib.condition_number:
-                eig, _ = np.linalg.eig(np.array(self.get_FIM()))
-                cond_number = np.log(np.abs(np.max(eig) / np.min(eig)))
-                model.obj_cons.egb_fim_block.outputs["ME-opt"].set_value(cond_number)
+            # Synchronize the external-model inputs and output with the square
+            # initialization solve before handing the model to CyIpopt.
+            grey_box_inputs = []
+            if self.grey_box_fim_formulation == GreyBoxFIMFormulation.sensitivity:
+                for output in model.output_names:
+                    for parameter in model.parameter_names:
+                        value = pyo.value(model.sensitivity_jacobian[output, parameter])
+                        model.obj_cons.egb_fim_block.inputs[
+                            (output, parameter)
+                        ].set_value(value)
+                        grey_box_inputs.append(value)
+            else:
+                for i in model.parameter_names:
+                    for j in model.parameter_names:
+                        if list(model.parameter_names).index(i) >= list(
+                            model.parameter_names
+                        ).index(j):
+                            value = pyo.value(model.fim[(i, j)])
+                            model.obj_cons.egb_fim_block.inputs[(j, i)].set_value(value)
+                            grey_box_inputs.append(value)
+            self._grey_box_model.set_input_values(grey_box_inputs)
+            output_name = self._grey_box_model.output_names()[0]
+            model.obj_cons.egb_fim_block.outputs[output_name].set_value(
+                self._grey_box_model.evaluate_outputs()[0]
+            )
 
-        # Keep Cholesky-related variables synchronized with current FIM values
-        self._initialize_cholesky_from_fim(model=model)
+        # Keep Cholesky-related variables synchronized with current FIM values.
+        # The sensitivity formulation excludes those lifted variables from the
+        # NLP and reconstructs the reported FIM directly from J.
+        if not (
+            self.use_grey_box
+            and self.grey_box_fim_formulation == GreyBoxFIMFormulation.sensitivity
+        ):
+            self._initialize_cholesky_from_fim(model=model)
 
         if hasattr(model, "determinant"):
             model.determinant.value = np.linalg.det(np.array(self.get_FIM()))
@@ -478,6 +521,26 @@ class DesignOfExperiments:
         self.results["Finite Difference Scheme"] = str(self.fd_formula).split(".")[-1]
         self.results["Finite Difference Step"] = self.step
         self.results["Nominal Parameter Scaling"] = self.scale_nominal_param_value
+        if self.use_grey_box:
+            self.results["GreyBox FIM Formulation"] = (
+                self.grey_box_fim_formulation.value
+            )
+            if self.grey_box_fim_formulation in (
+                GreyBoxFIMFormulation.softplus_exact,
+                GreyBoxFIMFormulation.softplus_smooth,
+            ):
+                self.results["GreyBox Eigenvalue Floor"] = (
+                    self.grey_box_eigenvalue_floor
+                )
+                self.results["GreyBox Softplus Beta"] = self.grey_box_softplus_beta
+                self.results["GreyBox Shift Penalty"] = self.grey_box_shift_penalty
+                if (
+                    self.grey_box_fim_formulation
+                    == GreyBoxFIMFormulation.softplus_smooth
+                ):
+                    self.results["GreyBox Softmin Temperature"] = (
+                        self.grey_box_softmin_temperature
+                    )
 
         # TODO: Add more useful fields to the results object?
         # TODO: Add MetaData from the user to the results object? Or leave to the user?
@@ -715,15 +778,8 @@ class DesignOfExperiments:
                 "(%s, %s). Widening the bounds to (%s, %s) for the finite "
                 "difference computation. The unknown parameters are fixed "
                 "during these solves, so this does not change the computed "
-                "sensitivities or FIM." % (
-                    param.name,
-                    min(perturbed),
-                    max(perturbed),
-                    lb,
-                    ub,
-                    new_lb,
-                    new_ub,
-                )
+                "sensitivities or FIM."
+                % (param.name, min(perturbed), max(perturbed), lb, ub, new_lb, new_ub)
             )
             param.setlb(new_lb)
             param.setub(new_ub)
@@ -1755,8 +1811,14 @@ class DesignOfExperiments:
         grey_box_FIM = FIMExternalGreyBox(
             doe_object=self,
             objective_option=self.objective_option,
+            fim_formulation=self.grey_box_fim_formulation,
+            eigenvalue_floor=self.grey_box_eigenvalue_floor,
+            softplus_beta=self.grey_box_softplus_beta,
+            softmin_temperature=self.grey_box_softmin_temperature,
+            shift_penalty=self.grey_box_shift_penalty,
             logger_level=self.logger.getEffectiveLevel(),
         )
+        self._grey_box_model = grey_box_FIM
 
         # Attach External Grey Box Model
         # to the model as an External
@@ -1781,11 +1843,27 @@ class DesignOfExperiments:
             else:
                 return pyo.Constraint.Skip
 
-        # Add the FIM and External Grey
-        # Box inputs constraints
-        model.obj_cons.FIM_equalities = pyo.Constraint(
-            model.parameter_names, model.parameter_names, rule=FIM_egb_cons
-        )
+        if self.grey_box_fim_formulation == GreyBoxFIMFormulation.sensitivity:
+
+            # The information matrix is reconstructed inside the external
+            # model, so the lifted FIM variables and defining constraints are
+            # intentionally excluded from this NLP.
+            model.fim_constraint.deactivate()
+
+            def sensitivity_egb_cons(m, output, parameter):
+                return (
+                    model.sensitivity_jacobian[output, parameter]
+                    == m.egb_fim_block.inputs[(output, parameter)]
+                )
+
+            model.obj_cons.sensitivity_equalities = pyo.Constraint(
+                model.output_names, model.parameter_names, rule=sensitivity_egb_cons
+            )
+        else:
+            # Add the lifted FIM and External GreyBox input constraints.
+            model.obj_cons.FIM_equalities = pyo.Constraint(
+                model.parameter_names, model.parameter_names, rule=FIM_egb_cons
+            )
 
         # Add objective based on user provided
         # type within ObjectiveLib
@@ -2698,6 +2776,31 @@ class DesignOfExperiments:
         """
         if model is None:
             model = self.model
+
+        if (
+            self.use_grey_box
+            and self.grey_box_fim_formulation == GreyBoxFIMFormulation.sensitivity
+            and hasattr(model, "sensitivity_jacobian")
+        ):
+            sensitivity = np.asarray(self.get_sensitivity_matrix(model), dtype=float)
+            scenario = model.scenario_blocks[0]
+            measurement_weights = np.asarray(
+                [
+                    1.0
+                    / float(
+                        scenario.measurement_error[
+                            pyo.ComponentUID(name).find_component_on(scenario)
+                        ]
+                    )
+                    ** 2
+                    for name in model.output_names
+                ]
+            )
+            fim_np = (
+                sensitivity.T @ (measurement_weights[:, None] * sensitivity)
+                + self.prior_FIM
+            )
+            return [list(row) for row in fim_np]
 
         if not hasattr(model, "fim"):
             raise RuntimeError(

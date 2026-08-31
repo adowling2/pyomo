@@ -44,7 +44,17 @@ import pyomo.environ as pyo
 class FIMExternalGreyBox(
     ExternalGreyBoxModel if (scipy_available and numpy_available) else object
 ):
-    def __init__(self, doe_object, objective_option="determinant", logger_level=None):
+    def __init__(
+        self,
+        doe_object,
+        objective_option="determinant",
+        logger_level=None,
+        fim_formulation="fim",
+        eigenvalue_floor=1e-8,
+        softplus_beta=50.0,
+        softmin_temperature=1e-2,
+        shift_penalty=1e3,
+    ):
         """
         Grey box model for metrics on the FIM. This methodology reduces
         numerical complexity for the computation of FIM metrics related
@@ -63,6 +73,17 @@ class FIMExternalGreyBox(
            ``minimum_eigenvalue`` (E-optimality), ``condition_number``
            (modified E-optimality).
            default: ``determinant``
+        fim_formulation:
+           One of ``fim``, ``sensitivity``, ``softplus_exact``, or
+           ``softplus_smooth``. The default retains the lifted-FIM behavior.
+        eigenvalue_floor:
+           Target minimum eigenvalue for either softplus formulation.
+        softplus_beta:
+           Positive sharpness parameter for the softplus shift.
+        softmin_temperature:
+           Positive spectral soft-min temperature for ``softplus_smooth``.
+        shift_penalty:
+           Nonnegative objective penalty on the diagonal shift.
         logger_level:
            logging level to be specified if different from doe_object's logging level.
            default: None, or equivalently, use the logging level of doe_object.
@@ -80,6 +101,29 @@ class FIMExternalGreyBox(
         # Grab parameter list from the doe_object model
         self._param_names = [i for i in self.doe_object.model.parameter_names]
         self._n_params = len(self._param_names)
+        self._fim_input_names = list(
+            itertools.combinations_with_replacement(self._param_names, 2)
+        )
+
+        if isinstance(fim_formulation, Enum):
+            fim_formulation = fim_formulation.value
+        valid_formulations = {"fim", "sensitivity", "softplus_exact", "softplus_smooth"}
+        if fim_formulation not in valid_formulations:
+            raise ValueError(
+                "fim_formulation must be one of %s; received %r."
+                % (sorted(valid_formulations), fim_formulation)
+            )
+        self.fim_formulation = fim_formulation
+        self.eigenvalue_floor = float(eigenvalue_floor)
+        self.softplus_beta = float(softplus_beta)
+        self.softmin_temperature = float(softmin_temperature)
+        self.shift_penalty = float(shift_penalty)
+        if self.softplus_beta <= 0:
+            raise ValueError("softplus_beta must be positive.")
+        if self.softmin_temperature <= 0:
+            raise ValueError("softmin_temperature must be positive.")
+        if self.shift_penalty < 0:
+            raise ValueError("shift_penalty must be nonnegative.")
 
         # Check if the doe_object has model components that are required
         # TODO: is this check necessary?
@@ -97,12 +141,41 @@ class FIMExternalGreyBox(
 
         self.logger.setLevel(level=logger_level)
 
-        # Set initial values for inputs
-        # Need a mask structure
+        # Set initial values for inputs.
         self._masking_matrix = np.triu(np.ones_like(self.doe_object.fim_initial))
-        self._input_values = np.asarray(
-            self.doe_object.fim_initial[self._masking_matrix > 0], dtype=np.float64
-        )
+        if self.fim_formulation == "sensitivity":
+            self._measurement_names = [i for i in self.doe_object.model.output_names]
+            if self.doe_object.jac_initial is None:
+                raise ValueError(
+                    "jac_initial is required for the sensitivity GreyBox formulation."
+                )
+            jac_initial = np.asarray(self.doe_object.jac_initial, dtype=np.float64)
+            expected_shape = (len(self._measurement_names), self._n_params)
+            if jac_initial.shape != expected_shape:
+                raise ValueError(
+                    "jac_initial has shape %s; expected %s for the sensitivity "
+                    "GreyBox formulation." % (jac_initial.shape, expected_shape)
+                )
+            self._input_values = jac_initial.flatten()
+            self._prior_FIM = np.asarray(self.doe_object.prior_FIM, dtype=np.float64)
+            scenario = self.doe_object.model.scenario_blocks[0]
+            self._measurement_weights = np.asarray(
+                [
+                    1.0
+                    / float(
+                        scenario.measurement_error[
+                            pyo.ComponentUID(name).find_component_on(scenario)
+                        ]
+                    )
+                    ** 2
+                    for name in self._measurement_names
+                ],
+                dtype=np.float64,
+            )
+        else:
+            self._input_values = np.asarray(
+                self.doe_object.fim_initial[self._masking_matrix > 0], dtype=np.float64
+            )
         self._n_inputs = len(self._input_values)
 
         # The solver updates this value before requesting the Hessian of the
@@ -110,7 +183,16 @@ class FIMExternalGreyBox(
         # for direct users of the external model.
         self._output_con_mult_values = np.ones(self.n_outputs(), dtype=np.float64)
 
-    def _get_FIM(self):
+    def _get_raw_FIM(self):
+        if self.fim_formulation == "sensitivity":
+            sensitivity = self._input_values.reshape(
+                len(self._measurement_names), self._n_params
+            )
+            return (
+                sensitivity.T @ (self._measurement_weights[:, None] * sensitivity)
+                + self._prior_FIM
+            )
+
         # Grabs the current FIM subject
         # to the input values.
         # Inputs store one triangular half
@@ -129,6 +211,126 @@ class FIMExternalGreyBox(
         current_FIM += current_FIM.transpose() - np.diag(np.diag(current_FIM))
 
         return current_FIM
+
+    @staticmethod
+    def _stable_softplus(value, beta):
+        return np.logaddexp(0.0, beta * value) / beta
+
+    def _shift_information(self, current_FIM, derivative_order=2):
+        """Return shift, gradient, and Hessian with respect to packed FIM inputs."""
+        eigenvalues, eigenvectors = np.linalg.eigh(current_FIM)
+        if self.fim_formulation == "softplus_exact":
+            minimum_value = eigenvalues[0]
+            weights = None
+        else:
+            temperature = self.softmin_temperature
+            scaled = -eigenvalues / temperature
+            scaled -= np.max(scaled)
+            weights = np.exp(scaled)
+            weights /= np.sum(weights)
+            minimum_value = -temperature * scipy.special.logsumexp(
+                -eigenvalues / temperature
+            )
+
+        argument = self.eigenvalue_floor - minimum_value
+        sigmoid = scipy.special.expit(self.softplus_beta * argument)
+        shift = self._stable_softplus(argument, self.softplus_beta)
+        if derivative_order == 0:
+            return shift, None, None
+
+        n_fim_inputs = len(self._fim_input_names)
+        basis = []
+        for row_name, col_name in self._fim_input_names:
+            row = self._param_names.index(row_name)
+            col = self._param_names.index(col_name)
+            matrix = np.zeros_like(current_FIM)
+            matrix[row, col] = 1.0
+            matrix[col, row] = 1.0
+            basis.append(matrix)
+
+        if self.fim_formulation == "softplus_exact":
+            minimum_vector = eigenvectors[:, 0]
+            eigenvalue_tolerance = np.sqrt(np.finfo(float).eps) * max(
+                1.0, np.max(np.abs(eigenvalues))
+            )
+            if (
+                self._n_params > 1
+                and abs(eigenvalues[1] - eigenvalues[0]) <= eigenvalue_tolerance
+            ):
+                raise ValueError(
+                    "softplus_exact is not differentiable at a repeated minimum "
+                    "eigenvalue; use softplus_smooth instead."
+                )
+            minimum_gradient = np.asarray(
+                [minimum_vector @ matrix @ minimum_vector for matrix in basis]
+            )
+            if derivative_order == 1:
+                return shift, -sigmoid * minimum_gradient, None
+            minimum_hessian = np.zeros((n_fim_inputs, n_fim_inputs))
+            for other in range(1, self._n_params):
+                denominator = minimum_value - eigenvalues[other]
+                other_vector = eigenvectors[:, other]
+                projections = np.asarray(
+                    [other_vector @ matrix @ minimum_vector for matrix in basis]
+                )
+                minimum_hessian += (
+                    2.0 * np.outer(projections, projections) / denominator
+                )
+        else:
+            transformed_basis = [
+                eigenvectors.T @ matrix @ eigenvectors for matrix in basis
+            ]
+            minimum_gradient = np.asarray(
+                [np.dot(weights, np.diag(matrix)) for matrix in transformed_basis]
+            )
+            if derivative_order == 1:
+                return shift, -sigmoid * minimum_gradient, None
+            eigenvalue_hessian = (
+                -(np.diag(weights) - np.outer(weights, weights)) / temperature
+            )
+            minimum_hessian = np.zeros((n_fim_inputs, n_fim_inputs))
+            for row, row_matrix in enumerate(transformed_basis):
+                row_diagonal = np.diag(row_matrix)
+                for col, col_matrix in enumerate(transformed_basis):
+                    value = row_diagonal @ eigenvalue_hessian @ np.diag(col_matrix)
+                    for i in range(self._n_params):
+                        for j in range(i + 1, self._n_params):
+                            gap = eigenvalues[i] - eigenvalues[j]
+                            if abs(gap) <= np.finfo(float).eps:
+                                divided_difference = -weights[i] / temperature
+                            else:
+                                divided_difference = (weights[i] - weights[j]) / gap
+                            value += (
+                                2.0
+                                * divided_difference
+                                * row_matrix[i, j]
+                                * col_matrix[i, j]
+                            )
+                    minimum_hessian[row, col] = value
+
+        shift_gradient = -sigmoid * minimum_gradient
+        shift_hessian = (
+            self.softplus_beta
+            * sigmoid
+            * (1.0 - sigmoid)
+            * np.outer(minimum_gradient, minimum_gradient)
+            - sigmoid * minimum_hessian
+        )
+        return shift, shift_gradient, shift_hessian
+
+    def _get_FIM(self):
+        current_FIM = self._get_raw_FIM()
+        if self.fim_formulation.startswith("softplus_"):
+            shift, _, _ = self._shift_information(current_FIM, derivative_order=0)
+            current_FIM = current_FIM + shift * np.eye(self._n_params)
+        return current_FIM
+
+    def _shift_penalty_sign(self):
+        from pyomo.contrib.doe import ObjectiveLib
+
+        if self.objective_option in (ObjectiveLib.trace, ObjectiveLib.condition_number):
+            return 1.0
+        return -1.0
 
     def _reorder_pairs(self, i, j, k, l):
         # Reorders the pairs (i, j) and
@@ -153,10 +355,9 @@ class FIMExternalGreyBox(
         # Cartesian product gives us matrix indices flattened in row-first format
         # Can use itertools.combinations(self._param_names, 2) with added
         # diagonal elements, or do double for loops if we switch to upper triangular
-        input_names_list = list(
-            itertools.combinations_with_replacement(self._param_names, 2)
-        )
-        return input_names_list
+        if self.fim_formulation == "sensitivity":
+            return list(itertools.product(self._measurement_names, self._param_names))
+        return self._fim_input_names
 
     def equality_constraint_names(self):
         # TODO: Are there any objectives that will have constraints?
@@ -219,6 +420,12 @@ class FIMExternalGreyBox(
         else:
             ObjectiveLib(self.objective_option)
 
+        if self.fim_formulation.startswith("softplus_"):
+            shift, _, _ = self._shift_information(
+                self._get_raw_FIM(), derivative_order=0
+            )
+            obj_value += self._shift_penalty_sign() * self.shift_penalty * shift
+
         return np.asarray([obj_value], dtype=np.float64)
 
     def finalize_block_construction(self, pyomo_block):
@@ -226,11 +433,9 @@ class FIMExternalGreyBox(
         # Set initial values of the inputs/outputs
         # This will depend on the objective used
 
-        # Initialize grey box FIM values
+        # Initialize GreyBox inputs in the same order used by set_input_values.
         for ind, val in enumerate(self.input_names()):
-            pyomo_block.inputs[val] = self.doe_object.fim_initial[
-                self._masking_matrix > 0
-            ][ind]
+            pyomo_block.inputs[val] = self._input_values[ind]
 
         # Initialize log_determinant value
         from pyomo.contrib.doe import ObjectiveLib
@@ -257,22 +462,7 @@ class FIMExternalGreyBox(
         # Returns coo_matrix of the correct shape
         return None
 
-    def evaluate_jacobian_outputs(self):
-        # Compute the jacobian of the objective function with
-        # respect to the fisher information matrix. Then, return
-        # a coo_matrix that aligns with what IPOPT will expect.
-        current_FIM = self._get_FIM()
-
-        M = np.asarray(current_FIM, dtype=np.float64).reshape(
-            self._n_params, self._n_params
-        )
-
-        # TODO: Add inertia correction for
-        #       negative/small eigenvalues
-        eig_vals, eig_vecs = np.linalg.eig(M)
-        if min(eig_vals) <= 1e-3:
-            pass
-
+    def _objective_gradient_matrix(self, M):
         from pyomo.contrib.doe import ObjectiveLib
 
         if self.objective_option == ObjectiveLib.trace:
@@ -290,6 +480,7 @@ class FIMExternalGreyBox(
             # manuscript S.I.
             jac_M = 0.5 * (Minv + Minv.transpose())
         elif self.objective_option == ObjectiveLib.minimum_eigenvalue:
+            eig_vals, eig_vecs = np.linalg.eigh(M)
             # Obtain minimum eigenvalue location
             min_eig_loc = np.argmin(eig_vals)
 
@@ -306,6 +497,7 @@ class FIMExternalGreyBox(
             # the previous line of code.
             jac_M = min_eig_vec * np.transpose(min_eig_vec)
         elif self.objective_option == ObjectiveLib.condition_number:
+            eig_vals, eig_vecs = np.linalg.eigh(M)
             # Obtain minimum (and maximum) eigenvalue location(s)
             min_eig_loc = np.argmin(eig_vals)
             max_eig_loc = np.argmax(eig_vals)
@@ -332,21 +524,67 @@ class FIMExternalGreyBox(
             jac_M = 1 / max_eig * max_eig_term - 1 / min_eig * min_eig_term
         else:
             ObjectiveLib(self.objective_option)
+        return jac_M
 
-        # We are only using a symmetric, triangular
-        # representation of the FIM, so we need
-        # to add the off-diagonal elements twice.
-        jac_M = 2 * jac_M - np.diag(np.diag(jac_M))
-        # Filter the Jacobian, jac_M, using the
-        # masking matrix to only select the
-        # symmetric, triangular components
-        jac_M = jac_M[self._masking_matrix > 0]
-        M_rows = np.zeros((len(jac_M.flatten()), 1)).flatten()
-        M_cols = np.arange(len(jac_M.flatten()))
+    def _sensitivity_to_fim_jacobian(self):
+        sensitivity = self._input_values.reshape(
+            len(self._measurement_names), self._n_params
+        )
+        derivative = np.zeros((len(self._fim_input_names), self._n_inputs))
+        for fim_index, (row_name, col_name) in enumerate(self._fim_input_names):
+            row = self._param_names.index(row_name)
+            col = self._param_names.index(col_name)
+            for measurement in range(len(self._measurement_names)):
+                weight = self._measurement_weights[measurement]
+                if row == col:
+                    derivative[fim_index, measurement * self._n_params + row] = (
+                        2.0 * weight * sensitivity[measurement, row]
+                    )
+                else:
+                    derivative[fim_index, measurement * self._n_params + row] = (
+                        weight * sensitivity[measurement, col]
+                    )
+                    derivative[fim_index, measurement * self._n_params + col] = (
+                        weight * sensitivity[measurement, row]
+                    )
+        return derivative
 
-        # Returns coo_matrix of the correct shape
+    @staticmethod
+    def _pack_symmetric_gradient(gradient):
+        packed = 2.0 * gradient - np.diag(np.diag(gradient))
+        return packed[np.triu_indices_from(packed)]
+
+    def evaluate_jacobian_outputs(self):
+        # Compute the objective gradient with respect to the selected GreyBox
+        # inputs and return the sparse row expected by PyNumero.
+        M = np.asarray(self._get_FIM(), dtype=np.float64).reshape(
+            self._n_params, self._n_params
+        )
+        gradient_matrix = self._objective_gradient_matrix(M)
+        packed_gradient = self._pack_symmetric_gradient(gradient_matrix)
+
+        if self.fim_formulation == "sensitivity":
+            jacobian = packed_gradient @ self._sensitivity_to_fim_jacobian()
+        elif self.fim_formulation.startswith("softplus_"):
+            _, shift_gradient, _ = self._shift_information(
+                self._get_raw_FIM(), derivative_order=1
+            )
+            jacobian = (
+                packed_gradient
+                + (
+                    np.trace(gradient_matrix)
+                    + self._shift_penalty_sign() * self.shift_penalty
+                )
+                * shift_gradient
+            )
+        else:
+            jacobian = packed_gradient
+
+        rows = np.zeros(len(jacobian), dtype=int)
+        cols = np.arange(len(jacobian))
+
         return scipy.sparse.coo_matrix(
-            (jac_M.flatten(), (M_rows, M_cols)), shape=(1, len(jac_M.flatten()))
+            (jacobian, (rows, cols)), shape=(1, self._n_inputs)
         )
 
     # Beyond here is for Hessian information
@@ -462,12 +700,12 @@ class FIMExternalGreyBox(
                 # Note: we are only interested in building
                 # the lower triangular portion of the Hessian.
                 row = max(
-                    self.input_names().index(d1_symmetric),
-                    self.input_names().index(d2_symmetric),
+                    self._fim_input_names.index(d1_symmetric),
+                    self._fim_input_names.index(d2_symmetric),
                 )
                 col = min(
-                    self.input_names().index(d1_symmetric),
-                    self.input_names().index(d2_symmetric),
+                    self._fim_input_names.index(d1_symmetric),
+                    self._fim_input_names.index(d2_symmetric),
                 )
                 flattened_row_col_index = (row + 1) * row // 2 + col
 
@@ -534,12 +772,12 @@ class FIMExternalGreyBox(
                 # Identify what index of the symmetric FIM
                 # Hessian arrays need to be updated
                 row = max(
-                    self.input_names().index(d1_symmetric),
-                    self.input_names().index(d2_symmetric),
+                    self._fim_input_names.index(d1_symmetric),
+                    self._fim_input_names.index(d2_symmetric),
                 )
                 col = min(
-                    self.input_names().index(d1_symmetric),
-                    self.input_names().index(d2_symmetric),
+                    self._fim_input_names.index(d1_symmetric),
+                    self._fim_input_names.index(d2_symmetric),
                 )
                 flattened_row_col_index = (row + 1) * row // 2 + col
 
@@ -628,12 +866,12 @@ class FIMExternalGreyBox(
                 # Identify what index of the symmetric FIM
                 # Hessian arrays need to be updated
                 row = max(
-                    self.input_names().index(d1_symmetric),
-                    self.input_names().index(d2_symmetric),
+                    self._fim_input_names.index(d1_symmetric),
+                    self._fim_input_names.index(d2_symmetric),
                 )
                 col = min(
-                    self.input_names().index(d1_symmetric),
-                    self.input_names().index(d2_symmetric),
+                    self._fim_input_names.index(d1_symmetric),
+                    self._fim_input_names.index(d2_symmetric),
                 )
                 flattened_row_col_index = (row + 1) * row // 2 + col
 
@@ -803,12 +1041,12 @@ class FIMExternalGreyBox(
                 # Identify what index of the symmetric FIM
                 # Hessian arrays need to be updated
                 row = max(
-                    self.input_names().index(d1_symmetric),
-                    self.input_names().index(d2_symmetric),
+                    self._fim_input_names.index(d1_symmetric),
+                    self._fim_input_names.index(d2_symmetric),
                 )
                 col = min(
-                    self.input_names().index(d1_symmetric),
-                    self.input_names().index(d2_symmetric),
+                    self._fim_input_names.index(d1_symmetric),
+                    self._fim_input_names.index(d2_symmetric),
                 )
                 flattened_row_col_index = (row + 1) * row // 2 + col
 
@@ -827,11 +1065,65 @@ class FIMExternalGreyBox(
         else:
             ObjectiveLib(self.objective_option)
 
-        # The ExternalGreyBoxModel contract requires the Hessian of the
-        # output constraint contribution to the Lagrangian, not the raw
-        # Hessian of the output itself.
-        output_hessian = scipy.sparse.coo_matrix(
+        n_fim_inputs = len(self._fim_input_names)
+        packed_hessian = scipy.sparse.coo_matrix(
             (np.asarray(hess_vals), (hess_rows, hess_cols)),
-            shape=(self._n_inputs, self._n_inputs),
-        )
+            shape=(n_fim_inputs, n_fim_inputs),
+        ).toarray()
+
+        if self.fim_formulation == "fim":
+            output_hessian = scipy.sparse.coo_matrix(packed_hessian)
+        else:
+            # The formulas above populate one triangle. The chain rules below
+            # use the conventional full symmetric Hessian.
+            packed_hessian = (
+                packed_hessian + packed_hessian.T - np.diag(np.diag(packed_hessian))
+            )
+            M = np.asarray(self._get_FIM(), dtype=np.float64)
+            gradient_matrix = self._objective_gradient_matrix(M)
+            packed_gradient = self._pack_symmetric_gradient(gradient_matrix)
+
+            if self.fim_formulation == "sensitivity":
+                derivative = self._sensitivity_to_fim_jacobian()
+                transformed_hessian = derivative.T @ packed_hessian @ derivative
+                for measurement, weight in enumerate(self._measurement_weights):
+                    block = np.zeros((self._n_params, self._n_params))
+                    for fim_index, (row_name, col_name) in enumerate(
+                        self._fim_input_names
+                    ):
+                        row = self._param_names.index(row_name)
+                        col = self._param_names.index(col_name)
+                        if row == col:
+                            block[row, row] += 2.0 * weight * packed_gradient[fim_index]
+                        else:
+                            value = weight * packed_gradient[fim_index]
+                            block[row, col] += value
+                            block[col, row] += value
+                    start = measurement * self._n_params
+                    transformed_hessian[
+                        start : start + self._n_params, start : start + self._n_params
+                    ] += block
+            else:
+                _, shift_gradient, shift_hessian = self._shift_information(
+                    self._get_raw_FIM()
+                )
+                diagonal_direction = np.asarray(
+                    [float(row == col) for row, col in self._fim_input_names]
+                )
+                transformation = np.eye(n_fim_inputs) + np.outer(
+                    diagonal_direction, shift_gradient
+                )
+                transformed_hessian = (
+                    transformation.T @ packed_hessian @ transformation
+                    + (
+                        np.trace(gradient_matrix)
+                        + self._shift_penalty_sign() * self.shift_penalty
+                    )
+                    * shift_hessian
+                )
+
+            output_hessian = scipy.sparse.coo_matrix(np.tril(transformed_hessian))
+
+        # The ExternalGreyBoxModel contract requires the multiplier-weighted
+        # output contribution to the Hessian of the Lagrangian.
         return self._output_con_mult_values[0] * output_hessian
