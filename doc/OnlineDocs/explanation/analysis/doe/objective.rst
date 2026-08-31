@@ -66,3 +66,25 @@ The small :mod:`pyomo.contrib.doe.examples.grey_box_spd_example` benchmark
 isolates the indefinite-matrix failure mode in one design variable. It can be
 run directly to compare the original lifted formulation with the penalized
 smooth-shift formulation.
+
+GreyBox Hessian safeguards
+--------------------------
+
+``grey_box_hessian_mode`` controls the curvature returned by the external
+objective. Its default, ``exact``, returns the analytic Hessian. With the
+``sensitivity`` FIM formulation, ``gauss-newton`` retains the exact gradient
+but drops the second derivative of the quadratic map
+:math:`J\mapsto J^T W J`. The resulting approximation is
+
+.. math::
+
+   \left(\frac{\partial F}{\partial J}\right)^T
+   \nabla_F^2 f
+   \left(\frac{\partial F}{\partial J}\right).
+
+For a convex canonical FIM metric, this approximation is positive
+semidefinite. ``projected-psd`` instead projects the multiplier-weighted exact
+GreyBox Hessian onto the positive semidefinite cone.
+``gauss-newton-psd`` combines both operations. These modes safeguard only the
+GreyBox objective contribution; they do not modify curvature from the
+experiment model's dynamic or algebraic constraints.

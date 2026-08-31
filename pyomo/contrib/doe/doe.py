@@ -113,6 +113,7 @@ class DesignOfExperiments:
         grey_box_softplus_beta=50.0,
         grey_box_softmin_temperature=1e-2,
         grey_box_shift_penalty=1e3,
+        grey_box_hessian_mode="exact",
     ):
         """This package enables model-based design of experiments analysis
         with Pyomo.  Both direct optimization and enumeration modes are
@@ -169,6 +170,13 @@ class DesignOfExperiments:
             Nonnegative objective penalty on the diagonal shift used by either
             softplus formulation. The penalty is subtracted from maximized
             criteria and added to minimized criteria. Default: 1000.
+        grey_box_hessian_mode:
+            Curvature supplied by the GreyBox objective. ``exact`` returns the
+            analytic Hessian. ``gauss-newton`` drops the second derivative of
+            the quadratic sensitivity-to-FIM map and is available with the
+            ``sensitivity`` formulation. ``projected-psd`` clips negative
+            eigenvalues of the multiplier-weighted objective Hessian, and
+            ``gauss-newton-psd`` combines both safeguards. Default: ``exact``.
         scale_constant_value:
             Constant scaling for the sensitivity matrix. Every element will be
             multiplied by this scaling factor.
@@ -242,6 +250,26 @@ class DesignOfExperiments:
         self.grey_box_softplus_beta = float(grey_box_softplus_beta)
         self.grey_box_softmin_temperature = float(grey_box_softmin_temperature)
         self.grey_box_shift_penalty = float(grey_box_shift_penalty)
+        self.grey_box_hessian_mode = str(grey_box_hessian_mode)
+        valid_hessian_modes = {
+            "exact",
+            "gauss-newton",
+            "projected-psd",
+            "gauss-newton-psd",
+        }
+        if self.grey_box_hessian_mode not in valid_hessian_modes:
+            raise ValueError(
+                "grey_box_hessian_mode must be one of %s; received %r."
+                % (sorted(valid_hessian_modes), self.grey_box_hessian_mode)
+            )
+        if (
+            self.grey_box_hessian_mode.startswith("gauss-newton")
+            and self.grey_box_fim_formulation != GreyBoxFIMFormulation.sensitivity
+        ):
+            raise ValueError(
+                "Gauss-Newton GreyBox Hessians require "
+                "grey_box_fim_formulation='sensitivity'."
+            )
         if self.grey_box_softplus_beta <= 0:
             raise ValueError("grey_box_softplus_beta must be positive.")
         if self.grey_box_softmin_temperature <= 0:
@@ -525,6 +553,7 @@ class DesignOfExperiments:
             self.results["GreyBox FIM Formulation"] = (
                 self.grey_box_fim_formulation.value
             )
+            self.results["GreyBox Hessian Mode"] = self.grey_box_hessian_mode
             if self.grey_box_fim_formulation in (
                 GreyBoxFIMFormulation.softplus_exact,
                 GreyBoxFIMFormulation.softplus_smooth,
@@ -1816,6 +1845,7 @@ class DesignOfExperiments:
             softplus_beta=self.grey_box_softplus_beta,
             softmin_temperature=self.grey_box_softmin_temperature,
             shift_penalty=self.grey_box_shift_penalty,
+            hessian_mode=self.grey_box_hessian_mode,
             logger_level=self.logger.getEffectiveLevel(),
         )
         self._grey_box_model = grey_box_FIM
