@@ -312,7 +312,7 @@ def get_standard_args(experiment, fd_method, obj_used):
     return args
 
 
-def make_greybox_and_doe_objects(objective_option):
+def make_greybox_and_doe_objects(objective_option, fim_formulation="fim"):
     """
     Create reactor-based DoE and grey-box objects for derivative/build tests.
 
@@ -328,13 +328,16 @@ def make_greybox_and_doe_objects(objective_option):
 
     DoE_args = get_standard_args(experiment, fd_method, obj_used)
     DoE_args["use_grey_box_objective"] = True
+    DoE_args["grey_box_fim_formulation"] = fim_formulation
     DoE_args["prior_FIM"] = testing_matrix
 
     doe_obj = DesignOfExperiments(**DoE_args)
     doe_obj.create_doe_model()
 
     grey_box_object = FIMExternalGreyBox(
-        doe_object=doe_obj, objective_option=doe_obj.objective_option
+        doe_object=doe_obj,
+        objective_option=doe_obj.objective_option,
+        fim_formulation=fim_formulation,
     )
 
     return doe_obj, grey_box_object
@@ -435,6 +438,27 @@ if (
 @unittest.skipIf(not scipy_available, "scipy is not available")
 @unittest.skipIf(not cyipopt_available, "'cyipopt' is not available")
 class TestFIMExternalGreyBox(unittest.TestCase):
+    def test_alternative_formulation_wiring(self):
+        doe_obj, grey_box_object = make_greybox_and_doe_objects(
+            objective_option="determinant", fim_formulation="sensitivity"
+        )
+        doe_obj.create_grey_box_objective_function()
+
+        self.assertEqual(
+            len(grey_box_object.input_names()),
+            len(doe_obj.model.output_names) * len(doe_obj.model.parameter_names),
+        )
+        self.assertTrue(hasattr(doe_obj.model.obj_cons, "sensitivity_equalities"))
+        self.assertFalse(hasattr(doe_obj.model.obj_cons, "FIM_equalities"))
+        self.assertFalse(doe_obj.model.fim_constraint.active)
+
+        doe_obj, _ = make_greybox_and_doe_objects(
+            objective_option="determinant", fim_formulation="softplus_smooth"
+        )
+        doe_obj.create_grey_box_objective_function()
+        self.assertTrue(hasattr(doe_obj.model.obj_cons, "FIM_equalities"))
+        self.assertTrue(doe_obj.model.fim_constraint.active)
+
     # Test that we can properly
     # set the inputs for the
     # Grey Box object
