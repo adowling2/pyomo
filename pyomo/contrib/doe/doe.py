@@ -66,6 +66,7 @@ class ObjectiveLib(Enum):
     trace = "trace"  # trace(inv(FIM)), A-optimality
     pseudo_trace = "pseudo_trace"  # trace(FIM), pseudo-A-optimality
     minimum_eigenvalue = "minimum_eigenvalue"  # min(eig(FIM)), E-optimality
+    log_minimum_eigenvalue = "log_minimum_eigenvalue"
     condition_number = "condition_number"  # cond(FIM), ME-optimality
     zero = "zero"  # Constant zero objective, useful for initialization and debugging
 
@@ -114,6 +115,7 @@ class DesignOfExperiments:
         grey_box_softmin_temperature=1e-2,
         grey_box_shift_penalty=1e3,
         grey_box_hessian_mode="exact",
+        grey_box_eigenvalue_reference=1.0,
     ):
         """This package enables model-based design of experiments analysis
         with Pyomo.  Both direct optimization and enumeration modes are
@@ -145,7 +147,9 @@ class DesignOfExperiments:
             - ``determinant`` (for determinant, or D-optimality),
             - ``trace`` (for trace of covariance matrix, or A-optimality),
             - ``pseudo_trace`` (for trace of Fisher Information Matrix(FIM), or pseudo A-optimality),
-            - ``minimum_eigenvalue``, (for E-optimality), or ``condition_number`` (for ME-optimality)
+            - ``minimum_eigenvalue`` (for E-optimality),
+            - ``log_minimum_eigenvalue`` (for logarithmically scaled E-optimality), or
+            - ``condition_number`` (for ME-optimality)
             Note: E-optimality and ME-optimality are only supported when using the
             grey box objective (i.e., ``grey_box_solver`` is True)
             default: ``determinant``
@@ -177,6 +181,10 @@ class DesignOfExperiments:
             ``sensitivity`` formulation. ``projected-psd`` clips negative
             eigenvalues of the multiplier-weighted objective Hessian, and
             ``gauss-newton-psd`` combines both safeguards. Default: ``exact``.
+        grey_box_eigenvalue_reference:
+            Positive reference used to nondimensionalize the minimum eigenvalue
+            for ``log_minimum_eigenvalue``. The objective is
+            ``log(lambda_min(FIM) / reference)``. Default: 1.
         scale_constant_value:
             Constant scaling for the sensitivity matrix. Every element will be
             multiplied by this scaling factor.
@@ -251,6 +259,7 @@ class DesignOfExperiments:
         self.grey_box_softmin_temperature = float(grey_box_softmin_temperature)
         self.grey_box_shift_penalty = float(grey_box_shift_penalty)
         self.grey_box_hessian_mode = str(grey_box_hessian_mode)
+        self.grey_box_eigenvalue_reference = float(grey_box_eigenvalue_reference)
         valid_hessian_modes = {
             "exact",
             "gauss-newton",
@@ -276,6 +285,8 @@ class DesignOfExperiments:
             raise ValueError("grey_box_softmin_temperature must be positive.")
         if self.grey_box_shift_penalty < 0:
             raise ValueError("grey_box_shift_penalty must be nonnegative.")
+        if self.grey_box_eigenvalue_reference <= 0:
+            raise ValueError("grey_box_eigenvalue_reference must be positive.")
 
         self.scale_constant_value = scale_constant_value
         self.scale_nominal_param_value = scale_nominal_param_value
@@ -1849,6 +1860,7 @@ class DesignOfExperiments:
             softmin_temperature=self.grey_box_softmin_temperature,
             shift_penalty=self.grey_box_shift_penalty,
             hessian_mode=self.grey_box_hessian_mode,
+            eigenvalue_reference=self.grey_box_eigenvalue_reference,
             logger_level=self.logger.getEffectiveLevel(),
         )
         self._grey_box_model = grey_box_FIM
@@ -1917,6 +1929,11 @@ class DesignOfExperiments:
         elif self.objective_option == ObjectiveLib.minimum_eigenvalue:
             model.objective = pyo.Objective(
                 expr=model.obj_cons.egb_fim_block.outputs["E-opt"], sense=pyo.maximize
+            )
+        elif self.objective_option == ObjectiveLib.log_minimum_eigenvalue:
+            model.objective = pyo.Objective(
+                expr=model.obj_cons.egb_fim_block.outputs["log-E-opt"],
+                sense=pyo.maximize,
             )
         elif self.objective_option == ObjectiveLib.condition_number:
             model.objective = pyo.Objective(

@@ -55,6 +55,7 @@ class FIMExternalGreyBox(
         softmin_temperature=1e-2,
         shift_penalty=1e3,
         hessian_mode="exact",
+        eigenvalue_reference=1.0,
     ):
         """
         Grey box model for metrics on the FIM. This methodology reduces
@@ -89,6 +90,9 @@ class FIMExternalGreyBox(
            One of ``exact``, ``gauss-newton``, ``projected-psd``, or
            ``gauss-newton-psd``. Gauss-Newton modes are available only with
            the sensitivity formulation.
+        eigenvalue_reference:
+           Positive reference used to nondimensionalize the minimum eigenvalue
+           for the ``log_minimum_eigenvalue`` objective. Default: 1.
         logger_level:
            logging level to be specified if different from doe_object's logging level.
            default: None, or equivalently, use the logging level of doe_object.
@@ -124,6 +128,7 @@ class FIMExternalGreyBox(
         self.softmin_temperature = float(softmin_temperature)
         self.shift_penalty = float(shift_penalty)
         self.hessian_mode = str(hessian_mode)
+        self.eigenvalue_reference = float(eigenvalue_reference)
         valid_hessian_modes = {
             "exact",
             "gauss-newton",
@@ -148,6 +153,8 @@ class FIMExternalGreyBox(
             raise ValueError("softmin_temperature must be positive.")
         if self.shift_penalty < 0:
             raise ValueError("shift_penalty must be nonnegative.")
+        if self.eigenvalue_reference <= 0:
+            raise ValueError("eigenvalue_reference must be positive.")
 
         # Check if the doe_object has model components that are required
         # TODO: is this check necessary?
@@ -384,6 +391,8 @@ class FIMExternalGreyBox(
             shift_benefit_slope = np.trace(np.linalg.pinv(effective_fim))
         elif self.objective_option == ObjectiveLib.minimum_eigenvalue:
             shift_benefit_slope = 1.0
+        elif self.objective_option == ObjectiveLib.log_minimum_eigenvalue:
+            shift_benefit_slope = 1.0 / effective_eigenvalues[0]
         elif self.objective_option == ObjectiveLib.condition_number:
             shift_benefit_slope = (
                 1.0 / effective_eigenvalues[0]
@@ -455,6 +464,8 @@ class FIMExternalGreyBox(
             obj_name = "log-D-opt"
         elif self.objective_option == ObjectiveLib.minimum_eigenvalue:
             obj_name = "E-opt"
+        elif self.objective_option == ObjectiveLib.log_minimum_eigenvalue:
+            obj_name = "log-E-opt"
         elif self.objective_option == ObjectiveLib.condition_number:
             obj_name = "ME-opt"
         else:
@@ -489,8 +500,15 @@ class FIMExternalGreyBox(
             sign, logdet = np.linalg.slogdet(M)
             obj_value = logdet
         elif self.objective_option == ObjectiveLib.minimum_eigenvalue:
-            eig, _ = np.linalg.eig(M)
-            obj_value = np.min(eig)
+            obj_value = np.linalg.eigvalsh(M)[0]
+        elif self.objective_option == ObjectiveLib.log_minimum_eigenvalue:
+            minimum_eigenvalue = np.linalg.eigvalsh(M)[0]
+            if minimum_eigenvalue <= 0:
+                raise ValueError(
+                    "log_minimum_eigenvalue requires a positive-definite "
+                    "information matrix."
+                )
+            obj_value = np.log(minimum_eigenvalue / self.eigenvalue_reference)
         elif self.objective_option == ObjectiveLib.condition_number:
             eig, _ = np.linalg.eig(M)
             obj_value = np.log(np.abs(np.max(eig) / np.min(eig)))
@@ -530,6 +548,8 @@ class FIMExternalGreyBox(
             pyomo_block.outputs["log-D-opt"] = output_value
         elif self.objective_option == ObjectiveLib.minimum_eigenvalue:
             pyomo_block.outputs["E-opt"] = output_value
+        elif self.objective_option == ObjectiveLib.log_minimum_eigenvalue:
+            pyomo_block.outputs["log-E-opt"] = output_value
         elif self.objective_option == ObjectiveLib.condition_number:
             pyomo_block.outputs["ME-opt"] = output_value
 
@@ -556,7 +576,10 @@ class FIMExternalGreyBox(
             # calculus. Add reference to pyomo.DoE 2.0
             # manuscript S.I.
             jac_M = 0.5 * (Minv + Minv.transpose())
-        elif self.objective_option == ObjectiveLib.minimum_eigenvalue:
+        elif self.objective_option in (
+            ObjectiveLib.minimum_eigenvalue,
+            ObjectiveLib.log_minimum_eigenvalue,
+        ):
             eig_vals, eig_vecs = np.linalg.eigh(M)
             # Obtain minimum eigenvalue location
             min_eig_loc = np.argmin(eig_vals)
@@ -573,6 +596,14 @@ class FIMExternalGreyBox(
             # the eigenvector we grabbed in
             # the previous line of code.
             jac_M = min_eig_vec * np.transpose(min_eig_vec)
+            if self.objective_option == ObjectiveLib.log_minimum_eigenvalue:
+                minimum_eigenvalue = eig_vals[min_eig_loc]
+                if minimum_eigenvalue <= 0:
+                    raise ValueError(
+                        "log_minimum_eigenvalue requires a positive-definite "
+                        "information matrix."
+                    )
+                jac_M /= minimum_eigenvalue
         elif self.objective_option == ObjectiveLib.condition_number:
             eig_vals, eig_vecs = np.linalg.eigh(M)
             # Obtain minimum (and maximum) eigenvalue location(s)
@@ -872,16 +903,27 @@ class FIMExternalGreyBox(
                 hess_rows[flattened_row_col_index] = row
                 hess_cols[flattened_row_col_index] = col
 
-        elif self.objective_option == ObjectiveLib.minimum_eigenvalue:
+        elif self.objective_option in (
+            ObjectiveLib.minimum_eigenvalue,
+            ObjectiveLib.log_minimum_eigenvalue,
+        ):
             # Grab eigenvalues and eigenvectors
             # Also need the min location
-            all_eig_vals, all_eig_vecs = np.linalg.eig(M)
+            all_eig_vals, all_eig_vecs = np.linalg.eigh(M)
             min_eig_loc = np.argmin(all_eig_vals)
 
             # Grabbing min eigenvalue and corresponding
             # eigenvector
             min_eig = all_eig_vals[min_eig_loc]
             min_eig_vec = np.array([all_eig_vecs[:, min_eig_loc]])
+            if (
+                self.objective_option == ObjectiveLib.log_minimum_eigenvalue
+                and min_eig <= 0
+            ):
+                raise ValueError(
+                    "log_minimum_eigenvalue requires a positive-definite "
+                    "information matrix."
+                )
 
             for current_differential in input_differentials_2D:
                 # Row, Col and i, j, k, l values are
@@ -924,6 +966,14 @@ class FIMExternalGreyBox(
                             * all_eig_vecs[l, curr_eig]
                         )
                         / (min_eig - all_eig_vals[curr_eig])
+                    )
+
+                if self.objective_option == ObjectiveLib.log_minimum_eigenvalue:
+                    first_d1 = min_eig_vec[0, i] * min_eig_vec[0, j]
+                    first_d2 = min_eig_vec[0, k] * min_eig_vec[0, l]
+                    hess_contribution = (
+                        hess_contribution / min_eig
+                        - first_d1 * first_d2 / min_eig**2
                     )
 
                 # Since we are considering the full matrix in
