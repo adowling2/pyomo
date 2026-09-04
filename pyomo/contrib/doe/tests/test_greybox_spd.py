@@ -153,6 +153,7 @@ class TestGreyBoxSPDFormulations(unittest.TestCase):
             "trace",
             "pseudo_trace",
             "minimum_eigenvalue",
+            "log_minimum_eigenvalue",
             "condition_number",
         ):
             with self.subTest(objective=objective):
@@ -165,6 +166,7 @@ class TestGreyBoxSPDFormulations(unittest.TestCase):
                 "trace",
                 "pseudo_trace",
                 "minimum_eigenvalue",
+                "log_minimum_eigenvalue",
                 "condition_number",
             ):
                 with self.subTest(formulation=formulation, objective=objective):
@@ -227,6 +229,44 @@ class TestGreyBoxSPDFormulations(unittest.TestCase):
             + doe_object.prior_FIM
         )
         self.assertTrue(np.allclose(grey_box._get_FIM(), expected))
+
+    def test_log_minimum_eigenvalue_value_and_reference(self):
+        doe_object = _SmallDoEObject()
+        raw = FIMExternalGreyBox(
+            doe_object,
+            objective_option="minimum_eigenvalue",
+            fim_formulation="sensitivity",
+        )
+        reference = 2.5
+        logarithmic = FIMExternalGreyBox(
+            doe_object,
+            objective_option="log_minimum_eigenvalue",
+            fim_formulation="sensitivity",
+            eigenvalue_reference=reference,
+        )
+
+        self.assertAlmostEqual(
+            logarithmic.evaluate_outputs()[0],
+            np.log(raw.evaluate_outputs()[0] / reference),
+        )
+
+    def test_log_minimum_eigenvalue_requires_positive_reference(self):
+        with self.assertRaisesRegex(ValueError, "eigenvalue_reference must be positive"):
+            FIMExternalGreyBox(
+                _SmallDoEObject(),
+                objective_option="log_minimum_eigenvalue",
+                fim_formulation="sensitivity",
+                eigenvalue_reference=0.0,
+            )
+
+    def test_log_minimum_eigenvalue_requires_positive_definite_fim(self):
+        grey_box = FIMExternalGreyBox(
+            _SmallDoEObject(fim_initial=np.diag([-1.0, 1.0])),
+            objective_option="log_minimum_eigenvalue",
+            fim_formulation="fim",
+        )
+        with self.assertRaisesRegex(ValueError, "positive-definite information matrix"):
+            grey_box.evaluate_outputs()
 
     def test_sensitivity_gauss_newton_removes_map_curvature(self):
         exact = FIMExternalGreyBox(

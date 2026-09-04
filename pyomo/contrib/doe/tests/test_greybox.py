@@ -1071,6 +1071,20 @@ class TestFIMExternalGreyBox(unittest.TestCase):
 
         self.assertTrue(np.all(np.isclose(current_FIM, testing_matrix + np.eye(4))))
 
+    def test_log_E_opt_greybox_build(self):
+        """Validate log-E GreyBox wiring and initialized objective value."""
+        doe_obj, grey_box_object = make_greybox_and_doe_objects(
+            objective_option="log_minimum_eigenvalue"
+        )
+
+        doe_obj.create_grey_box_objective_function()
+
+        minimum_eigenvalue = np.linalg.eigvalsh(testing_matrix + np.eye(4))[0]
+        output = doe_obj.model.obj_cons.egb_fim_block.outputs["log-E-opt"]
+        self.assertAlmostEqual(np.log(minimum_eigenvalue), output.value)
+        self.assertEqual(doe_obj.model.objective.sense, pyo.maximize)
+        self.assertEqual(grey_box_object.output_names(), ["log-E-opt"])
+
     def test_ME_opt_greybox_build(self):
         """Validate ME-opt grey-box block wiring and initialized values on DoE model."""
         objective_option = "condition_number"
@@ -1362,6 +1376,36 @@ class TestFIMExternalGreyBox(unittest.TestCase):
                 np.isclose(
                     optimal_design_np_array, optimal_experimental_designs[1], 1e-1
                 )
+            )
+        )
+
+    @unittest.skipIf(
+        not cyipopt_call_working, "cyipopt is not properly accessing linear solvers"
+    )
+    @unittest.skipIf(not pandas_available, "pandas is not available")
+    def test_solve_E_optimality_log_minimum_eigenvalue(self):
+        """The log-E objective recovers a known raw E-optimal local design."""
+        optimal_experimental_designs = [
+            np.array([1.30, 38.70]),
+            np.array([10.00, 28.349]),
+        ]
+        doe_object, _ = make_greybox_and_doe_objects_rooney_biegler(
+            objective_option="log_minimum_eigenvalue"
+        )
+        doe_object.use_grey_box = True
+
+        doe_object.run_doe()
+
+        result = np.array(
+            [
+                doe_object.results["Experiment Design"][0],
+                np.exp(doe_object.model.objective()),
+            ]
+        )
+        self.assertTrue(
+            any(
+                np.all(np.isclose(result, expected, atol=1e-1))
+                for expected in optimal_experimental_designs
             )
         )
 
