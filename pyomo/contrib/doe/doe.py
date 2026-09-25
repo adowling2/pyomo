@@ -71,6 +71,7 @@ class ObjectiveLib(Enum):
     trace = "trace"  # trace(inv(FIM)), A-optimality
     pseudo_trace = "pseudo_trace"  # trace(FIM), pseudo-A-optimality
     minimum_eigenvalue = "minimum_eigenvalue"  # min(eig(FIM)), E-optimality
+    log_minimum_eigenvalue = "log_minimum_eigenvalue"  # log-E-optimality
     condition_number = "condition_number"  # cond(FIM), ME-optimality
     zero = "zero"  # Constant zero objective, useful for initialization and debugging
 
@@ -79,6 +80,13 @@ class FiniteDifferenceStep(Enum):
     forward = "forward"
     central = "central"
     backward = "backward"
+
+
+class GreyBoxFIMFormulation(Enum):
+    """Select the matrix passed to the GreyBox objective."""
+
+    fim = "fim"
+    sensitivity = "sensitivity"
 
 
 class DesignOfExperiments:
@@ -104,6 +112,8 @@ class DesignOfExperiments:
         improve_cholesky_roundoff_error=False,
         _Cholesky_option=True,
         _only_compute_fim_lower=True,
+        grey_box_fim_formulation="fim",
+        grey_box_eigenvalue_reference=1.0,
     ):
         """This package enables model-based design of experiments analysis
         with Pyomo.  Both direct optimization and enumeration modes are
@@ -135,14 +145,26 @@ class DesignOfExperiments:
             - ``determinant`` (for determinant, or D-optimality),
             - ``trace`` (for trace of covariance matrix, or A-optimality),
             - ``pseudo_trace`` (for trace of Fisher Information Matrix(FIM), or pseudo A-optimality),
-            - ``minimum_eigenvalue``, (for E-optimality), or ``condition_number`` (for ME-optimality)
+            - ``minimum_eigenvalue`` (for E-optimality),
+            - ``log_minimum_eigenvalue`` (for natural-log E-optimality), or
+            - ``condition_number`` (for ME-optimality)
             Note: E-optimality and ME-optimality are only supported when using the
-            grey box objective (i.e., ``grey_box_solver`` is True)
+            grey box objective (i.e., ``use_grey_box_objective`` is True)
             default: ``determinant``
         use_grey_box_objective:
             Boolean of whether or not to use the grey-box version of the objective
             function. True to use grey box, False to use standard.
             Default: False (do not use grey box)
+        grey_box_fim_formulation:
+            ``fim`` passes the upper triangle of the lifted FIM (default).
+            ``sensitivity`` passes the sensitivity Jacobian and constructs
+            ``J.T @ W @ J + prior_FIM`` inside the GreyBox. Requires
+            ``use_grey_box_objective=True``. A positive-semidefinite prior is
+            required; positive definiteness also requires sufficient information
+            from the prior or Jacobian.
+        grey_box_eigenvalue_reference:
+            Finite positive reference for ``log_minimum_eigenvalue``, which
+            maximizes ``log(lambda_min(FIM) / reference)``. Default: 1.
         scale_constant_value:
             Constant scaling for the sensitivity matrix. Every element will be
             multiplied by this scaling factor.
@@ -214,6 +236,22 @@ class DesignOfExperiments:
         # Set the objective type and scaling options:
         self.objective_option = ObjectiveLib(objective_option)
         self.use_grey_box = use_grey_box_objective
+        self.grey_box_fim_formulation = GreyBoxFIMFormulation(grey_box_fim_formulation)
+        self.grey_box_eigenvalue_reference = float(grey_box_eigenvalue_reference)
+        if (
+            not math.isfinite(self.grey_box_eigenvalue_reference)
+            or self.grey_box_eigenvalue_reference <= 0
+        ):
+            raise ValueError(
+                "grey_box_eigenvalue_reference must be finite and positive."
+            )
+        if not self.use_grey_box and (
+            self.grey_box_fim_formulation == GreyBoxFIMFormulation.sensitivity
+            or self.objective_option == ObjectiveLib.log_minimum_eigenvalue
+        ):
+            raise ValueError(
+                "The sensitivity FIM formulation and log_minimum_eigenvalue require use_grey_box_objective=True."
+            )
 
         self.scale_constant_value = scale_constant_value
         self.scale_nominal_param_value = scale_nominal_param_value
@@ -373,39 +411,28 @@ class DesignOfExperiments:
         model.obj_cons.activate()
 
         if self.use_grey_box:
-            # Initialize grey box inputs to be fim values currently
-            for i in model.parameter_names:
-                for j in model.parameter_names:
-                    if list(model.parameter_names).index(i) >= list(
-                        model.parameter_names
-                    ).index(j):
-                        model.obj_cons.egb_fim_block.inputs[(j, i)].set_value(
-                            pyo.value(model.fim[(i, j)])
-                        )
-            # Set objective value
-            if self.objective_option == ObjectiveLib.trace:
-                trace_val = np.trace(np.linalg.pinv(self.get_FIM()))
-                model.obj_cons.egb_fim_block.outputs["A-opt"].set_value(trace_val)
-            elif self.objective_option == ObjectiveLib.pseudo_trace:
-                pseudo_trace_val = np.trace(np.array(self.get_FIM()))
-                model.obj_cons.egb_fim_block.outputs["pseudo-A-opt"].set_value(
-                    pseudo_trace_val
-                )
-            elif self.objective_option == ObjectiveLib.determinant:
-                det_val = np.linalg.det(np.array(self.get_FIM()))
-                model.obj_cons.egb_fim_block.outputs["log-D-opt"].set_value(
-                    np.log(det_val)
-                )
-            elif self.objective_option == ObjectiveLib.minimum_eigenvalue:
-                eig, _ = np.linalg.eig(np.array(self.get_FIM()))
-                model.obj_cons.egb_fim_block.outputs["E-opt"].set_value(np.min(eig))
-            elif self.objective_option == ObjectiveLib.condition_number:
-                eig, _ = np.linalg.eig(np.array(self.get_FIM()))
-                cond_number = np.log(np.abs(np.max(eig) / np.min(eig)))
-                model.obj_cons.egb_fim_block.outputs["ME-opt"].set_value(cond_number)
+            external = self._grey_box_model
+            inputs = model.obj_cons.egb_fim_block.inputs
+            values = []
+            for row, col in external.input_names():
+                if self.grey_box_fim_formulation == GreyBoxFIMFormulation.sensitivity:
+                    value = pyo.value(model.sensitivity_jacobian[row, col])
+                else:
+                    # The DoE model may store only the lower FIM triangle.
+                    value = pyo.value(model.fim[col, row])
+                inputs[row, col].set_value(value)
+                values.append(value)
+            external.set_input_values(values)
+            output_name = external.output_names()[0]
+            model.obj_cons.egb_fim_block.outputs[output_name].set_value(
+                external.evaluate_outputs()[0]
+            )
 
-        # Keep Cholesky-related variables synchronized with current FIM values
-        self._initialize_cholesky_from_fim(model=model)
+        if not (
+            self.use_grey_box
+            and self.grey_box_fim_formulation == GreyBoxFIMFormulation.sensitivity
+        ):
+            self._initialize_cholesky_from_fim(model=model)
 
         if hasattr(model, "determinant"):
             model.determinant.value = np.linalg.det(np.array(self.get_FIM()))
@@ -488,6 +515,14 @@ class DesignOfExperiments:
         self.results["Finite Difference Scheme"] = str(self.fd_formula).split(".")[-1]
         self.results["Finite Difference Step"] = self.step
         self.results["Nominal Parameter Scaling"] = self.scale_nominal_param_value
+        if self.use_grey_box:
+            self.results["GreyBox FIM Formulation"] = (
+                self.grey_box_fim_formulation.value
+            )
+            if self.objective_option == ObjectiveLib.log_minimum_eigenvalue:
+                self.results["GreyBox Eigenvalue Reference"] = (
+                    self.grey_box_eigenvalue_reference
+                )
 
         # TODO: Add more useful fields to the results object?
         # TODO: Add MetaData from the user to the results object? Or leave to the user?
@@ -1860,8 +1895,12 @@ class DesignOfExperiments:
         grey_box_FIM = FIMExternalGreyBox(
             doe_object=self,
             objective_option=self.objective_option,
+            fim_formulation=self.grey_box_fim_formulation,
+            eigenvalue_reference=self.grey_box_eigenvalue_reference,
             logger_level=self.logger.getEffectiveLevel(),
         )
+
+        self._grey_box_model = grey_box_FIM
 
         # Attach External Grey Box Model
         # to the model as an External
@@ -1886,11 +1925,24 @@ class DesignOfExperiments:
             else:
                 return pyo.Constraint.Skip
 
-        # Add the FIM and External Grey
-        # Box inputs constraints
-        model.obj_cons.FIM_equalities = pyo.Constraint(
-            model.parameter_names, model.parameter_names, rule=FIM_egb_cons
-        )
+        if self.grey_box_fim_formulation == GreyBoxFIMFormulation.sensitivity:
+            # FIM entries are reconstructed from J inside the external model.
+            # Exclude the lifted FIM equations from the solver problem.
+            model.fim_constraint.deactivate()
+
+            def sensitivity_egb_cons(m, output, parameter):
+                return (
+                    model.sensitivity_jacobian[output, parameter]
+                    == m.egb_fim_block.inputs[output, parameter]
+                )
+
+            model.obj_cons.sensitivity_equalities = pyo.Constraint(
+                model.output_names, model.parameter_names, rule=sensitivity_egb_cons
+            )
+        else:
+            model.obj_cons.FIM_equalities = pyo.Constraint(
+                model.parameter_names, model.parameter_names, rule=FIM_egb_cons
+            )
 
         # Add objective based on user provided
         # type within ObjectiveLib
@@ -1911,6 +1963,11 @@ class DesignOfExperiments:
         elif self.objective_option == ObjectiveLib.minimum_eigenvalue:
             model.objective = pyo.Objective(
                 expr=model.obj_cons.egb_fim_block.outputs["E-opt"], sense=pyo.maximize
+            )
+        elif self.objective_option == ObjectiveLib.log_minimum_eigenvalue:
+            model.objective = pyo.Objective(
+                expr=model.obj_cons.egb_fim_block.outputs["log-E-opt"],
+                sense=pyo.maximize,
             )
         elif self.objective_option == ObjectiveLib.condition_number:
             model.objective = pyo.Objective(
@@ -2803,6 +2860,29 @@ class DesignOfExperiments:
         """
         if model is None:
             model = self.model
+
+        if (
+            self.use_grey_box
+            and self.grey_box_fim_formulation == GreyBoxFIMFormulation.sensitivity
+            and hasattr(model, "sensitivity_jacobian")
+        ):
+            sensitivity = np.asarray(self.get_sensitivity_matrix(model), dtype=float)
+            scenario = model.scenario_blocks[0]
+            weights = np.asarray(
+                [
+                    1.0
+                    / float(
+                        scenario.measurement_error[
+                            pyo.ComponentUID(name).find_component_on(scenario)
+                        ]
+                    )
+                    ** 2
+                    for name in model.output_names
+                ]
+            )
+            return (
+                sensitivity.T @ (weights[:, None] * sensitivity) + self.prior_FIM
+            ).tolist()
 
         if not hasattr(model, "fim"):
             raise RuntimeError(
