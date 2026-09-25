@@ -975,6 +975,25 @@ class DesignOfExperiments:
         for comp in model.experiment_inputs:
             comp.fix()
 
+        inequalities = [
+            constraint
+            for constraint in model.component_data_objects(
+                pyo.Constraint, active=True, descend_into=True
+            )
+            if not constraint.equality
+        ]
+        if inequalities:
+            self.logger.warning(
+                "Computing the FIM with k_aug on a model containing %s active "
+                "inequality constraint(s) (first: '%s'). k_aug may reject this "
+                "formulation, even when the inequalities are satisfied at the "
+                "nominal solution. Consider method='sequential' or an equivalent "
+                "formulation with explicit slack variables. The calculation "
+                "will proceed without modifying the inequalities.",
+                len(inequalities),
+                inequalities[0].name,
+            )
+
         result = self.solver.solve(model, tee=self.tee)
         pyo.assert_optimal_termination(result)
 

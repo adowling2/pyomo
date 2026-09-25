@@ -269,6 +269,17 @@ dependency missing from the k_aug sensitivity columns raises an error instead
 of silently contributing a zero row. Expressions must support Pyomo's numeric
 differentiation.
 
+If the model contains active inequality constraints, Pyomo.DoE logs a warning
+before the nominal solve. k_aug may reject such formulations, even if the
+inequalities are satisfied at the nominal solution. This includes inequalities
+inside active nested blocks; deactivated constraints and variable bounds do not
+trigger the warning. Here, "active" refers to Pyomo component activation, not
+whether an inequality is binding at the solution. Consider sequential finite
+differences or an equivalent formulation with explicit slack variables. The
+warning does not alter the model or suppress subsequent solver errors. It uses
+the ``pyomo.contrib.doe.doe`` logger at ``logging.WARNING`` level, consistent
+with other Pyomo.DoE diagnostics, rather than Python's ``warnings.warn``.
+
 The k_aug path requires working ``ipopt``, ``k_aug``, and ``dot_sens`` executables.
 The solver-backed Expression regression can be run on an equipped machine with::
 

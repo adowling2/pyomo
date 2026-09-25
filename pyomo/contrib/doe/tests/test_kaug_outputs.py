@@ -9,6 +9,11 @@
 
 """Analytical and solver-backed checks for k_aug Expression measurements."""
 
+import io
+import logging
+from unittest.mock import patch
+
+from pyomo.common.log import LoggingIntercept
 from pyomo.common.dependencies import numpy as np, numpy_available, scipy_available
 from pyomo.common.fileutils import Executable
 import pyomo.common.unittest as unittest
@@ -64,6 +69,63 @@ def make_doe(extended=False, **kwds):
 @unittest.skipIf(not (numpy_available and scipy_available), "Requires numpy and scipy")
 class TestKaugOutputJacobian(unittest.TestCase):
     """Check chain-rule extraction independently of the external executables."""
+
+    def test_active_inequality_warning_before_solve(self):
+        """Warn for all inequality forms, including constraints in nested blocks."""
+        for form in ("lower", "upper", "ranged", "nested"):
+            with self.subTest(form=form):
+                doe = make_doe()
+                model = doe.experiment.get_labeled_model()
+                if form == "lower":
+                    model.limit = pyo.Constraint(expr=model.x[0] >= 0)
+                elif form == "upper":
+                    model.limit = pyo.Constraint(expr=model.x[0] <= 10)
+                elif form == "ranged":
+                    model.limit = pyo.Constraint(expr=(0, model.x[0], 10))
+                else:
+                    model.block = pyo.Block()
+                    model.block.limit = pyo.Constraint(
+                        [0, 1], rule=lambda b, i: model.x[i] <= 10
+                    )
+                output = io.StringIO()
+                # A failing nominal solve must not hide the diagnostic. Stopping
+                # here makes this a solver-independent test of the public path.
+                with LoggingIntercept(output, "pyomo", logging.WARNING):
+                    with patch.object(
+                        doe.solver, "solve", side_effect=RuntimeError("nominal failure")
+                    ) as solve:
+                        with self.assertRaisesRegex(RuntimeError, "nominal failure"):
+                            doe.compute_FIM(model=model, method="kaug")
+                solve.assert_called_once()
+                warning = output.getvalue()
+                self.assertIn("active inequality constraint(s)", warning)
+                self.assertIn("method='sequential'", warning)
+                self.assertIn("explicit slack variables", warning)
+                self.assertEqual(warning.count("Computing the FIM with k_aug"), 1)
+                first = "block.limit[0]" if form == "nested" else "limit"
+                self.assertIn("first: '%s'" % first, warning)
+                self.assertTrue(model.find_component(first).active)
+
+    def test_no_warning_for_equalities_bounds_or_inactive_constraints(self):
+        """Only active inequality rows, not variable bounds, trigger the warning."""
+        doe = make_doe()
+        model = doe.experiment.get_labeled_model()
+        model.x[0].setlb(0)
+        model.x[0].setub(10)
+        model.limit = pyo.Constraint(expr=model.x[0] <= 10)
+        model.limit.deactivate()
+        model.block = pyo.Block()
+        model.block.limit = pyo.Constraint(expr=model.x[1] >= 0)
+        model.block.deactivate()
+        output = io.StringIO()
+        with LoggingIntercept(output, "pyomo", logging.WARNING):
+            with patch.object(
+                doe.solver, "solve", side_effect=RuntimeError("nominal failure")
+            ) as solve:
+                with self.assertRaisesRegex(RuntimeError, "nominal failure"):
+                    doe.compute_FIM(model=model, method="kaug")
+        solve.assert_called_once()
+        self.assertEqual(output.getvalue(), "")
 
     def test_mixed_outputs(self):
         """Include direct parameters, fixed variables, and nonlinear Expressions."""
