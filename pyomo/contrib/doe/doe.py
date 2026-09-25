@@ -279,13 +279,13 @@ class DesignOfExperiments:
         Parameters
         ----------
         model: model to run the DoE, default: None (self.model)
-        results_file: string name of the file path to save the results
+        results_file: string or pathlib.Path specifying where to save the results
                       to in the form of a .json file
                       default: None --> don't save
         """
         # Check results file name
         if results_file is not None:
-            if type(results_file) not in [pathlib.Path, str]:
+            if not isinstance(results_file, (pathlib.Path, str)):
                 raise ValueError(
                     "``results_file`` must be either a Path object or a string."
                 )
@@ -647,6 +647,83 @@ class DesignOfExperiments:
 
         return self._computed_FIM
 
+    def _adjust_bounds_for_fd_perturbation(self, unknown_parameters):
+        """
+        Widen the declared bounds of unknown-parameter Vars when a finite
+        difference perturbation would fall outside them.
+
+        Pyomo.DoE estimates the sensitivity matrix (and FIM) by perturbing
+        each unknown parameter to ``nominal * (1 + diff)`` where ``diff`` is
+        ``+step`` and/or ``-step`` depending on the finite difference formula
+        (central perturbs both directions, forward only ``+step``, backward
+        only ``-step``). When a parameter's nominal value sits at or near one
+        of its declared Var bounds, the perturbed value can fall outside those
+        bounds. Because the unknown parameters are *fixed* during the finite
+        difference solves, the declared bounds have no mathematical effect on
+        the (square) solves -- but ``set_value`` would otherwise emit a
+        low-level ``W1002`` warning for every offending scenario.
+
+        To replace that warning storm with a single, intentional message, this
+        method widens the affected bounds just enough to contain every
+        perturbed value and logs one warning per affected parameter,
+        identifying the parameter, its original bounds, the perturbation
+        range, and the adjusted bounds. The computed sensitivities and FIM are
+        unchanged; only the bound bookkeeping and warning clarity differ.
+
+        Parameters
+        ----------
+        unknown_parameters: mapping (e.g. the ``unknown_parameters`` Suffix)
+            from each unknown-parameter Var to its nominal value.
+
+        Returns
+        -------
+        list
+            List of ``(param, lb, ub)`` tuples giving each adjusted Var and its
+            original bounds, so the caller may restore them after the finite
+            difference computation if appropriate.
+        """
+        original_bounds = []
+        for param, nominal in unknown_parameters.items():
+            lb, ub = param.lb, param.ub
+            # Nothing to violate if the Var is unbounded on both sides
+            if lb is None and ub is None:
+                continue
+
+            # Perturbed values this parameter will take across the FD scenarios
+            if self.fd_formula == FiniteDifferenceStep.central:
+                perturbed = [nominal * (1 + self.step), nominal * (1 - self.step)]
+            elif self.fd_formula == FiniteDifferenceStep.forward:
+                perturbed = [nominal * (1 + self.step)]
+            elif self.fd_formula == FiniteDifferenceStep.backward:
+                perturbed = [nominal * (1 - self.step)]
+            else:
+                continue
+
+            new_lb, new_ub = lb, ub
+            if lb is not None and min(perturbed) < lb:
+                new_lb = min(perturbed)
+            if ub is not None and max(perturbed) > ub:
+                new_ub = max(perturbed)
+
+            # No adjustment needed if every perturbation is within bounds
+            if new_lb == lb and new_ub == ub:
+                continue
+
+            self.logger.warning(
+                "Finite difference perturbation of unknown parameter '%s' "
+                "(perturbed range [%s, %s]) falls outside its declared bounds "
+                "(%s, %s). Widening the bounds to (%s, %s) for the finite "
+                "difference computation. The unknown parameters are fixed "
+                "during these solves, so this does not change the computed "
+                "sensitivities or FIM."
+                % (param.name, min(perturbed), max(perturbed), lb, ub, new_lb, new_ub)
+            )
+            original_bounds.append((param, param.lower, param.upper))
+            param.setlb(new_lb)
+            param.setub(new_ub)
+
+        return original_bounds
+
     # Use a sequential method to get the FIM
     def _sequential_FIM(self, model=None):
         """
@@ -697,56 +774,62 @@ class DesignOfExperiments:
         for comp in model.experiment_inputs:
             comp.fix()
 
-        measurement_vals = []
-        # In a loop.....
-        # Calculate measurement values for each scenario
-        for s in model.scenarios:
-            # Perturbation to be (1 + diff) * param_value
-            if self.fd_formula == FiniteDifferenceStep.central:
-                diff = self.step * (
-                    (-1) ** s
-                )  # Positive perturbation, even; negative, odd
-            elif self.fd_formula == FiniteDifferenceStep.backward:
-                diff = (
-                    self.step * -1 * (s != 0)
-                )  # Backward always negative perturbation; 0 at s = 0
-            elif self.fd_formula == FiniteDifferenceStep.forward:
-                diff = self.step * (s != 0)  # Forward always positive; 0 at s = 0
+        # Widen any unknown-parameter bounds that the finite difference
+        # perturbations would violate (see _adjust_bounds_for_fd_perturbation).
+        # The original bounds are restored after the FD computation below.
+        original_param_bounds = self._adjust_bounds_for_fd_perturbation(
+            model.unknown_parameters
+        )
 
-            # If we are doing forward/backward, no change for s=0
-            skip_param_update = (
-                self.fd_formula
-                in [FiniteDifferenceStep.forward, FiniteDifferenceStep.backward]
-            ) and (s == 0)
-            if not skip_param_update:
-                param = model.parameter_scenarios[s]
-                # Update parameter values for the given finite difference scenario
-                param.set_value(model.unknown_parameters[param] * (1 + diff))
-            else:
-                continue
-
-            # Simulate the model
+        def solve_and_record(context):
             try:
                 res = self.solver.solve(model, tee=self.tee)
                 pyo.assert_optimal_termination(res)
-            except:
-                # TODO: Make error message more verbose,
-                #       (i.e., add unknown parameter values so the user
-                #       can try to solve the model instance outside of
-                #       the pyomo.DoE framework)
+            except Exception as err:
                 raise RuntimeError(
-                    "Model from experiment did not solve appropriately."
-                    " Make sure the model is well-posed."
-                )
+                    "Model from experiment did not solve appropriately during "
+                    f"{context}. Make sure the model is well-posed."
+                ) from err
+            return [pyo.value(output) for output in model.experiment_outputs]
 
-            # Reset value of parameter to default value
-            # before computing finite difference perturbation
-            param.set_value(model.unknown_parameters[param])
+        measurement_vals = []
+        try:
+            # Warm-start perturbations from the solved nominal model. One-sided
+            # formulas also need the nominal response as their first column.
+            for param, nominal in model.unknown_parameters.items():
+                param.set_value(nominal)
+            nominal_outputs = solve_and_record("the nominal solve")
+            if self.fd_formula != FiniteDifferenceStep.central:
+                measurement_vals.append(nominal_outputs)
 
-            # Extract the measurement values for the scenario and append
-            measurement_vals.append(
-                [pyo.value(k) for k, v in model.experiment_outputs.items()]
-            )
+            for s in model.scenarios:
+                if self.fd_formula == FiniteDifferenceStep.central:
+                    diff = self.step * (-1) ** s
+                elif s == 0:
+                    # The nominal response was already computed above.
+                    continue
+                elif self.fd_formula == FiniteDifferenceStep.forward:
+                    diff = self.step
+                else:
+                    diff = -self.step
+
+                param = model.parameter_scenarios[s]
+                try:
+                    param.set_value(model.unknown_parameters[param] * (1 + diff))
+                    # Read outputs before resetting the parameter: Expressions
+                    # can depend directly on its perturbed value.
+                    measurement_vals.append(
+                        solve_and_record(
+                            f"finite difference scenario {s} ({param.name})"
+                        )
+                    )
+                finally:
+                    param.set_value(model.unknown_parameters[param])
+        finally:
+            # Restore bounds even when a nominal or perturbed solve fails.
+            for param, lb, ub in original_param_bounds:
+                param.setlb(lb)
+                param.setub(ub)
 
         # Use the measurement outputs to make the Q matrix
         measurement_vals_np = np.array(measurement_vals).T
@@ -772,11 +855,11 @@ class DesignOfExperiments:
                 col_2 = 2 * i + 1
                 curr_step *= 2
             elif self.fd_formula == FiniteDifferenceStep.forward:
-                col_1 = i
+                col_1 = i + 1
                 col_2 = 0
             elif self.fd_formula == FiniteDifferenceStep.backward:
                 col_1 = 0
-                col_2 = i
+                col_2 = i + 1
 
             # If scale_nominal_param_value is active, scale
             # by nominal parameter value (v)
@@ -1292,6 +1375,15 @@ class DesignOfExperiments:
 
         for comp in model.base_model.experiment_inputs:
             comp.unfix()
+
+        # Widen any unknown-parameter bounds that the finite difference
+        # perturbations would violate (see _adjust_bounds_for_fd_perturbation).
+        # This is done on ``base_model`` *before* the scenario blocks are cloned
+        # from it, so each scenario block inherits the widened bounds and no
+        # per-scenario W1002 warnings are emitted. The bounds are intentionally
+        # not restored: each scenario block permanently holds its perturbed
+        # (fixed) parameter value, which must remain within bounds.
+        self._adjust_bounds_for_fd_perturbation(model.base_model.unknown_parameters)
 
         # Generate blocks for finite difference scenarios
         def build_block_scenarios(b, s):
@@ -2764,7 +2856,7 @@ class DesignOfExperiments:
     # Gets the measurement error values from an existing model
     def get_measurement_error_values(self, model=None):
         """
-        Gets the experiment output values (sigma)
+        Gets the measurement error values (sigma)
         from the model specified.
 
         Parameters
@@ -2789,11 +2881,11 @@ class DesignOfExperiments:
                 )
 
             sigma_vals = [
-                pyo.value(k)
+                pyo.value(v)
                 for k, v in model.scenario_blocks[0].measurement_error.items()
             ]
         else:
-            sigma_vals = [pyo.value(k) for k, v in model.measurement_error.items()]
+            sigma_vals = [pyo.value(v) for k, v in model.measurement_error.items()]
 
         return sigma_vals
 

@@ -9,6 +9,8 @@
 import copy
 import itertools
 import json
+import logging
+from types import SimpleNamespace
 import os.path
 
 from pyomo.common.dependencies import (
@@ -428,6 +430,89 @@ if (
         )
     except Exception:
         cyipopt_call_working = False
+
+
+class TestFIMExternalGreyBoxMultipliers(unittest.TestCase):
+    """Exercise the Hessian interface without an external NLP solver."""
+
+    def make_greybox(self, objective):
+        doe = SimpleNamespace(
+            model=SimpleNamespace(parameter_names=range(4)),
+            fim_initial=testing_matrix.copy(),
+            logger=logging.getLogger(__name__),
+        )
+        return FIMExternalGreyBox(doe, objective_option=objective)
+
+    def test_output_hessian_multipliers(self):
+        for objective in (
+            "trace",
+            "determinant",
+            "minimum_eigenvalue",
+            "condition_number",
+            "pseudo_trace",
+        ):
+            with self.subTest(objective=objective):
+                greybox = self.make_greybox(objective)
+                default_hessian = greybox.evaluate_hessian_outputs()
+                outputs = greybox.evaluate_outputs().copy()
+                jacobian = greybox.evaluate_jacobian_outputs().toarray().copy()
+                greybox.set_output_constraint_multipliers([1.0])
+                unit_hessian = greybox.evaluate_hessian_outputs()
+                np.testing.assert_allclose(
+                    default_hessian.toarray(), unit_hessian.toarray()
+                )
+                if objective == "pseudo_trace":
+                    np.testing.assert_array_equal(unit_hessian.toarray(), 0)
+                else:
+                    self.assertGreater(np.linalg.norm(unit_hessian.data), 0)
+
+                # Repeated updates must replace, not accumulate, the multiplier.
+                for multiplier in (0.0, -2.5, 3.0, 1.0):
+                    with self.subTest(multiplier=multiplier):
+                        greybox.set_output_constraint_multipliers([multiplier])
+                        hessian = greybox.evaluate_hessian_outputs()
+                        self.assertEqual(hessian.format, "coo")
+                        self.assertEqual(hessian.shape, unit_hessian.shape)
+                        np.testing.assert_array_equal(hessian.row, unit_hessian.row)
+                        np.testing.assert_array_equal(hessian.col, unit_hessian.col)
+                        self.assertTrue(np.all(hessian.row >= hessian.col))
+                        np.testing.assert_allclose(
+                            hessian.toarray(), multiplier * unit_hessian.toarray()
+                        )
+                        # Multipliers weight the Hessian contribution only.
+                        np.testing.assert_allclose(greybox.evaluate_outputs(), outputs)
+                        np.testing.assert_allclose(
+                            greybox.evaluate_jacobian_outputs().toarray(), jacobian
+                        )
+
+    def test_weighted_hessian_matches_finite_difference(self):
+        for objective in (
+            "trace",
+            "determinant",
+            "minimum_eigenvalue",
+            "condition_number",
+        ):
+            with self.subTest(objective=objective):
+                greybox = self.make_greybox(objective)
+                numerical = get_numerical_second_derivative(greybox)
+                greybox.set_output_constraint_multipliers([-2.5])
+                lower = greybox.evaluate_hessian_outputs().toarray()
+                symmetric = lower + lower.T - np.diag(np.diag(lower))
+                np.testing.assert_allclose(
+                    symmetric, -2.5 * numerical, rtol=1e-4, atol=2.5e-4
+                )
+
+    def test_output_multiplier_length(self):
+        greybox = self.make_greybox("trace")
+        greybox.set_output_constraint_multipliers([-2.5])
+        expected = greybox.evaluate_hessian_outputs().toarray()
+        for multipliers in ([], [1.0, 2.0]):
+            with self.subTest(multipliers=multipliers):
+                with self.assertRaises(AssertionError):
+                    greybox.set_output_constraint_multipliers(multipliers)
+                np.testing.assert_allclose(
+                    greybox.evaluate_hessian_outputs().toarray(), expected
+                )
 
 
 @unittest.skipIf(not ipopt_available, "The 'ipopt' command is not available")

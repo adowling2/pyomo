@@ -231,3 +231,27 @@ After applying ``run_doe`` on the ``DesignOfExperiments`` object,
 the optimal design is an initial concentration of 5.0 mol/L and
 an initial temperature of 494 K with all other temperatures being 300 K.
 The corresponding :math:`\log_{10}` determinant of the FIM is 19.32.
+
+Finite-difference evaluation and results
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+``compute_FIM(method="sequential")`` first solves the fixed-design model at
+its nominal parameter values. Central differences use this solution as a warm
+start; forward and backward differences also use its outputs as the nominal
+response in the difference formula. Outputs are evaluated before resetting each
+perturbed parameter, including Expression outputs that reference parameters
+directly.
+
+If a relative finite-difference perturbation crosses a declared parameter bound,
+Pyomo.DoE widens the bound to include the perturbation and logs a warning for
+that parameter. Perturbations are not clipped, so the finite-difference step is
+unchanged. Parameters are fixed during these solves. Sequential evaluation
+restores the original bounds, including when a solve fails; simultaneous scenario
+blocks retain the widened bounds to accommodate their fixed perturbed values.
+The experiment model must remain valid at the perturbed parameter values.
+
+``run_doe(results_file=...)`` accepts a string or a ``pathlib.Path`` and writes
+JSON results. The ``"Measurement Error"`` field and
+``get_measurement_error_values()`` report the standard deviations stored as
+values in the ``measurement_error`` suffix, in suffix order, rather than the
+corresponding measured output values.
