@@ -255,3 +255,38 @@ JSON results. The ``"Measurement Error"`` field and
 ``get_measurement_error_values()`` report the standard deviations stored as
 values in the ``measurement_error`` suffix, in suffix order, rather than the
 corresponding measured output values.
+
+Expression measurements with k_aug
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+``compute_FIM(method="kaug")`` supports measurements labeled with either Vars
+or Expressions. Expression sensitivities use the chain rule at the solved
+model state, combining output derivatives with the variable sensitivities
+returned by k_aug. Direct dependence on unknown parameters is included even
+when those parameters are fixed in the experiment model. Ordinary fixed
+variables and constant Expressions contribute zero sensitivity. An unfixed
+dependency missing from the k_aug sensitivity columns raises an error instead
+of silently contributing a zero row. Expressions must support Pyomo's numeric
+differentiation.
+
+The k_aug path requires working ``ipopt``, ``k_aug``, and ``dot_sens`` executables.
+The solver-backed Expression regression can be run on an equipped machine with::
+
+    python -m pytest pyomo/contrib/doe/tests/test_kaug_outputs.py -v
+
+Starting values from solved scenarios
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+``create_doe_model()`` initializes its default sensitivity matrix from the
+already solved finite-difference scenarios. It then initializes the default
+FIM using those sensitivities, measurement-error weights, and the prior FIM.
+This avoids unnecessary Jacobian/FIM assembly residuals without additional
+scenario solves. The fixed-design initialization solve in ``run_doe()`` remains
+in place.
+
+Explicit constructor values for ``jac_initial`` and ``fim_initial`` are
+preserved independently. If only ``jac_initial`` is supplied, the default FIM
+is computed from that supplied Jacobian; if only ``fim_initial`` is supplied,
+the Jacobian is still derived from solved scenarios. Objective auxiliaries use
+the resulting FIM and the existing Cholesky regularization policy. Lower-only
+FIM storage retains fixed zeros in the unused upper triangle.

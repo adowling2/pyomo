@@ -166,17 +166,21 @@ class TestDoeBuild(unittest.TestCase):
             diff = (-1) ** s * doe_obj.step
 
             param_val = pyo.value(
-                pyo.ComponentUID(param).find_component_on(model.scenario_blocks[s])
+                pyo.ComponentUID(
+                    param, context=model.scenario_blocks[0]
+                ).find_component_on(model.scenario_blocks[s])
             )
 
             param_val_from_step = model.scenario_blocks[0].unknown_parameters[
-                pyo.ComponentUID(param).find_component_on(model.scenario_blocks[0])
+                pyo.ComponentUID(
+                    param, context=model.scenario_blocks[0]
+                ).find_component_on(model.scenario_blocks[0])
             ] * (1 + diff)
 
             for k, v in model.scenario_blocks[s].unknown_parameters.items():
                 if pyo.ComponentUID(
                     k, context=model.scenario_blocks[s]
-                ) == pyo.ComponentUID(param):
+                ) == pyo.ComponentUID(param, context=model.scenario_blocks[0]):
                     continue
 
                 other_param_val = pyo.value(k)
@@ -205,18 +209,22 @@ class TestDoeBuild(unittest.TestCase):
                 param = model.parameter_scenarios[s]
 
                 param_val = pyo.value(
-                    pyo.ComponentUID(param).find_component_on(model.scenario_blocks[s])
+                    pyo.ComponentUID(
+                        param, context=model.scenario_blocks[0]
+                    ).find_component_on(model.scenario_blocks[s])
                 )
 
                 param_val_from_step = model.scenario_blocks[0].unknown_parameters[
-                    pyo.ComponentUID(param).find_component_on(model.scenario_blocks[0])
+                    pyo.ComponentUID(
+                        param, context=model.scenario_blocks[0]
+                    ).find_component_on(model.scenario_blocks[0])
                 ] * (1 + diff)
                 self.assertAlmostEqual(param_val, param_val_from_step)
 
             for k, v in model.scenario_blocks[s].unknown_parameters.items():
                 if (s != 0) and pyo.ComponentUID(
                     k, context=model.scenario_blocks[s]
-                ) == pyo.ComponentUID(param):
+                ) == pyo.ComponentUID(param, context=model.scenario_blocks[0]):
                     continue
 
                 other_param_val = pyo.value(k)
@@ -243,18 +251,22 @@ class TestDoeBuild(unittest.TestCase):
                 param = model.parameter_scenarios[s]
 
                 param_val = pyo.value(
-                    pyo.ComponentUID(param).find_component_on(model.scenario_blocks[s])
+                    pyo.ComponentUID(
+                        param, context=model.scenario_blocks[0]
+                    ).find_component_on(model.scenario_blocks[s])
                 )
 
                 param_val_from_step = model.scenario_blocks[0].unknown_parameters[
-                    pyo.ComponentUID(param).find_component_on(model.scenario_blocks[0])
+                    pyo.ComponentUID(
+                        param, context=model.scenario_blocks[0]
+                    ).find_component_on(model.scenario_blocks[0])
                 ] * (1 + diff)
                 self.assertAlmostEqual(param_val, param_val_from_step)
 
             for k, v in model.scenario_blocks[s].unknown_parameters.items():
                 if (s != 0) and pyo.ComponentUID(
                     k, context=model.scenario_blocks[s]
-                ) == pyo.ComponentUID(param):
+                ) == pyo.ComponentUID(param, context=model.scenario_blocks[0]):
                     continue
 
                 other_param_val = pyo.value(k)
@@ -604,6 +616,8 @@ class TestDoEObjectiveOptions(unittest.TestCase):
         ]
 
         DoE_args = get_standard_args(experiment, fd_method, obj_used)
+        # This test exercises the explicit identity initial guess.
+        DoE_args["fim_initial"] = np.eye(2)
         doe_obj = DesignOfExperiments(**DoE_args)
 
         doe_obj.create_doe_model()

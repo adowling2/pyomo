@@ -9,6 +9,7 @@
 
 """Regression tests for finite differences, parameter bounds, and result reporting."""
 
+import gc
 import json
 import logging
 from io import StringIO
@@ -319,3 +320,172 @@ class TestDoEFiniteDifferenceAndReporting(unittest.TestCase):
                     self.assertEqual(results["Measurement Error"], [0.5, 2.0, 1.5])
                     self.assertEqual(results["FIM"], doe.results["FIM"])
                     self.assertEqual(results["Termination Condition"], "optimal")
+
+
+@unittest.skipIf(not (numpy_available and scipy_available), "Requires numpy and scipy")
+class TestDoEAssemblyInitialization(unittest.TestCase):
+    """Check assembled starting values without an extra initialization solve."""
+
+    def test_solved_scenario_initialization(self):
+        """Respect explicit arrays and derive defaults for every FD/storage mode."""
+        prior = np.array([[2.0, 0.25], [0.25, 1.0]])
+        supplied_jac = np.array([[3.0, 2.0], [2.0, 1.0], [-1.0, 4.0]])
+        supplied_fim = np.array([[8.0, 1.0], [1.0, 7.0]])
+        for formula in ("central", "forward", "backward"):
+            for scaled in (False, True):
+                for lower in (False, True):
+                    for supplied in ("neither", "jac", "fim", "both"):
+                        with self.subTest(
+                            formula=formula,
+                            scaled=scaled,
+                            lower=lower,
+                            supplied=supplied,
+                        ):
+                            solver = ExactLinearSolver()
+                            jac_initial = (
+                                supplied_jac.copy()
+                                if supplied in ("jac", "both")
+                                else None
+                            )
+                            fim_initial = (
+                                supplied_fim.copy()
+                                if supplied in ("fim", "both")
+                                else None
+                            )
+                            doe = DesignOfExperiments(
+                                experiment=LinearExperiment(),
+                                solver=solver,
+                                objective_option="trace",
+                                fd_formula=formula,
+                                step=0.01,
+                                scale_nominal_param_value=scaled,
+                                scale_constant_value=2.0,
+                                prior_FIM=prior,
+                                jac_initial=jac_initial,
+                                fim_initial=fim_initial,
+                                _only_compute_fim_lower=lower,
+                            )
+                            doe.create_doe_model()
+                            model = doe.model
+                            expected_jac = (
+                                np.array([[2.0, 1.0], [1.0, -2.0], [1.0, 3.0]]) * 2.0
+                            )
+                            if scaled:
+                                expected_jac *= [3.0, -4.0]
+                            if jac_initial is not None:
+                                expected_jac = supplied_jac
+                            expected_fim = (
+                                expected_jac.T
+                                @ np.diag([4.0, 0.25, 1 / 1.5**2])
+                                @ expected_jac
+                                + prior
+                            )
+                            if fim_initial is not None:
+                                expected_fim = supplied_fim
+                            jac = np.array(
+                                [
+                                    [
+                                        pyo.value(model.sensitivity_jacobian[n, p])
+                                        for p in model.parameter_names
+                                    ]
+                                    for n in model.output_names
+                                ]
+                            )
+                            np.testing.assert_allclose(jac, expected_jac)
+                            np.testing.assert_allclose(
+                                doe._get_fim_numpy(model), expected_fim
+                            )
+                            np.testing.assert_allclose(doe.jac_initial, expected_jac)
+                            np.testing.assert_allclose(doe.fim_initial, expected_fim)
+                            self.assertEqual(
+                                len(solver.calls), 5 if formula == "central" else 3
+                            )
+                            for block in model.scenario_blocks.values():
+                                self.assertAlmostEqual(
+                                    pyo.value(block.response_y.body), 0.0
+                                )
+                                self.assertAlmostEqual(
+                                    pyo.value(block.response_z.body), 0.0
+                                )
+                            for p in model.sensitivity_jacobian.values():
+                                self.assertFalse(p.fixed)
+                            for i, p in enumerate(model.parameter_names):
+                                for j, q in enumerate(model.parameter_names):
+                                    self.assertEqual(
+                                        model.fim[p, q].fixed, lower and i < j
+                                    )
+                                    if lower and i < j:
+                                        self.assertEqual(
+                                            pyo.value(model.fim[p, q]), 0.0
+                                        )
+                            if jac_initial is None:
+                                for con in model.jacobian_constraint.values():
+                                    self.assertAlmostEqual(
+                                        pyo.value(con.body), 0.0, places=9
+                                    )
+                            if fim_initial is None:
+                                for con in model.fim_constraint.values():
+                                    self.assertAlmostEqual(
+                                        pyo.value(con.body), 0.0, places=9
+                                    )
+                            L = np.array(
+                                [
+                                    [
+                                        pyo.value(model.L[p, q])
+                                        for q in model.parameter_names
+                                    ]
+                                    for p in model.parameter_names
+                                ]
+                            )
+                            np.testing.assert_allclose(L @ L.T, expected_fim)
+
+    @unittest.skipIf(not pyo.SolverFactory("ipopt").available(), "Requires ipopt")
+    def test_real_solver_assembly_residuals(self):
+        """Verify default assembly equations directly after real scenario solves."""
+        for formula in ("central", "forward", "backward"):
+            with self.subTest(formula=formula):
+                doe = make_doe(formula, solver=pyo.SolverFactory("ipopt"))
+                doe.create_doe_model()
+                for constraints in (
+                    doe.model.jacobian_constraint,
+                    doe.model.fim_constraint,
+                ):
+                    for constraint in constraints.values():
+                        self.assertAlmostEqual(
+                            pyo.value(constraint.body), 0.0, places=8
+                        )
+
+    def test_scenario_metadata_survives_garbage_collection(self):
+        """Retain parameter identities after the temporary base model is deleted."""
+
+        class CollectingDoE(DesignOfExperiments):
+            """Collect temporary models before the assembly constraints are built."""
+
+            def _generate_scenario_blocks(self, model=None):
+                """Generate real scenario blocks, then force garbage collection."""
+                super()._generate_scenario_blocks(model)
+                gc.collect()
+
+        doe = CollectingDoE(
+            experiment=LinearExperiment(),
+            solver=ExactLinearSolver(),
+            objective_option="zero",
+        )
+        doe.create_doe_model()
+        for parameter in doe.model.parameter_scenarios.values():
+            self.assertIs(parameter.model(), doe.model)
+            self.assertIn(parameter, doe.model.scenario_blocks[0].unknown_parameters)
+
+    def test_default_initialization_rebuilds_from_changed_design(self):
+        """Do not treat automatically derived arrays as explicit user guesses."""
+        doe = make_doe()
+        doe.create_doe_model()
+        first = doe._get_fim_numpy(doe.model).copy()
+        doe.experiment.get_labeled_model().design.set_value(3.0)
+        model = pyo.ConcreteModel()
+        doe.create_doe_model(model=model)
+        expected_jac = np.array([[3.0, 1.0], [1.0, -2.0], [1.0, 3.0]])
+        np.testing.assert_allclose(doe.jac_initial, expected_jac)
+        expected_fim = expected_jac.T @ np.diag([4.0, 0.25, 1 / 1.5**2]) @ expected_jac
+        np.testing.assert_allclose(doe._get_fim_numpy(model), expected_fim)
+        self.assertFalse(np.allclose(first, expected_fim))

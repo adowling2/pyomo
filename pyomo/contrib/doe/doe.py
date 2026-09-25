@@ -40,6 +40,11 @@ from pyomo.common.dependencies import (
     scipy_available,
 )
 
+from pyomo.common.collections import ComponentMap
+from pyomo.core.expr.calculus.derivatives import differentiate
+from pyomo.core.expr.visitor import identify_variables, identify_mutable_parameters
+from pyomo.util.calc_var_value import calculate_variable_from_constraint
+
 from pyomo.common.errors import DeveloperError
 from pyomo.common.timing import TicTocTimer
 
@@ -155,8 +160,11 @@ class DesignOfExperiments:
             here has been scaled by the parameter values)
         jac_initial:
             2D numpy array as the initial values for the sensitivity matrix.
+            If None, derive values from the solved finite-difference scenarios.
         fim_initial:
-            2D numpy array as the initial values for the FIM.
+            2D numpy array as the initial values for the FIM. If None, compute
+            values from the initialized sensitivity matrix, measurement errors,
+            and prior FIM. Explicit constructor initial arrays are preserved.
         L_diagonal_lower_bound:
             Lower bound for the values of the lower triangular Cholesky factorization
             matrix.
@@ -216,6 +224,8 @@ class DesignOfExperiments:
         # Set the initial values for the jacobian, fim, and L matrices
         self.jac_initial = jac_initial
         self.fim_initial = fim_initial
+        self._user_provided_jac_initial = jac_initial is not None
+        self._user_provided_fim_initial = fim_initial is not None
 
         # Set the lower bound on the Cholesky lower triangular matrix
         self.L_diagonal_lower_bound = L_diagonal_lower_bound
@@ -875,6 +885,69 @@ class DesignOfExperiments:
         # Compute and record FIM
         self.seq_FIM = self.seq_jac.T @ cov_y @ self.seq_jac + self.prior_FIM
 
+    def _extract_kaug_output_jacobian(self, model, sensitivities, column_names):
+        """Apply the chain rule to measurement outputs at the solved model state.
+
+        Parameters
+        ----------
+        model : ConcreteModel
+            Labeled experiment used to compute the k_aug sensitivities.
+        sensitivities : ndarray
+            Variable-by-parameter sensitivities in NL column order.
+        column_names : list of str
+            Variable names returned by the sensitivity toolbox.
+
+        Returns
+        -------
+        ndarray
+            Unscaled output-by-parameter Jacobian in suffix order.
+
+        Raises
+        ------
+        ValueError
+            If dimensions disagree or an unfixed output dependency has no
+            k_aug sensitivity. Only fixed non-parameter variables have zero
+            sensitivities by definition.
+        """
+        n_parameters = len(model.unknown_parameters)
+        sensitivities = np.asarray(sensitivities)
+        if sensitivities.shape != (len(column_names), n_parameters):
+            raise ValueError("k_aug sensitivity dimensions do not match the model.")
+
+        # Resolve external NL names once; use component identity thereafter.
+        variable_sensitivities = ComponentMap()
+        for i, name in enumerate(column_names):
+            component = model.find_component(name)
+            if component is not None:
+                variable_sensitivities[component] = sensitivities[i]
+        parameter_sensitivities = ComponentMap(
+            (parameter, row)
+            for parameter, row in zip(model.unknown_parameters, np.eye(n_parameters))
+        )
+        jacobian = np.zeros((len(model.experiment_outputs), n_parameters))
+        for i, output in enumerate(model.experiment_outputs):
+            dependencies = list(identify_variables(output, include_fixed=True))
+            dependencies.extend(
+                parameter
+                for parameter in identify_mutable_parameters(output)
+                if parameter in parameter_sensitivities
+            )
+            partials = differentiate(output, wrt_list=dependencies)
+            for dependency, partial in zip(dependencies, partials):
+                if dependency in parameter_sensitivities:
+                    row = parameter_sensitivities[dependency]
+                elif dependency.fixed:
+                    continue
+                elif dependency in variable_sensitivities:
+                    row = variable_sensitivities[dependency]
+                else:
+                    raise ValueError(
+                        f"No k_aug sensitivity for unfixed variable '{dependency.name}' "
+                        f"in experiment output '{output.name}'."
+                    )
+                jacobian[i] += partial * row
+        return jacobian
+
     # Use kaug to get FIM
     def _kaug_FIM(self, model=None):
         """
@@ -902,7 +975,8 @@ class DesignOfExperiments:
         for comp in model.experiment_inputs:
             comp.fix()
 
-        self.solver.solve(model, tee=self.tee)
+        result = self.solver.solve(model, tee=self.tee)
+        pyo.assert_optimal_termination(result)
 
         # Probe the solved model for dsdp results (sensitivities s.t. parameters)
         params_dict = {k.name: v for k, v in model.unknown_parameters.items()}
@@ -913,26 +987,7 @@ class DesignOfExperiments:
         # analyze result
         dsdp_array = dsdp_re.toarray().T
 
-        # store dsdp returned
-        dsdp_extract = []
-        # get right lines from results
-        measurement_index = []
-
-        # loop over measurement variables and their time points
-        for k, v in model.experiment_outputs.items():
-            name = k.name
-            try:
-                kaug_no = col.index(name)
-                measurement_index.append(kaug_no)
-                # get right line of dsdp
-                dsdp_extract.append(dsdp_array[kaug_no])
-            except:
-                # k_aug does not provide value for fixed variables
-                self.logger.debug("The variable is fixed:  %s", name)
-                # produce the sensitivity for fixed variables
-                zero_sens = np.zeros(len(params_names))
-                # for fixed variables, the sensitivity are a zero vector
-                dsdp_extract.append(zero_sens)
+        dsdp_extract = self._extract_kaug_output_jacobian(model, dsdp_array, col)
 
         # Extract and calculate sensitivity if scaled by constants or parameters.
         jac = [[] for k in params_names]
@@ -1170,8 +1225,7 @@ class DesignOfExperiments:
             var_lo = cuid.find_component_on(m.scenario_blocks[s2])
 
             param = m.parameter_scenarios[max(s1, s2)]
-            param_loc = pyo.ComponentUID(param).find_component_on(m.scenario_blocks[0])
-            param_val = m.scenario_blocks[0].unknown_parameters[param_loc]
+            param_val = m.scenario_blocks[0].unknown_parameters[param]
             param_diff = param_val * fd_step_mult * self.step
 
             if self.scale_nominal_param_value:
@@ -1256,6 +1310,61 @@ class DesignOfExperiments:
                         model.fim[p, q].fix(0.0)
                         if self.objective_option == ObjectiveLib.trace:
                             model.fim_inv[p, q].fix(0.0)
+
+        self._initialize_fim_assembly_from_scenarios(model)
+
+    def _initialize_fim_assembly_from_scenarios(self, model):
+        """Seed default assembly values from solved scenarios without solving again.
+
+        Parameters
+        ----------
+        model : ConcreteModel
+            DoE model with Jacobian and FIM constraints already constructed.
+
+        Notes
+        -----
+        Explicit constructor initial arrays are preserved independently. If only
+        the Jacobian is supplied, the default FIM is computed from that Jacobian.
+        Scenario states and variable fixed flags are not changed.
+        """
+        if not self._user_provided_jac_initial:
+            for index, constraint in model.jacobian_constraint.items():
+                calculate_variable_from_constraint(
+                    model.sensitivity_jacobian[index], constraint
+                )
+            self.jac_initial = np.array(
+                [
+                    [
+                        pyo.value(model.sensitivity_jacobian[n, p])
+                        for p in model.parameter_names
+                    ]
+                    for n in model.output_names
+                ]
+            )
+
+        if not self._user_provided_fim_initial:
+            # Evaluate information sums before upper-triangle symmetry equations.
+            names = list(model.parameter_names)
+            for i, p in enumerate(names):
+                for q in names[: i + 1]:
+                    calculate_variable_from_constraint(
+                        model.fim[p, q], model.fim_constraint[p, q]
+                    )
+            if not self.only_compute_fim_lower:
+                for i, p in enumerate(names):
+                    for q in names[i + 1 :]:
+                        model.fim[p, q].set_value(pyo.value(model.fim[q, p]))
+            self.fim_initial = self._get_fim_numpy(model)
+
+        # Keep objective auxiliaries consistent with the resulting FIM.
+        if hasattr(model, "L"):
+            self._initialize_cholesky_from_fim(model)
+        elif hasattr(model, "fim_inv"):
+            inverse = np.linalg.pinv(self._get_fim_numpy(model))
+            for i, p in enumerate(model.parameter_names):
+                for j, q in enumerate(model.parameter_names):
+                    if not model.fim_inv[p, q].fixed:
+                        model.fim_inv[p, q].set_value(inverse[i, j])
 
     # Create scenario block structure
     def _generate_scenario_blocks(self, model=None):
@@ -1440,6 +1549,12 @@ class DesignOfExperiments:
             model.add_component(
                 con_name, pyo.Constraint(model.scenarios, rule=global_design_fixing)
             )
+
+        # Keep metadata attached to retained components before deleting the base.
+        for scenario, parameter in list(model.parameter_scenarios.items()):
+            model.parameter_scenarios[scenario] = pyo.ComponentUID(
+                parameter, context=model.base_model
+            ).find_component_on(model.scenario_blocks[0])
 
         # Clean up the base model used to generate the scenarios
         model.del_component(model.base_model)

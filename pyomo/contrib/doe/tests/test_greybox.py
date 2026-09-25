@@ -331,6 +331,8 @@ def make_greybox_and_doe_objects(objective_option):
     DoE_args = get_standard_args(experiment, fd_method, obj_used)
     DoE_args["use_grey_box_objective"] = True
     DoE_args["prior_FIM"] = testing_matrix
+    # These metric tests intentionally use a prescribed initial FIM.
+    DoE_args["fim_initial"] = testing_matrix + np.eye(4)
 
     doe_obj = DesignOfExperiments(**DoE_args)
     doe_obj.create_doe_model()
