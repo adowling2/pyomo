@@ -358,6 +358,13 @@ class FIMExternalGreyBox(
         )
 
     def set_output_constraint_multipliers(self, output_con_multiplier_values):
+        """Set the single output-constraint multiplier used in the Hessian.
+
+        Parameters
+        ----------
+        output_con_multiplier_values : array_like
+            Length-one sequence containing the current output multiplier.
+        """
         output_con_multiplier_values = np.asarray(
             output_con_multiplier_values, dtype=np.float64
         )
@@ -370,6 +377,13 @@ class FIMExternalGreyBox(
         return None
 
     def evaluate_hessian_outputs(self):
+        """Return the multiplier-weighted Hessian of the FIM metric.
+
+        Returns
+        -------
+        scipy.sparse.coo_matrix
+            Lower triangle of the output Hessian contribution to the Lagrangian.
+        """
         # Compute the hessian of the objective function with
         # respect to the fisher information matrix. Then, return
         # a coo_matrix that aligns with what IPOPT will expect.

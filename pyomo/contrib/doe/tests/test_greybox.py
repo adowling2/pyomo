@@ -436,6 +436,7 @@ class TestFIMExternalGreyBoxMultipliers(unittest.TestCase):
     """Exercise the Hessian interface without an external NLP solver."""
 
     def make_greybox(self, objective):
+        """Construct a metric wrapper around a known positive-definite FIM."""
         doe = SimpleNamespace(
             model=SimpleNamespace(parameter_names=range(4)),
             fim_initial=testing_matrix.copy(),
@@ -444,6 +445,7 @@ class TestFIMExternalGreyBoxMultipliers(unittest.TestCase):
         return FIMExternalGreyBox(doe, objective_option=objective)
 
     def test_output_hessian_multipliers(self):
+        """Preserve sparse structure while scaling each metric Hessian by its multiplier."""
         for objective in (
             "trace",
             "determinant",
@@ -486,6 +488,7 @@ class TestFIMExternalGreyBoxMultipliers(unittest.TestCase):
                         )
 
     def test_weighted_hessian_matches_finite_difference(self):
+        """Compare weighted Hessians against numerical second derivatives."""
         for objective in (
             "trace",
             "determinant",
@@ -503,6 +506,7 @@ class TestFIMExternalGreyBoxMultipliers(unittest.TestCase):
                 )
 
     def test_output_multiplier_length(self):
+        """Reject invalid multiplier lengths without replacing the last valid value."""
         greybox = self.make_greybox("trace")
         greybox.set_output_constraint_multipliers([-2.5])
         expected = greybox.evaluate_hessian_outputs().toarray()

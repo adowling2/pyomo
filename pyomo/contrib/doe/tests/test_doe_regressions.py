@@ -7,6 +7,8 @@
 # software.  This software is distributed under the 3-clause BSD License.
 # ____________________________________________________________________________________
 
+"""Regression tests for finite differences, parameter bounds, and result reporting."""
+
 import json
 import logging
 from io import StringIO
@@ -25,10 +27,12 @@ class LinearExperiment:
     """Two identifiable parameters, including a negative nominal value."""
 
     def __init__(self, bounded=False):
+        """Optionally place each nominal parameter at a declared bound."""
         self.bounded = bounded
         self.model = None
 
     def get_labeled_model(self):
+        """Return the cached linear model with DoE labels and three outputs."""
         if self.model is not None:
             return self.model
         m = pyo.ConcreteModel()
@@ -61,15 +65,23 @@ class LinearExperiment:
 
 
 class ExactLinearSolver:
-    """Record each fixed-design solve and evaluate the linear response exactly."""
+    """Evaluate the linear response and record fixed-design solve inputs.
+
+    This test double makes solve ordering and failure cleanup observable without
+    relying on solver convergence or external binaries. It does not replace DoE
+    calculations. Separate IPOPT tests check the same sensitivities and FIM
+    against their analytical values using the actual model constraints.
+    """
 
     def __init__(self, fail_on=None, raise_error=False):
+        """Optionally fail on a one-based solve count, by status or exception."""
         self.calls = []
         self.bounds = []
         self.fail_on = fail_on
         self.raise_error = raise_error
 
     def solve(self, model, **kwds):
+        """Record parameters and bounds, evaluate responses, and return status."""
         assert model.design.fixed
         assert all(v.fixed for v in model.theta.values())
         theta = [pyo.value(v) for v in model.theta.values()]
@@ -88,6 +100,7 @@ class ExactLinearSolver:
 
 
 def make_doe(formula="central", bounded=False, scaled=False, solver=None):
+    """Construct a linear DoE using the requested formula, scaling, and solver."""
     return DesignOfExperiments(
         experiment=LinearExperiment(bounded),
         solver=solver if solver is not None else ExactLinearSolver(),
@@ -100,7 +113,10 @@ def make_doe(formula="central", bounded=False, scaled=False, solver=None):
 
 @unittest.skipIf(not (numpy_available and scipy_available), "Requires numpy and scipy")
 class TestDoEFiniteDifferenceAndReporting(unittest.TestCase):
+    """Check analytical sensitivities, bound cleanup, and serialized results."""
+
     def test_sequential_formulas(self):
+        """Check nominal-first solve order and analytical sensitivities for each formula."""
         expected_calls = {
             "central": [[3, -4], [3.03, -4], [2.97, -4], [3, -4.04], [3, -3.96]],
             "forward": [[3, -4], [3.03, -4], [3, -4.04]],
@@ -126,7 +142,46 @@ class TestDoEFiniteDifferenceAndReporting(unittest.TestCase):
                         [3, -4],
                     )
 
+    @unittest.skipIf(not pyo.SolverFactory("ipopt").available(), "Requires ipopt")
+    def test_sequential_formulas_with_ipopt(self):
+        """Validate all formulas against analytical derivatives using real solves."""
+        for formula in ("central", "forward", "backward"):
+            for scaled in (False, True):
+                for bounded in (False, True):
+                    with self.subTest(formula=formula, scaled=scaled, bounded=bounded):
+                        doe = make_doe(
+                            formula,
+                            bounded=bounded,
+                            scaled=scaled,
+                            solver=pyo.SolverFactory("ipopt"),
+                        )
+                        fim = doe.compute_FIM()
+                        # Rows differentiate y, z, and the Expression output;
+                        # columns correspond to theta[0] and theta[1].
+                        expected_jac = np.array([[2.0, 1.0], [1.0, -2.0], [1.0, 3.0]])
+                        if scaled:
+                            expected_jac *= [3, -4]
+                        expected_fim = (
+                            expected_jac.T
+                            @ np.diag([4.0, 0.25, 1 / 1.5**2])
+                            @ expected_jac
+                        )
+                        np.testing.assert_allclose(
+                            doe.seq_jac, expected_jac, rtol=1e-7, atol=1e-9
+                        )
+                        np.testing.assert_allclose(
+                            fim, expected_fim, rtol=1e-7, atol=1e-9
+                        )
+                        if bounded:
+                            self.assertEqual(
+                                doe.compute_FIM_model.theta[0].bounds, (3, 6)
+                            )
+                            self.assertEqual(
+                                doe.compute_FIM_model.theta[1].bounds, (-8, -4)
+                            )
+
     def test_bounds_sequential_and_simultaneous(self):
+        """Check bound widening, warnings, and restoration in both DoE paths."""
         for formula in ("central", "forward", "backward"):
             for simultaneous in (False, True):
                 with self.subTest(formula=formula, simultaneous=simultaneous):
@@ -163,6 +218,7 @@ class TestDoEFiniteDifferenceAndReporting(unittest.TestCase):
                     self.assertEqual(source.theta[0].bounds, (3, 6))
 
     def test_one_sided_and_interior_bounds(self):
+        """Keep all solved perturbations inside adjusted bounds without changing the source."""
         bound_cases = (
             ((None, 3), (-4, None)),
             ((3, None), (None, -4)),
@@ -209,6 +265,7 @@ class TestDoEFiniteDifferenceAndReporting(unittest.TestCase):
                             )
 
     def test_sequential_preserves_bound_expressions(self):
+        """Preserve mutable bound expressions when restoring sequential bounds."""
         doe = make_doe()
         model = doe.experiment.get_labeled_model()
         model.lower = pyo.Param(initialize=3, mutable=True)
@@ -219,6 +276,7 @@ class TestDoEFiniteDifferenceAndReporting(unittest.TestCase):
         self.assertEqual(model.theta[0].lb, 2)
 
     def test_sequential_failure_restores_parameters_and_bounds(self):
+        """Restore nominal parameters and bounds after failed or interrupted solves."""
         for formula in ("central", "forward", "backward"):
             for fail_on in (1, 2):
                 for raise_error in (False, True):
@@ -238,6 +296,7 @@ class TestDoEFiniteDifferenceAndReporting(unittest.TestCase):
                         self.assertTrue(all(v.fixed for v in model.theta.values()))
 
     def test_measurement_errors_flat_and_scenario_models(self):
+        """Return suffix values for both supported model structures."""
         doe = make_doe()
         model = doe.experiment.get_labeled_model()
         model.measurement_error[model.expression_output] = model.sigma
@@ -248,6 +307,7 @@ class TestDoEFiniteDifferenceAndReporting(unittest.TestCase):
 
     @unittest.skipIf(not pyo.SolverFactory("ipopt").available(), "Requires ipopt")
     def test_results_file_path_and_string(self):
+        """Write valid JSON with correct measurement errors through Path and string inputs."""
         with TemporaryDirectory() as directory:
             for path_type in (Path, str):
                 with self.subTest(path_type=path_type):

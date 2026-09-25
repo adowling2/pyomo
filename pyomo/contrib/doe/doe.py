@@ -652,28 +652,14 @@ class DesignOfExperiments:
         Widen the declared bounds of unknown-parameter Vars when a finite
         difference perturbation would fall outside them.
 
-        Pyomo.DoE estimates the sensitivity matrix (and FIM) by perturbing
-        each unknown parameter to ``nominal * (1 + diff)`` where ``diff`` is
-        ``+step`` and/or ``-step`` depending on the finite difference formula
-        (central perturbs both directions, forward only ``+step``, backward
-        only ``-step``). When a parameter's nominal value sits at or near one
-        of its declared Var bounds, the perturbed value can fall outside those
-        bounds. Because the unknown parameters are *fixed* during the finite
-        difference solves, the declared bounds have no mathematical effect on
-        the (square) solves -- but ``set_value`` would otherwise emit a
-        low-level ``W1002`` warning for every offending scenario.
-
-        To replace that warning storm with a single, intentional message, this
-        method widens the affected bounds just enough to contain every
-        perturbed value and logs one warning per affected parameter,
-        identifying the parameter, its original bounds, the perturbation
-        range, and the adjusted bounds. The computed sensitivities and FIM are
-        unchanged; only the bound bookkeeping and warning clarity differ.
+        Parameters are fixed during these solves. Widening bounds preserves
+        the requested perturbation and replaces repeated W1002 messages with
+        one explanatory warning per parameter.
 
         Parameters
         ----------
-        unknown_parameters: mapping (e.g. the ``unknown_parameters`` Suffix)
-            from each unknown-parameter Var to its nominal value.
+        unknown_parameters : mapping
+            Map each unknown-parameter Var to its nominal value.
 
         Returns
         -------
@@ -782,6 +768,7 @@ class DesignOfExperiments:
         )
 
         def solve_and_record(context):
+            """Solve the current scenario and evaluate outputs before resetting it."""
             try:
                 res = self.solver.solve(model, tee=self.tee)
                 pyo.assert_optimal_termination(res)
