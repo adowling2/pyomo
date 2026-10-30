@@ -31,7 +31,10 @@ implemented native direct/adjoint interface.
 The user has selected one targeted Pyomo.DAE PR. PR_DESCRIPTION.md at the
 repository root is the current Markdown draft, including validation details
 and the status of the independent full-diff audit. Development artifacts are
-retained until the correctness review is complete and cleanup is approved.
+retained until cleanup is approved. The independent full-diff review is complete;
+its three finding categories are fixed and verified in 8cbe3070d. PR_AUDIT.rst
+and results/pr_audit_validation.json contain the latest evidence and supersede
+earlier test counts for the current implementation.
 
 The supplied probes reproduce: eight of twelve native cases meet their
 analytic checks with both CasADi versions. Four cases remain outside the

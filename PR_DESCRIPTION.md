@@ -10,7 +10,8 @@
 <!-- DO NOT DELETE OR IGNORE THIS TEMPLATE. Failing to adhere to this template and provide the necessary information may lead to your Pull Request being closed without consideration. -->
 
 <!-- Proposed PR title: DAE: fix Simulator behavior and add differentiable ODE/DAE maps -->
-<!-- Local draft. Independent correctness audit is in progress. Keep the development
+<!-- Local draft. Independent correctness audit completed; fixes are in 8cbe3070d.
+     Keep the development
      evidence until the audit findings are resolved and the author approves cleanup.
      The human submitter must complete the review-process and legal declarations. -->
 
@@ -46,11 +47,12 @@ algebraic switch values intentionally differ from results affected by the bugs.
 | --- | --- |
 | Equation separation | Preserve non-derivative product terms when rearranging expressions such as `2*x + dx == 0`; test equivalent equation forms with SciPy and CasADi. |
 | Constant derivatives | Evaluate constant SciPy right-hand sides correctly, including zero derivatives. |
-| Piecewise inputs | Restart SciPy integration at input switches so cached derivatives and multistep history do not use the previous amplitude. Test asynchronous changes and repeated profile updates. |
-| Observation endpoints | Include the final time when `tstep` does not divide the horizon. Handle generated observation points close to switches without failing on a spurious tiny interval. |
+| Piecewise inputs | Restart SciPy integration at input switches so cached derivatives and multistep history do not use the previous amplitude. Use a phase-local time origin while retaining physical time and step-size options. Test asynchronous changes, repeated profiles, and one-ULP finite-area pulses. |
+| Observation endpoints | Include the final time when `tstep` does not divide the horizon. Protect exact endpoints and switches when reconciling generated output points close to input changes. Test switches adjacent to both endpoints and distinct adjacent interior switches. |
 | Shifted domains and explicit time | Read profiles at the actual initial time and retain physical time in converted differential and algebraic equations, including normalized phases. |
 | Algebraic initialization | Pass model algebraic values as IDAS guesses in `simulate()`. Verify positive and negative nonlinear branches while preserving differential initial states. |
 | Algebraic switch outputs | Return algebraic values consistent with the newly active input at a switch while keeping differential states continuous. |
+| Complex SciPy data | Preserve finite complex ICs supplied as lists or arrays and complex control amplitudes with `zvode`; reject complex data for real-only paths. Test analytic decay and constant/switched complex inputs on shifted domains. |
 | Invalid input | Validate observation grids, initial-state shapes/finiteness, integrator selection, and used input profiles before integration. Permit an empty input suffix. |
 | Caller and Simulator state | Copy option dictionaries and preserve model values/fixity, caller options, ordering, and previous simulation results after failed calls. Test reuse after failure. |
 
@@ -133,6 +135,13 @@ mixed-observation/algebraic-output adjoint failures. Explicit-time DAE equations
 use an internal physical-clock state, hidden from public state layouts. No
 model-specific elimination or numerical gradient correction is used.
 
+Consistency checks use per-entry finite predicates and native QR of the
+row/column-equilibrated algebraic Jacobian. Every absolute QR diagonal must
+exceed the algebraic dimension times double-precision machine epsilon. This
+avoids determinant overflow/underflow and refuses numerically dependent roots
+even at an already-consistent guess. The checks leave the original residual and
+its tolerance unchanged; they do not provide global conditioning/index analysis.
+
 For fixed-grid controls:
 
 - Selected controls are whole time-indexed `Var` or `Param` components and may
@@ -184,17 +193,20 @@ analytic results without ASL or an optimization solver:
 
 ### Validation
 
-The recorded complete `pyomo/dae/tests` runs pass **293 tests and 300 subtests in
-each environment** below. These results qualify implementation commit `17a021b54`;
-production, core tests, the public guide, and examples remain unchanged in
-`59e20e579`. The independent audit requested for this PR is in progress, and any
-resulting changes will require updating these results before submission.
+The complete `pyomo/dae/tests` runs pass **302 tests and 320 subtests in each
+environment** below on the corrected implementation committed in `8cbe3070d`.
+A separate worker reviewed the combined production diff, fixture, tests/oracles,
+guide/examples and this draft. It independently reran the full suite on CasADi
+3.8.2 and fifteen additional analytic/regression checks on each of 3.8.1 and
+3.8.2. Source hashes were unchanged during the independent full-suite run. The
+worker reports no outstanding production correctness findings after the fixes;
+human author review and cross-platform qualification remain pending.
 
 | Platform | Python | CasADi | NumPy | SciPy | Result |
 | --- | --- | --- | --- | --- | --- |
-| macOS 27.0.1 ARM64 | 3.12.14 | 3.8.1 | 2.5.4 | 1.18.1 | 293 tests + 300 subtests pass |
-| macOS 27.0.1 ARM64 | 3.12.14 | 3.8.2 | 2.5.4 | 1.18.1 | 293 tests + 300 subtests pass |
-| macOS 27.0.1 ARM64 | 3.14.3 | 3.8.2 | 2.5.4 | 1.18.1 | 293 tests + 300 subtests pass |
+| macOS 27.0.1 ARM64 | 3.12.14 | 3.8.1 | 2.5.4 | 1.18.1 | 302 tests + 320 subtests pass |
+| macOS 27.0.1 ARM64 | 3.12.14 | 3.8.2 | 2.5.4 | 1.18.1 | 302 tests + 320 subtests pass |
+| macOS 27.0.1 ARM64 | 3.14.3 | 3.8.2 | 2.5.4 | 1.18.1 | 302 tests + 320 subtests pass |
 
 Tests use `pyomo.common.unittest`, guarded optional dependencies, actual numerical
 integration, and independent references without mocks.
@@ -204,13 +216,14 @@ integration, and independent references without mocks.
 | Existing Simulator behavior | Equivalent equations, constant/coupled/stiff ODEs, indexed states, explicit/shifted time, asynchronous controls, endpoints, initialization, repeated calls, and forced-failure recovery. |
 | ODE derivatives | Exact exponential, affine and nonlinear solutions; a coupled matrix-exponential reference; initial/parameter/control derivatives; integral/terminal costs; two directions and scaled random weights. |
 | DAE derivatives | Exact linear, nonlinear and coupled algebraic models; both regular branches; guess invariance; parameters used only in algebraic residuals; initial-only and multiple observations; algebraic/integral terminal costs; full initial/parameter partials. |
+| Audit-derived edge cases | One-ULP finite-area pulses at either endpoint and inside the interval; complex `zvode` ICs/controls; 160-variable scaled algebraic blocks outside determinant range with analytic JVP/VJP; mixed units, finite roots of size `1e308`, and dependent-row refusal at consistent guesses with nonsingular neighbors. |
 | Controlled DAE derivatives | Exact affine/nonlinear phase composition; controls in `f` and `g`; reordered controls and control types; sparse/dense/switch/adjacent-time observations; narrow pulses; all amplitude partials; failed switch consistency and recovery. |
 | Total derivatives | Nonlinear ICs, shared parameter/control dependencies and explicit cost terms; analytic chain rules and centered finite differences across four step sizes. |
 | Numerical convergence | Scalar tolerance sweeps, state scales separated by six orders of magnitude, explicitly scaled directions/weights, and unchanged analytic comparison targets, generally `rtol=atol=3e-7`. Selected total FD checks require best scaled error below `1e-6`. |
 | Direct/adjoint agreement | Independent analytic products plus forward-adjoint identities; agreement between the two modes alone is not the correctness criterion. |
 | Independent collocation | ODE and DAE Radau3 meshes with 4/8/16 elements. Discrete implicit derivatives agree with discrete FD, and continuous errors decrease under refinement. DAE total-cost gradient error decreases from `9.74e-7` to `3.12e-8` to `9.89e-10`; the public DAE analytic checks are below `5.6e-11`. These optional checks use PyNumero/ASL sparse solves, with no NLP solver. |
-| Dependency absence | Without NumPy, SciPy or CasADi, 155 Simulator tests run: seven pass and 148 appropriately skip. Core sensitivities and all four examples do not require ASL. |
-| Coverage | `286/290` modified executable Simulator lines covered (`98.62%`); module coverage `96.24%`; DAE helper `60/60` statements. Four uncovered statements are identified defensive guards. |
+| Dependency absence | Without NumPy, SciPy or CasADi, 164 Simulator tests run: seven pass and 157 appropriately skip. Core sensitivities and all four examples do not require ASL. |
+| Coverage | `304/308` modified executable Simulator lines covered (`98.70%`); module coverage `96.32%`; DAE helper `66/66` statements. All `24/24` executable audit-fix lines are covered. Four uncovered statements are identified defensive guards. |
 | Documentation and style | Focused Sphinx 9.1.1 guide/API build with warnings as errors; five executed guide blocks; four executed analytic examples and verified download hashes; Black, repository-configured typos, and whitespace checks pass. |
 
 The coverage-instrumented run passes with an existing multiprocessing semaphore
@@ -235,13 +248,6 @@ are executable directly with the checkout on `PYTHONPATH`.
 
 ### Remaining before submission
 
-- The independent audit has reproduced three issues requiring regression fixes:
-  a near-terminal switch can remove the final observation, the algebraic
-  determinant guard can overflow on a well-conditioned system, and SciPy complex
-  initial conditions can be rejected or lose their imaginary part. The recorded
-  passing suites do not cover these cases yet. This draft will be updated after
-  the fixes and the rest of the audit are verified.
-- Resolve the independent audit findings and rerun checks affected by fixes.
 - Validate the final diff against current upstream `main`; obtain Linux/Windows
   and the remaining supported-Python CI coverage, checking that numerical tests
   execute with supported CasADi versions.
@@ -265,7 +271,7 @@ or
     - [x] AI tools generated documentation (including the PR description/comments, code comments, and/or Sphinx documentation)
     - [x] AI tools generated tests (baselines, examples, and/or code)
     - [x] AI tools generated code (apart from tests)
-    
+
     *Review process (select ONE)*:
     - [ ] **Rewritten**: All AI-generated content was rewritten by me before being committed.
     - [ ] **Reviewed/verified**: I retained AI-generated content and verified it before committing. Verification included (as applicable):
@@ -275,12 +281,8 @@ or
         - [ ] Checked for alignment with the contribution guide
         - [ ] Considered security implications
     - [ ] **As-is**: AI-generated content was committed directly to the repository
-    
- **Notes for reviewers (optional):** <!-- Where should reviewers focus? What are you least confident about? -->
 
-
-
-**Notes for reviewers:** Codex contributed production code, tests, numerical
+ **Notes for reviewers (optional):** Codex contributed production code, tests, numerical
 probes, documentation, and this draft. Automated checks and an independent agent
 audit supplement the submitting author's personal review. Review-process boxes
 are intentionally unselected until the human author completes that declaration.

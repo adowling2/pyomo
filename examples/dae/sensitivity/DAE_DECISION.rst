@@ -10,6 +10,10 @@ and results/dae_native-3.8.2.json, with an aggregate in
 results/dae_decision.json. Those records retain their original source hashes.
 G6 adds fixed-grid controls under the convention in DAE_CONTROLS.rst;
 results/dae_controls_validation.json is the later public validation snapshot.
+The subsequent independent PR audit replaced the determinant guard with an
+equilibrated numerical-QR rank check. See PR_AUDIT.rst and
+results/pr_audit_validation.json for the current guard, regressions and evidence;
+the G4/G5 discussion below retains its historical implementation context.
 
 Decision
 --------

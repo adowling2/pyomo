@@ -7,13 +7,17 @@ G7, 30 October 2026. Local implementation is complete through G6 commit
 submission or a claim of maintainer approval. Historical A/B/C and G0-G6
 records retain their original source snapshots and test counts.
 
-Post-qualification review is active. The user selected one targeted Pyomo.DAE
+Post-qualification independent review is complete. The user selected one targeted Pyomo.DAE
 PR covering the bug fixes, ODE/DAE maps and both sensitivity modes. The current
 Markdown draft is PR_DESCRIPTION.md at the repository root. An independent
-full-diff audit has reproduced endpoint, algebraic-guard scaling and complex-IC
-regressions that the recorded suites missed. These require fixes and regression
-tests before submission readiness can be claimed. Development artifacts remain
-in the tree during this review.
+full-diff audit reproduced endpoint, algebraic-guard scaling and complex-data
+regressions that the recorded suites missed. All were fixed in 8cbe3070d with
+real regressions and independent verification. Current evidence is PR_AUDIT.rst
+and results/pr_audit_validation.json: 302 tests/320 subtests pass in each of the
+three environments, seven lean tests pass with 157 skips, and modified-line
+coverage is 304/308 (98.70%). The worker has no outstanding production findings;
+human review and cross-platform qualification remain. The G7 tables below retain
+their historical counts. Development artifacts remain pending author-approved cleanup.
 
 Public contract and measured support
 -------------------------------------
@@ -257,8 +261,9 @@ Local completion
 ------------------
 
 The recorded G0-G7 qualification passed with the listed native limitations
-and release exclusions. The subsequent independent full-diff review is active;
-its findings must be resolved before submission. The source and validation hashes,
+and release exclusions. The subsequent independent full-diff review found and
+verified fixes for three additional correctness categories; see PR_AUDIT.rst.
+The original source and validation hashes,
 checkpoint history and final checks are in results/contribution_readiness.json.
 Historical source claims are checked against retained Git snapshots, not
 misrepresented as hashes of today's files. The next user decision is when

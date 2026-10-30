@@ -314,3 +314,28 @@ supported-Python release matrix, whole-manual/external-link checks, human
 review and any upstream submission remain explicitly unexecuted. They are
 outside this local goal and require the appropriate infrastructure and/or
 user authorization. No push, PR, issue or external message was sent.
+
+30 October 2026: Single-PR draft and independent correctness audit
+------------------------------------------------------------------
+
+The user selected one targeted Pyomo.DAE PR covering the Simulator fixes,
+ODE/DAE maps and both native sensitivity modes. PR_DESCRIPTION.md was drafted
+in 35c6d4884 using the repository template, with numerical validation details
+and provisional human-review/legal declarations. A separate read-only worker
+audited the entire combined diff and found three correctness categories missed
+by the earlier suites: endpoint/switch handling, algebraic determinant/rank
+checks and complex zvode IC/input data.
+
+All three were fixed in 8cbe3070d with nine additional collected regression
+methods. The parent ran all three full suites: 302 tests and 320 subtests pass
+per environment. The worker independently verified the fixes on both versions
+and reran the stable-source full 3.8.2 suite with the same result. It reports
+no outstanding production findings. Modified coverage is 304/308 (98.70%),
+including all 24 audit-fix executable lines. PR_AUDIT.rst and
+results/pr_audit_validation.json record the exact source and checks.
+
+The Markdown draft now reflects the corrected implementation and current
+validation, rather than historical G7 counts. Human review, cross-platform
+qualification and submission declarations remain pending. All development
+artifacts are retained until the user is satisfied and authorizes cleanup;
+committed history will preserve that evidence. No PR was opened or published.
