@@ -1,0 +1,158 @@
+{
+  "checkpoint": "G4",
+  "date": "2026-10-30",
+  "source_parent_commit": "f2fcaa0cc",
+  "gate_passed": true,
+  "gate_scope": "Native mathematical/design qualification only; public Simulator DAE compilation is not implemented by this checkpoint. Known native failures are preserved.",
+  "minimum_casadi": "3.8.1",
+  "numerical_policy": "Scalar positive tolerances; quad_err_con/calc_ic/calc_icB True; suppress_algebraic False; native max_num_dir=1 on 3.8.1; original-residual root projection and normalized IDAS interval composition.",
+  "validation": {
+    "3.8.1": {
+      "native_cases": 58,
+      "processes_exited_zero": 58,
+      "qualified_composed_maps": [
+        {
+          "kind": "linear",
+          "reltol": 1e-10,
+          "max_scaled_analytic_or_product_error": 7.923816047750165e-10,
+          "minimum_fd_error": 1.9231147785347957e-09,
+          "minimum_total_fd_error": 3.7407459274607646e-07
+        },
+        {
+          "kind": "linear",
+          "reltol": 1e-11,
+          "max_scaled_analytic_or_product_error": 8.535239182094756e-11,
+          "minimum_fd_error": 3.048944904882056e-08,
+          "minimum_total_fd_error": 2.067839155461826e-08
+        },
+        {
+          "kind": "nonlinear",
+          "reltol": 1e-10,
+          "max_scaled_analytic_or_product_error": 7.249539108429332e-10,
+          "minimum_fd_error": 8.902887316253327e-10,
+          "minimum_total_fd_error": 2.178887440843861e-09
+        },
+        {
+          "kind": "nonlinear",
+          "reltol": 1e-11,
+          "max_scaled_analytic_or_product_error": 5.493831800506982e-11,
+          "minimum_fd_error": 2.6190249968749413e-10,
+          "minimum_total_fd_error": 5.394581078140466e-10
+        },
+        {
+          "kind": "coupled",
+          "reltol": 1e-10,
+          "max_scaled_analytic_or_product_error": 9.65862057000777e-10,
+          "minimum_fd_error": 3.69004860001354e-09,
+          "minimum_total_fd_error": 5.041262962635073e-09
+        },
+        {
+          "kind": "coupled",
+          "reltol": 1e-11,
+          "max_scaled_analytic_or_product_error": 2.332254009219863e-10,
+          "minimum_fd_error": 1.3973744339423888e-07,
+          "minimum_total_fd_error": 3.043113909010723e-10
+        }
+      ],
+      "branch_and_initial_only_checks": "passed",
+      "invalid_and_singular_checks": "expected refusals verified",
+      "known_failures": [
+        "Raw algebraic-terminal adjoints inaccurate",
+        "Multi-observation mixed-weight adjoints fail without interval composition",
+        "Coupled total IC adjoint consistency fails at reltol=1e-12",
+        "Near-singular native integration fails"
+      ]
+    },
+    "3.8.2": {
+      "native_cases": 58,
+      "processes_exited_zero": 58,
+      "qualified_composed_maps": [
+        {
+          "kind": "linear",
+          "reltol": 1e-10,
+          "max_scaled_analytic_or_product_error": 6.810378927468719e-10,
+          "minimum_fd_error": 1.9231147785347957e-09,
+          "minimum_total_fd_error": 3.7407459274607646e-07
+        },
+        {
+          "kind": "linear",
+          "reltol": 1e-11,
+          "max_scaled_analytic_or_product_error": 8.535239182094756e-11,
+          "minimum_fd_error": 3.048944904882056e-08,
+          "minimum_total_fd_error": 2.067839155461826e-08
+        },
+        {
+          "kind": "nonlinear",
+          "reltol": 1e-10,
+          "max_scaled_analytic_or_product_error": 7.249539108429332e-10,
+          "minimum_fd_error": 8.902887316253327e-10,
+          "minimum_total_fd_error": 2.178887440843861e-09
+        },
+        {
+          "kind": "nonlinear",
+          "reltol": 1e-11,
+          "max_scaled_analytic_or_product_error": 5.493831800506982e-11,
+          "minimum_fd_error": 2.6190249968749413e-10,
+          "minimum_total_fd_error": 5.394581078140466e-10
+        },
+        {
+          "kind": "coupled",
+          "reltol": 1e-10,
+          "max_scaled_analytic_or_product_error": 9.65862057000777e-10,
+          "minimum_fd_error": 3.69004860001354e-09,
+          "minimum_total_fd_error": 5.041262962635073e-09
+        },
+        {
+          "kind": "coupled",
+          "reltol": 1e-11,
+          "max_scaled_analytic_or_product_error": 1.728216458829479e-10,
+          "minimum_fd_error": 1.3973744339423888e-07,
+          "minimum_total_fd_error": 3.043113909010723e-10
+        }
+      ],
+      "branch_and_initial_only_checks": "passed",
+      "invalid_and_singular_checks": "expected refusals verified",
+      "known_failures": [
+        "Raw algebraic-terminal adjoints inaccurate",
+        "Multi-observation mixed-weight adjoints fail without interval composition",
+        "Coupled total IC adjoint consistency fails at reltol=1e-12",
+        "Near-singular native integration fails"
+      ]
+    }
+  },
+  "implementation_decision": "DAE_DECISION.rst",
+  "production_code_changed": false,
+  "repository_files": {
+    "pyomo/dae/simulator.py": {
+      "bytes": 58540,
+      "sha256": "be9d88a68a042fc321cd7e3779bddc6f59858fae2bc81af3cdd7506800344d45"
+    },
+    "examples/dae/sensitivity/dae_qualification.py": {
+      "bytes": 25718,
+      "sha256": "509c86a79d5d11089b443ae98628d4d27f3e5a7149acef849c1e83fa281f5d5e"
+    },
+    "examples/dae/sensitivity/DAE_DECISION.rst": {
+      "bytes": 12473,
+      "sha256": "07642aea4b9046c48e3081e2507abfad7c656641c161069c3676a87b0633991e"
+    },
+    "examples/dae/sensitivity/DEVELOPMENT_LOG.rst": {
+      "bytes": 8187,
+      "sha256": "c1ffda707061ed6bc39bdd954734a4d8a2097355bf64ca20adc471035b394a31"
+    },
+    "examples/dae/sensitivity/results/dae_native-3.8.1.json": {
+      "bytes": 137529,
+      "sha256": "64785737f7fde38eebebe3419719cdde794e87cfe768eba7598a39f6bca895b9"
+    },
+    "examples/dae/sensitivity/results/dae_native-3.8.2.json": {
+      "bytes": 136242,
+      "sha256": "fe35dc7ce4ec7199acffce53a97f58dcc053b5f7098c2e8168024e014bbc23a2"
+    }
+  },
+  "checks": {
+    "black": "passed",
+    "typos": "passed",
+    "standalone_RST": "passed",
+    "git_diff_check": "passed"
+  },
+  "next_checkpoint": "G5 minimal autonomous public DAE bridge and regression tests"
+}

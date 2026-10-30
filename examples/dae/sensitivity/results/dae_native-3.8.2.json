@@ -1,0 +1,3514 @@
+{
+  "checkpoint": "G4",
+  "casadi": "3.8.2",
+  "numpy": "2.5.4",
+  "python": "3.12.14 (main, Sep  3 2026, 03:46:19) [Clang 21.1.8 ]",
+  "platform": "macOS-27.0.1-arm64-arm-64bit",
+  "cases": {
+    "linear-segmented-1e-07": {
+      "executed": true,
+      "observations": {
+        "kind": "linear",
+        "projected": true,
+        "segmented": true,
+        "options": {
+          "reltol": 1e-07,
+          "abstol": 9.999999999999999e-10,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false
+        },
+        "errors": {
+          "primal": 6.001973018587847e-08,
+          "forward_multiple": 1.1483538242540448e-07,
+          "forward_one": 2.6873214709066673e-08,
+          "adjoint_terminal_x": 1.7244595962306875e-07,
+          "guess_adjoint_terminal_x": 0.0,
+          "adjoint_integral": 2.1558287155443168e-08,
+          "guess_adjoint_integral": 0.0,
+          "adjoint_terminal_z": 5.11802651481652e-07,
+          "guess_adjoint_terminal_z": 0.0,
+          "adjoint_mixed_observations": 1.271360983157166e-07,
+          "guess_adjoint_mixed_observations": 0.0,
+          "adjoint_multiple": 1.9896636083149843e-07,
+          "duality": 5.5901870466001924e-08,
+          "algebraic_residual": 8.881784197001252e-16,
+          "total_IC_direct": 4.0542930419045885e-08,
+          "total_IC_adjoint": 7.937529341301922e-08
+        },
+        "accurate": {
+          "primal": true,
+          "forward_multiple": true,
+          "forward_one": true,
+          "adjoint_terminal_x": true,
+          "guess_adjoint_terminal_x": true,
+          "adjoint_integral": true,
+          "guess_adjoint_integral": true,
+          "adjoint_terminal_z": false,
+          "guess_adjoint_terminal_z": true,
+          "adjoint_mixed_observations": true,
+          "guess_adjoint_mixed_observations": true,
+          "adjoint_multiple": true,
+          "duality": true,
+          "algebraic_residual": true,
+          "total_IC_direct": true,
+          "total_IC_adjoint": true
+        },
+        "finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 4.525698755453167e-05
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 1.5186730206728782e-06
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 3.0404349038448686e-05
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 1.7952916930852323e-06
+          }
+        ],
+        "minimum_fd_error": 1.5186730206728782e-06,
+        "total_finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 1.6035194318714045e-05
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 1.920119353182592e-06
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 4.1936294514766104e-07
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 4.04805700848776e-07
+          }
+        ],
+        "minimum_total_fd_error": 4.04805700848776e-07,
+        "failures": {},
+        "all_modes_accurate": false
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    },
+    "linear-segmented-1e-10": {
+      "executed": true,
+      "observations": {
+        "kind": "linear",
+        "projected": true,
+        "segmented": true,
+        "options": {
+          "reltol": 1e-10,
+          "abstol": 1e-12,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false
+        },
+        "errors": {
+          "primal": 4.0594194672394224e-10,
+          "forward_multiple": 6.810378927468719e-10,
+          "forward_one": 1.496108237297733e-10,
+          "adjoint_terminal_x": 1.0343459422301748e-10,
+          "guess_adjoint_terminal_x": 0.0,
+          "adjoint_integral": 6.240419292424804e-11,
+          "guess_adjoint_integral": 0.0,
+          "adjoint_terminal_z": 3.998273934158192e-10,
+          "guess_adjoint_terminal_z": 0.0,
+          "adjoint_mixed_observations": 1.7978896149628554e-10,
+          "guess_adjoint_mixed_observations": 0.0,
+          "adjoint_multiple": 3.4212455091164884e-10,
+          "duality": 1.4000317571927212e-10,
+          "algebraic_residual": 4.440892098500626e-16,
+          "total_IC_direct": 2.193576431608335e-10,
+          "total_IC_adjoint": 3.3715008562751336e-10
+        },
+        "accurate": {
+          "primal": true,
+          "forward_multiple": true,
+          "forward_one": true,
+          "adjoint_terminal_x": true,
+          "guess_adjoint_terminal_x": true,
+          "adjoint_integral": true,
+          "guess_adjoint_integral": true,
+          "adjoint_terminal_z": true,
+          "guess_adjoint_terminal_z": true,
+          "adjoint_mixed_observations": true,
+          "guess_adjoint_mixed_observations": true,
+          "adjoint_multiple": true,
+          "duality": true,
+          "algebraic_residual": true,
+          "total_IC_direct": true,
+          "total_IC_adjoint": true
+        },
+        "finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 4.4371452931124544e-05
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 4.417313318461069e-07
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 6.566303056843026e-08
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 1.9231147785347957e-09
+          }
+        ],
+        "minimum_fd_error": 1.9231147785347957e-09,
+        "total_finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 1.5602770294973732e-05
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 3.7407459274607646e-07
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 3.3088205072528964e-06
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 1.9492448278479735e-05
+          }
+        ],
+        "minimum_total_fd_error": 3.7407459274607646e-07,
+        "failures": {},
+        "all_modes_accurate": true
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    },
+    "linear-segmented-1e-11": {
+      "executed": true,
+      "observations": {
+        "kind": "linear",
+        "projected": true,
+        "segmented": true,
+        "options": {
+          "reltol": 1e-11,
+          "abstol": 9.999999999999999e-14,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false
+        },
+        "errors": {
+          "primal": 4.5307091411928013e-11,
+          "forward_multiple": 5.2978149644999917e-11,
+          "forward_one": 1.622954548530231e-11,
+          "adjoint_terminal_x": 5.450684348318191e-11,
+          "guess_adjoint_terminal_x": 0.0,
+          "adjoint_integral": 2.9384605859661406e-11,
+          "guess_adjoint_integral": 0.0,
+          "adjoint_terminal_z": 8.535239182094756e-11,
+          "guess_adjoint_terminal_z": 0.0,
+          "adjoint_mixed_observations": 1.2057799203546438e-11,
+          "guess_adjoint_mixed_observations": 0.0,
+          "adjoint_multiple": 3.005906634712119e-11,
+          "duality": 2.1420532014815308e-11,
+          "algebraic_residual": 2.220446049250313e-16,
+          "total_IC_direct": 4.160904953920408e-11,
+          "total_IC_adjoint": 2.6361510388528688e-11
+        },
+        "accurate": {
+          "primal": true,
+          "forward_multiple": true,
+          "forward_one": true,
+          "adjoint_terminal_x": true,
+          "guess_adjoint_terminal_x": true,
+          "adjoint_integral": true,
+          "guess_adjoint_integral": true,
+          "adjoint_terminal_z": true,
+          "guess_adjoint_terminal_z": true,
+          "adjoint_mixed_observations": true,
+          "guess_adjoint_mixed_observations": true,
+          "adjoint_multiple": true,
+          "duality": true,
+          "algebraic_residual": true,
+          "total_IC_direct": true,
+          "total_IC_adjoint": true
+        },
+        "finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 4.437418361902257e-05
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 4.434239778694504e-07
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 3.048944904882056e-08
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 1.6108426212357863e-06
+          }
+        ],
+        "minimum_fd_error": 3.048944904882056e-08,
+        "total_finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 1.560366179277727e-05
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 1.560252709428077e-07
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 2.067839155461826e-08
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 7.538796176209672e-08
+          }
+        ],
+        "minimum_total_fd_error": 2.067839155461826e-08,
+        "failures": {},
+        "all_modes_accurate": true
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    },
+    "linear-segmented-1e-12": {
+      "executed": true,
+      "observations": {
+        "kind": "linear",
+        "projected": true,
+        "segmented": true,
+        "options": {
+          "reltol": 1e-12,
+          "abstol": 1e-14,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false
+        },
+        "errors": {
+          "primal": 1.182931530507858e-11,
+          "forward_multiple": 1.0909731451569371e-11,
+          "forward_one": 4.709288514703758e-12,
+          "adjoint_terminal_x": 1.665390048088966e-12,
+          "guess_adjoint_terminal_x": 0.0,
+          "adjoint_integral": 1.0269562977782698e-12,
+          "guess_adjoint_integral": 0.0,
+          "adjoint_terminal_z": 1.2853815234414867e-11,
+          "guess_adjoint_terminal_z": 0.0,
+          "adjoint_mixed_observations": 2.5206503551089554e-12,
+          "guess_adjoint_mixed_observations": 0.0,
+          "adjoint_multiple": 1.010845573912178e-11,
+          "duality": 2.3152590955533014e-12,
+          "algebraic_residual": 1.7763568394002505e-15,
+          "total_IC_direct": 1.0642375869451826e-11,
+          "total_IC_adjoint": 1.198774413069259e-11
+        },
+        "accurate": {
+          "primal": true,
+          "forward_multiple": true,
+          "forward_one": true,
+          "adjoint_terminal_x": true,
+          "guess_adjoint_terminal_x": true,
+          "adjoint_integral": true,
+          "guess_adjoint_integral": true,
+          "adjoint_terminal_z": true,
+          "guess_adjoint_terminal_z": true,
+          "adjoint_mixed_observations": true,
+          "guess_adjoint_mixed_observations": true,
+          "adjoint_multiple": true,
+          "duality": true,
+          "algebraic_residual": true,
+          "total_IC_direct": true,
+          "total_IC_adjoint": true
+        },
+        "finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 4.437361491838043e-05
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 4.404570733695934e-07
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 2.6338584313556623e-08
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 1.7330026302886378e-07
+          }
+        ],
+        "minimum_fd_error": 2.6338584313556623e-08,
+        "total_finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 1.560363655167582e-05
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 1.5581043137650722e-07
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 1.7960565590335875e-08
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 2.1487341461678963e-07
+          }
+        ],
+        "minimum_total_fd_error": 1.7960565590335875e-08,
+        "failures": {},
+        "all_modes_accurate": true
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    },
+    "linear-False-1e-07": {
+      "executed": true,
+      "observations": {
+        "kind": "linear",
+        "projected": false,
+        "segmented": false,
+        "options": {
+          "reltol": 1e-07,
+          "abstol": 9.999999999999999e-10,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false
+        },
+        "errors": {
+          "primal": 2.4202657900040947e-07,
+          "forward_multiple": 6.197494795134872e-08,
+          "forward_one": 4.7782885259639585e-08,
+          "adjoint_terminal_x": 1.468990603603615e-07,
+          "guess_adjoint_terminal_x": 0.0,
+          "adjoint_integral": 6.915017403130719e-08,
+          "guess_adjoint_integral": 0.0,
+          "adjoint_terminal_z": 0.02820681204279052,
+          "guess_adjoint_terminal_z": 0.0,
+          "algebraic_residual": 3.4645619706452635e-12,
+          "total_IC_direct": 1.9195329115095916e-07,
+          "total_IC_adjoint": 5.602057023933525e-06
+        },
+        "accurate": {
+          "primal": true,
+          "forward_multiple": true,
+          "forward_one": true,
+          "adjoint_terminal_x": true,
+          "guess_adjoint_terminal_x": true,
+          "adjoint_integral": true,
+          "guess_adjoint_integral": true,
+          "adjoint_terminal_z": false,
+          "guess_adjoint_terminal_z": true,
+          "algebraic_residual": true,
+          "total_IC_direct": true,
+          "total_IC_adjoint": false
+        },
+        "finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 5.2471966413336624e-05
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 1.698386431492338e-06
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 0.00099416336996061
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 1.7616599155001467e-06
+          }
+        ],
+        "minimum_fd_error": 1.698386431492338e-06,
+        "total_finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 1.4363457051794026e-05
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 7.0646554524896495e-06
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 0.00011478755637023119
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 0.004917360695559924
+          }
+        ],
+        "minimum_total_fd_error": 7.0646554524896495e-06,
+        "failures": {
+          "adjoint_mixed_observations": "Error in Function::call for 'adj1_flow' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adj1_flow' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj1_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens1_F' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:620: IDASolveB returned \"IDA_ERR_FAIL\". Consult IDAS documentation.",
+          "adjoint_multiple": "Error in Function::call for 'adj2_flow' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adj2_flow' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj2_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens2_F' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:620: IDASolveB returned \"IDA_ERR_FAIL\". Consult IDAS documentation."
+        },
+        "all_modes_accurate": false
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": "At t = 0.7 and h = -5.47952e-14, the error test failed repeatedly or with |h| = hmin."
+    },
+    "linear-False-1e-10": {
+      "executed": true,
+      "observations": {
+        "kind": "linear",
+        "projected": false,
+        "segmented": false,
+        "options": {
+          "reltol": 1e-10,
+          "abstol": 1e-12,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false
+        },
+        "errors": {
+          "primal": 3.747201438031311e-10,
+          "forward_multiple": 1.2484813183277765e-10,
+          "forward_one": 1.7671880625513836e-10,
+          "adjoint_terminal_x": 2.1774471115065808e-10,
+          "guess_adjoint_terminal_x": 0.0,
+          "adjoint_integral": 7.270606339204733e-11,
+          "guess_adjoint_integral": 0.0,
+          "adjoint_terminal_z": 0.007044878175695213,
+          "guess_adjoint_terminal_z": 0.0,
+          "algebraic_residual": 6.559197629485425e-12,
+          "total_IC_direct": 6.507050454018781e-11,
+          "total_IC_adjoint": 0.0005381037253224598
+        },
+        "accurate": {
+          "primal": true,
+          "forward_multiple": true,
+          "forward_one": true,
+          "adjoint_terminal_x": true,
+          "guess_adjoint_terminal_x": true,
+          "adjoint_integral": true,
+          "guess_adjoint_integral": true,
+          "adjoint_terminal_z": false,
+          "guess_adjoint_terminal_z": true,
+          "algebraic_residual": true,
+          "total_IC_direct": true,
+          "total_IC_adjoint": false
+        },
+        "finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 4.439376662646044e-05
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 5.843221598800241e-07
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 1.7628106615541483e-06
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 1.4144724280740205e-05
+          }
+        ],
+        "minimum_fd_error": 5.843221598800241e-07,
+        "total_finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 1.5606473408681955e-05
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 1.7185259793608037e-07
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 6.318176715147671e-07
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 6.357663394999472e-06
+          }
+        ],
+        "minimum_total_fd_error": 1.7185259793608037e-07,
+        "failures": {
+          "adjoint_mixed_observations": "Error in Function::call for 'adj1_flow' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adj1_flow' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj1_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens1_F' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:620: IDASolveB returned \"IDA_ERR_FAIL\". Consult IDAS documentation.",
+          "adjoint_multiple": "Error in Function::call for 'adj2_flow' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adj2_flow' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj2_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens2_F' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:620: IDASolveB returned \"IDA_ERR_FAIL\". Consult IDAS documentation."
+        },
+        "all_modes_accurate": false
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": "At t = 0.7 and h = -5.50269e-17, the error test failed repeatedly or with |h| = hmin."
+    },
+    "linear-False-1e-11": {
+      "executed": true,
+      "observations": {
+        "kind": "linear",
+        "projected": false,
+        "segmented": false,
+        "options": {
+          "reltol": 1e-11,
+          "abstol": 9.999999999999999e-14,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false
+        },
+        "errors": {
+          "primal": 1.2637002555493382e-11,
+          "forward_multiple": 2.0357160401829333e-11,
+          "forward_one": 2.573609381162356e-11,
+          "adjoint_terminal_x": 1.3813727939293585e-11,
+          "guess_adjoint_terminal_x": 0.0,
+          "adjoint_integral": 1.4077738974549447e-11,
+          "guess_adjoint_integral": 0.0,
+          "adjoint_terminal_z": 0.0016867231910171476,
+          "guess_adjoint_terminal_z": 0.0,
+          "algebraic_residual": 3.9968028886505635e-15,
+          "total_IC_direct": 2.1912582859329177e-11,
+          "total_IC_adjoint": 0.0006948344277106837
+        },
+        "accurate": {
+          "primal": true,
+          "forward_multiple": true,
+          "forward_one": true,
+          "adjoint_terminal_x": true,
+          "guess_adjoint_terminal_x": true,
+          "adjoint_integral": true,
+          "guess_adjoint_integral": true,
+          "adjoint_terminal_z": false,
+          "guess_adjoint_terminal_z": true,
+          "algebraic_residual": true,
+          "total_IC_direct": true,
+          "total_IC_adjoint": false
+        },
+        "finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 4.437650753785771e-05
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 4.436871562374378e-07
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 3.052003094694555e-08
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 1.0436096431476471e-09
+          }
+        ],
+        "minimum_fd_error": 1.0436096431476471e-09,
+        "total_finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 1.5603590548804776e-05
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 1.5551725888522859e-07
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 1.7487592929299464e-07
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 2.5863349676358283e-06
+          }
+        ],
+        "minimum_total_fd_error": 1.5551725888522859e-07,
+        "failures": {
+          "adjoint_mixed_observations": "Error in Function::call for 'adj1_flow' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adj1_flow' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj1_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens1_F' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:620: IDASolveB returned \"IDA_ERR_FAIL\". Consult IDAS documentation.",
+          "adjoint_multiple": "Error in Function::call for 'adj2_flow' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adj2_flow' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj2_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens2_F' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:620: IDASolveB returned \"IDA_ERR_FAIL\". Consult IDAS documentation."
+        },
+        "all_modes_accurate": false
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": "At t = 0.7 and h = -5.51777e-18, the error test failed repeatedly or with |h| = hmin."
+    },
+    "linear-False-1e-12": {
+      "executed": true,
+      "observations": {
+        "kind": "linear",
+        "projected": false,
+        "segmented": false,
+        "options": {
+          "reltol": 1e-12,
+          "abstol": 1e-14,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false
+        },
+        "errors": {
+          "primal": 3.3547609135098355e-12,
+          "forward_multiple": 6.976752509046946e-12,
+          "forward_one": 5.820899318109696e-13,
+          "adjoint_terminal_x": 6.771583294096217e-12,
+          "guess_adjoint_terminal_x": 0.0,
+          "adjoint_integral": 9.603429163007604e-13,
+          "guess_adjoint_integral": 0.0,
+          "adjoint_terminal_z": 0.0007714365458140193,
+          "guess_adjoint_terminal_z": 0.0,
+          "algebraic_residual": 4.218847493575595e-14,
+          "total_IC_direct": 2.450151193045258e-12,
+          "total_IC_adjoint": 0.0007491841248088619
+        },
+        "accurate": {
+          "primal": true,
+          "forward_multiple": true,
+          "forward_one": true,
+          "adjoint_terminal_x": true,
+          "guess_adjoint_terminal_x": true,
+          "adjoint_integral": true,
+          "guess_adjoint_integral": true,
+          "adjoint_terminal_z": false,
+          "guess_adjoint_terminal_z": true,
+          "algebraic_residual": true,
+          "total_IC_direct": true,
+          "total_IC_adjoint": false
+        },
+        "finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 4.437336194296204e-05
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 4.4373106555806174e-07
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 2.6231065305970525e-08
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 5.46016128144533e-07
+          }
+        ],
+        "minimum_fd_error": 2.6231065305970525e-08,
+        "total_finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 1.5603666298692692e-05
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 1.549492565672307e-07
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 1.4791021000585637e-08
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 7.140770633684568e-07
+          }
+        ],
+        "minimum_total_fd_error": 1.4791021000585637e-08,
+        "failures": {
+          "adjoint_mixed_observations": "Error in Function::call for 'adj1_flow' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adj1_flow' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj1_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens1_F' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:620: IDASolveB returned \"IDA_ERR_FAIL\". Consult IDAS documentation.",
+          "adjoint_multiple": "Error in Function::call for 'adj2_flow' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adj2_flow' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj2_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens2_F' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:620: IDASolveB returned \"IDA_ERR_FAIL\". Consult IDAS documentation."
+        },
+        "all_modes_accurate": false
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": "At t = 0.7 and h = -5.51927e-19, the error test failed repeatedly or with |h| = hmin."
+    },
+    "linear-True-1e-07": {
+      "executed": true,
+      "observations": {
+        "kind": "linear",
+        "projected": true,
+        "segmented": false,
+        "options": {
+          "reltol": 1e-07,
+          "abstol": 9.999999999999999e-10,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false
+        },
+        "errors": {
+          "primal": 2.4202657900040947e-07,
+          "forward_multiple": 2.03863602402099e-07,
+          "forward_one": 1.1275816880207401e-07,
+          "adjoint_terminal_x": 1.468990603603615e-07,
+          "guess_adjoint_terminal_x": 0.0,
+          "adjoint_integral": 6.915017403130719e-08,
+          "guess_adjoint_integral": 0.0,
+          "adjoint_terminal_z": 2.302730748304782e-07,
+          "guess_adjoint_terminal_z": 0.0,
+          "algebraic_residual": 3.4645619706452635e-12,
+          "total_IC_direct": 1.2932040260871247e-07,
+          "total_IC_adjoint": 4.166567605553436e-08
+        },
+        "accurate": {
+          "primal": true,
+          "forward_multiple": true,
+          "forward_one": true,
+          "adjoint_terminal_x": true,
+          "guess_adjoint_terminal_x": true,
+          "adjoint_integral": true,
+          "guess_adjoint_integral": true,
+          "adjoint_terminal_z": true,
+          "guess_adjoint_terminal_z": true,
+          "algebraic_residual": true,
+          "total_IC_direct": true,
+          "total_IC_adjoint": true
+        },
+        "finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 5.2471966413336624e-05
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 1.698386431492338e-06
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 0.00099416336996061
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 1.7616599155001467e-06
+          }
+        ],
+        "minimum_fd_error": 1.698386431492338e-06,
+        "total_finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 1.4363457051794026e-05
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 7.0646554524896495e-06
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 0.00011478755637023119
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 0.004917360695559924
+          }
+        ],
+        "minimum_total_fd_error": 7.0646554524896495e-06,
+        "failures": {
+          "adjoint_mixed_observations": "Error in Function::call for 'adj1_flow' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adj1_flow' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj1_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens1_F' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:620: IDASolveB returned \"IDA_ERR_FAIL\". Consult IDAS documentation.",
+          "adjoint_multiple": "Error in Function::call for 'adj2_flow' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adj2_flow' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj2_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens2_F' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:620: IDASolveB returned \"IDA_ERR_FAIL\". Consult IDAS documentation."
+        },
+        "all_modes_accurate": false
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": "At t = 0.7 and h = -6.71488e-14, the error test failed repeatedly or with |h| = hmin."
+    },
+    "linear-True-1e-10": {
+      "executed": true,
+      "observations": {
+        "kind": "linear",
+        "projected": true,
+        "segmented": false,
+        "options": {
+          "reltol": 1e-10,
+          "abstol": 1e-12,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false
+        },
+        "errors": {
+          "primal": 3.681609461736457e-10,
+          "forward_multiple": 3.254445879452561e-10,
+          "forward_one": 2.172963198265876e-10,
+          "adjoint_terminal_x": 2.1774471115065808e-10,
+          "guess_adjoint_terminal_x": 0.0,
+          "adjoint_integral": 7.270606339204733e-11,
+          "guess_adjoint_integral": 0.0,
+          "adjoint_terminal_z": 6.397409268998899e-10,
+          "guess_adjoint_terminal_z": 0.0,
+          "algebraic_residual": 9.103828801926284e-15,
+          "total_IC_direct": 1.475308764042893e-10,
+          "total_IC_adjoint": 2.181924640964894e-10
+        },
+        "accurate": {
+          "primal": true,
+          "forward_multiple": true,
+          "forward_one": true,
+          "adjoint_terminal_x": true,
+          "guess_adjoint_terminal_x": true,
+          "adjoint_integral": true,
+          "guess_adjoint_integral": true,
+          "adjoint_terminal_z": true,
+          "guess_adjoint_terminal_z": true,
+          "algebraic_residual": true,
+          "total_IC_direct": true,
+          "total_IC_adjoint": true
+        },
+        "finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 4.439376662646044e-05
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 5.843221598800241e-07
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 1.8499465156418538e-06
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 1.4144724280740205e-05
+          }
+        ],
+        "minimum_fd_error": 5.843221598800241e-07,
+        "total_finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 1.5606473408681955e-05
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 1.7185259793608037e-07
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 6.318176715147671e-07
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 6.357663394999472e-06
+          }
+        ],
+        "minimum_total_fd_error": 1.7185259793608037e-07,
+        "failures": {
+          "adjoint_mixed_observations": "Error in Function::call for 'adj1_flow' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adj1_flow' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj1_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens1_F' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:620: IDASolveB returned \"IDA_ERR_FAIL\". Consult IDAS documentation.",
+          "adjoint_multiple": "Error in Function::call for 'adj2_flow' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adj2_flow' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj2_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens2_F' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:620: IDASolveB returned \"IDA_ERR_FAIL\". Consult IDAS documentation."
+        },
+        "all_modes_accurate": false
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": "At t = 0.7 and h = -6.71488e-17, the error test failed repeatedly or with |h| = hmin."
+    },
+    "linear-True-1e-11": {
+      "executed": true,
+      "observations": {
+        "kind": "linear",
+        "projected": true,
+        "segmented": false,
+        "options": {
+          "reltol": 1e-11,
+          "abstol": 9.999999999999999e-14,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false
+        },
+        "errors": {
+          "primal": 1.2637002555493382e-11,
+          "forward_multiple": 2.0357271424131795e-11,
+          "forward_one": 1.740782518133699e-11,
+          "adjoint_terminal_x": 1.3813727939293585e-11,
+          "guess_adjoint_terminal_x": 0.0,
+          "adjoint_integral": 1.4077738974549447e-11,
+          "guess_adjoint_integral": 0.0,
+          "adjoint_terminal_z": 2.0438761794139282e-11,
+          "guess_adjoint_terminal_z": 0.0,
+          "algebraic_residual": 3.9968028886505635e-15,
+          "total_IC_direct": 3.200750775533834e-11,
+          "total_IC_adjoint": 1.8143287770681927e-11
+        },
+        "accurate": {
+          "primal": true,
+          "forward_multiple": true,
+          "forward_one": true,
+          "adjoint_terminal_x": true,
+          "guess_adjoint_terminal_x": true,
+          "adjoint_integral": true,
+          "guess_adjoint_integral": true,
+          "adjoint_terminal_z": true,
+          "guess_adjoint_terminal_z": true,
+          "algebraic_residual": true,
+          "total_IC_direct": true,
+          "total_IC_adjoint": true
+        },
+        "finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 4.437650753785771e-05
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 4.436871562374378e-07
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 3.052003094694555e-08
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 1.0436096431476471e-09
+          }
+        ],
+        "minimum_fd_error": 1.0436096431476471e-09,
+        "total_finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 1.5603590548804776e-05
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 1.5546958567975546e-07
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 1.7487592929299464e-07
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 2.5863349676358283e-06
+          }
+        ],
+        "minimum_total_fd_error": 1.5546958567975546e-07,
+        "failures": {
+          "adjoint_mixed_observations": "Error in Function::call for 'adj1_flow' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adj1_flow' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj1_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens1_F' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:620: IDASolveB returned \"IDA_ERR_FAIL\". Consult IDAS documentation.",
+          "adjoint_multiple": "Error in Function::call for 'adj2_flow' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adj2_flow' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj2_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens2_F' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:620: IDASolveB returned \"IDA_ERR_FAIL\". Consult IDAS documentation."
+        },
+        "all_modes_accurate": false
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": "At t = 0.7 and h = -6.71488e-18, the error test failed repeatedly or with |h| = hmin."
+    },
+    "linear-True-1e-12": {
+      "executed": true,
+      "observations": {
+        "kind": "linear",
+        "projected": true,
+        "segmented": false,
+        "options": {
+          "reltol": 1e-12,
+          "abstol": 1e-14,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false
+        },
+        "errors": {
+          "primal": 1.3294809697583787e-11,
+          "forward_multiple": 1.2147685635177652e-11,
+          "forward_one": 4.339917314410968e-12,
+          "adjoint_terminal_x": 3.4968694606618556e-12,
+          "guess_adjoint_terminal_x": 0.0,
+          "adjoint_integral": 9.92317339409965e-13,
+          "guess_adjoint_integral": 0.0,
+          "adjoint_terminal_z": 8.988657040909231e-12,
+          "guess_adjoint_terminal_z": 0.0,
+          "algebraic_residual": 3.9968028886505635e-15,
+          "total_IC_direct": 6.483702463810914e-12,
+          "total_IC_adjoint": 4.485180238343523e-12
+        },
+        "accurate": {
+          "primal": true,
+          "forward_multiple": true,
+          "forward_one": true,
+          "adjoint_terminal_x": true,
+          "guess_adjoint_terminal_x": true,
+          "adjoint_integral": true,
+          "guess_adjoint_integral": true,
+          "adjoint_terminal_z": true,
+          "guess_adjoint_terminal_z": true,
+          "algebraic_residual": true,
+          "total_IC_direct": true,
+          "total_IC_adjoint": true
+        },
+        "finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 4.4373284504906074e-05
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 4.4296850887359795e-07
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 4.20008472445943e-08
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 4.260758412755194e-07
+          }
+        ],
+        "minimum_fd_error": 4.20008472445943e-08,
+        "total_finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 1.5603666298692692e-05
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 1.549492565672307e-07
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 1.4791021000585637e-08
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 7.140770633684568e-07
+          }
+        ],
+        "minimum_total_fd_error": 1.4791021000585637e-08,
+        "failures": {
+          "adjoint_mixed_observations": "Error in Function::call for 'adj1_flow' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adj1_flow' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj1_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens1_F' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:620: IDASolveB returned \"IDA_ERR_FAIL\". Consult IDAS documentation.",
+          "adjoint_multiple": "Error in Function::call for 'adj2_flow' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adj2_flow' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj2_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens2_F' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:620: IDASolveB returned \"IDA_ERR_FAIL\". Consult IDAS documentation."
+        },
+        "all_modes_accurate": false
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": "At t = 0.7 and h = -6.71488e-19, the error test failed repeatedly or with |h| = hmin."
+    },
+    "nonlinear-segmented-1e-07": {
+      "executed": true,
+      "observations": {
+        "kind": "nonlinear",
+        "projected": true,
+        "segmented": true,
+        "options": {
+          "reltol": 1e-07,
+          "abstol": 9.999999999999999e-10,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false
+        },
+        "errors": {
+          "primal": 2.487992551567577e-07,
+          "forward_multiple": 2.0715813658819037e-07,
+          "forward_one": 1.827937289311521e-07,
+          "adjoint_terminal_x": 5.044958261740153e-07,
+          "guess_adjoint_terminal_x": 0.0,
+          "adjoint_integral": 1.0574289360498937e-07,
+          "guess_adjoint_integral": 0.0,
+          "adjoint_terminal_z": 2.7281430181602673e-07,
+          "guess_adjoint_terminal_z": 0.0,
+          "adjoint_mixed_observations": 3.1605392081246464e-08,
+          "guess_adjoint_mixed_observations": 0.0,
+          "adjoint_multiple": 8.096332826390551e-08,
+          "duality": 4.282467680472024e-08,
+          "algebraic_residual": 3.3306690738754696e-14,
+          "total_IC_direct": 5.8745264211303915e-08,
+          "total_IC_adjoint": 7.825605420095131e-08
+        },
+        "accurate": {
+          "primal": true,
+          "forward_multiple": true,
+          "forward_one": true,
+          "adjoint_terminal_x": false,
+          "guess_adjoint_terminal_x": true,
+          "adjoint_integral": true,
+          "guess_adjoint_integral": true,
+          "adjoint_terminal_z": true,
+          "guess_adjoint_terminal_z": true,
+          "adjoint_mixed_observations": true,
+          "guess_adjoint_mixed_observations": true,
+          "adjoint_multiple": true,
+          "duality": true,
+          "algebraic_residual": true,
+          "total_IC_direct": true,
+          "total_IC_adjoint": true
+        },
+        "finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 3.837928886030184e-06
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 1.9687267277157652e-06
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 1.7527703678623623e-06
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 1.7527784991818404e-06
+          }
+        ],
+        "minimum_fd_error": 1.7527703678623623e-06,
+        "total_finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 5.096016091332699e-06
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 1.2562692627652673e-05
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 1.3329074030436296e-05
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 2.981532688147344e-06
+          }
+        ],
+        "minimum_total_fd_error": 2.981532688147344e-06,
+        "failures": {},
+        "all_modes_accurate": false
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    },
+    "nonlinear-segmented-1e-10": {
+      "executed": true,
+      "observations": {
+        "kind": "nonlinear",
+        "projected": true,
+        "segmented": true,
+        "options": {
+          "reltol": 1e-10,
+          "abstol": 1e-12,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false
+        },
+        "errors": {
+          "primal": 1.343619182323766e-10,
+          "forward_multiple": 2.6570712659058567e-10,
+          "forward_one": 2.869083859380339e-10,
+          "adjoint_terminal_x": 7.249539108429332e-10,
+          "guess_adjoint_terminal_x": 0.0,
+          "adjoint_integral": 1.4790485550317016e-10,
+          "guess_adjoint_integral": 0.0,
+          "adjoint_terminal_z": 4.3419634554453523e-10,
+          "guess_adjoint_terminal_z": 0.0,
+          "adjoint_mixed_observations": 1.1949286005119575e-10,
+          "guess_adjoint_mixed_observations": 0.0,
+          "adjoint_multiple": 1.4997214581313756e-10,
+          "duality": 8.496298109506029e-11,
+          "algebraic_residual": 3.3306690738754696e-14,
+          "total_IC_direct": 7.072452748922151e-11,
+          "total_IC_adjoint": 2.1414216343527281e-10
+        },
+        "accurate": {
+          "primal": true,
+          "forward_multiple": true,
+          "forward_one": true,
+          "adjoint_terminal_x": true,
+          "guess_adjoint_terminal_x": true,
+          "adjoint_integral": true,
+          "guess_adjoint_integral": true,
+          "adjoint_terminal_z": true,
+          "guess_adjoint_terminal_z": true,
+          "adjoint_mixed_observations": true,
+          "guess_adjoint_mixed_observations": true,
+          "adjoint_multiple": true,
+          "duality": true,
+          "algebraic_residual": true,
+          "total_IC_direct": true,
+          "total_IC_adjoint": true
+        },
+        "finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 3.837928886030184e-06
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 3.8378522804194404e-08
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 8.902887316253327e-10
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 9.058318539700849e-10
+          }
+        ],
+        "minimum_fd_error": 8.902887316253327e-10,
+        "total_finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 2.1028516019826115e-06
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 2.1100664787957402e-08
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 2.178887440843861e-09
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 2.2121941315826157e-09
+          }
+        ],
+        "minimum_total_fd_error": 2.178887440843861e-09,
+        "failures": {},
+        "all_modes_accurate": true
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    },
+    "nonlinear-segmented-1e-11": {
+      "executed": true,
+      "observations": {
+        "kind": "nonlinear",
+        "projected": true,
+        "segmented": true,
+        "options": {
+          "reltol": 1e-11,
+          "abstol": 9.999999999999999e-14,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false
+        },
+        "errors": {
+          "primal": 3.4917014950389464e-11,
+          "forward_multiple": 2.405345943158112e-11,
+          "forward_one": 2.4189428238230448e-11,
+          "adjoint_terminal_x": 5.493831800506982e-11,
+          "guess_adjoint_terminal_x": 0.0,
+          "adjoint_integral": 1.680416993168984e-11,
+          "guess_adjoint_integral": 0.0,
+          "adjoint_terminal_z": 3.914968349505443e-11,
+          "guess_adjoint_terminal_z": 0.0,
+          "adjoint_mixed_observations": 2.752287286966748e-11,
+          "guess_adjoint_mixed_observations": 0.0,
+          "adjoint_multiple": 2.1271651107213074e-11,
+          "duality": 1.0836220809551378e-11,
+          "algebraic_residual": 3.3306690738754696e-14,
+          "total_IC_direct": 1.0664002076375883e-11,
+          "total_IC_adjoint": 1.858322464953411e-11
+        },
+        "accurate": {
+          "primal": true,
+          "forward_multiple": true,
+          "forward_one": true,
+          "adjoint_terminal_x": true,
+          "guess_adjoint_terminal_x": true,
+          "adjoint_integral": true,
+          "guess_adjoint_integral": true,
+          "adjoint_terminal_z": true,
+          "guess_adjoint_terminal_z": true,
+          "adjoint_mixed_observations": true,
+          "guess_adjoint_mixed_observations": true,
+          "adjoint_multiple": true,
+          "duality": true,
+          "algebraic_residual": true,
+          "total_IC_direct": true,
+          "total_IC_adjoint": true
+        },
+        "finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 3.837928886030184e-06
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 3.8378522804194404e-08
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 3.858027231018468e-10
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 2.6190249968749413e-10
+          }
+        ],
+        "minimum_fd_error": 2.6190249968749413e-10,
+        "total_finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 2.1025921875679954e-06
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 2.104042591244527e-08
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 5.394581078140466e-10
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 5.838670287990528e-10
+          }
+        ],
+        "minimum_total_fd_error": 5.394581078140466e-10,
+        "failures": {},
+        "all_modes_accurate": true
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    },
+    "nonlinear-segmented-1e-12": {
+      "executed": true,
+      "observations": {
+        "kind": "nonlinear",
+        "projected": true,
+        "segmented": true,
+        "options": {
+          "reltol": 1e-12,
+          "abstol": 1e-14,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false
+        },
+        "errors": {
+          "primal": 1.6359296708277986e-12,
+          "forward_multiple": 1.9256997354351823e-12,
+          "forward_one": 4.126476937926782e-12,
+          "adjoint_terminal_x": 8.341115367961199e-12,
+          "guess_adjoint_terminal_x": 0.0,
+          "adjoint_integral": 2.3110239441992855e-12,
+          "guess_adjoint_integral": 0.0,
+          "adjoint_terminal_z": 4.8087089865589405e-12,
+          "guess_adjoint_terminal_z": 0.0,
+          "adjoint_mixed_observations": 1.0531575611594235e-12,
+          "guess_adjoint_mixed_observations": 0.0,
+          "adjoint_multiple": 4.6278536558475025e-12,
+          "duality": 2.1462831512053526e-12,
+          "algebraic_residual": 8.881784197001252e-16,
+          "total_IC_direct": 1.2290881992885616e-12,
+          "total_IC_adjoint": 6.759800932604518e-12
+        },
+        "accurate": {
+          "primal": true,
+          "forward_multiple": true,
+          "forward_one": true,
+          "adjoint_terminal_x": true,
+          "guess_adjoint_terminal_x": true,
+          "adjoint_integral": true,
+          "guess_adjoint_integral": true,
+          "adjoint_terminal_z": true,
+          "guess_adjoint_terminal_z": true,
+          "adjoint_mixed_observations": true,
+          "guess_adjoint_mixed_observations": true,
+          "adjoint_multiple": true,
+          "duality": true,
+          "algebraic_residual": true,
+          "total_IC_direct": true,
+          "total_IC_adjoint": true
+        },
+        "finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 3.837928663985579e-06
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 3.837830075958948e-08
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 3.858027231018468e-10
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 1.0307809434687127e-10
+          }
+        ],
+        "minimum_fd_error": 1.0307809434687127e-10,
+        "total_finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 2.102579408320833e-06
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 2.10277327208195e-08
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 2.104681768741479e-10
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 6.576295064064651e-11
+          }
+        ],
+        "minimum_total_fd_error": 6.576295064064651e-11,
+        "failures": {},
+        "all_modes_accurate": true
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    },
+    "nonlinear-False-1e-07": {
+      "executed": true,
+      "observations": {
+        "kind": "nonlinear",
+        "projected": false,
+        "segmented": false,
+        "options": {
+          "reltol": 1e-07,
+          "abstol": 9.999999999999999e-10,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false
+        },
+        "errors": {
+          "primal": 4.004680099783749e-09,
+          "forward_multiple": 6.095528526373073e-09,
+          "forward_one": 1.4918408841602115e-08,
+          "adjoint_terminal_x": 3.1602949939802273e-07,
+          "guess_adjoint_terminal_x": 0.0,
+          "adjoint_integral": 3.519822070137224e-08,
+          "guess_adjoint_integral": 0.0,
+          "adjoint_terminal_z": 0.008545657215638935,
+          "guess_adjoint_terminal_z": 0.0,
+          "algebraic_residual": 1.170175067954915e-13,
+          "total_IC_direct": 2.677973210740848e-09,
+          "total_IC_adjoint": 0.017228476325783004
+        },
+        "accurate": {
+          "primal": true,
+          "forward_multiple": true,
+          "forward_one": true,
+          "adjoint_terminal_x": false,
+          "guess_adjoint_terminal_x": true,
+          "adjoint_integral": true,
+          "guess_adjoint_integral": true,
+          "adjoint_terminal_z": false,
+          "guess_adjoint_terminal_z": true,
+          "algebraic_residual": true,
+          "total_IC_direct": true,
+          "total_IC_adjoint": false
+        },
+        "finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 3.842457530156551e-06
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 4.426719153460823e-07
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 2.5635421256033654e-08
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 2.5594764658642433e-08
+          }
+        ],
+        "minimum_fd_error": 2.5594764658642433e-08,
+        "total_finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 2.1930609746311026e-06
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 6.67999989397335e-07
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 1.1598143816460292e-05
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 1.3065022034612164e-06
+          }
+        ],
+        "minimum_total_fd_error": 6.67999989397335e-07,
+        "failures": {
+          "adjoint_mixed_observations": "Error in Function::call for 'adj1_flow' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adj1_flow' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj1_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens1_F' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:620: IDASolveB returned \"IDA_ERR_FAIL\". Consult IDAS documentation.",
+          "adjoint_multiple": "Error in Function::call for 'adj2_flow' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adj2_flow' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj2_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens2_F' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:620: IDASolveB returned \"IDA_ERR_FAIL\". Consult IDAS documentation."
+        },
+        "all_modes_accurate": false
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": "At t = 0.7 and h = -9.70715e-14, the error test failed repeatedly or with |h| = hmin."
+    },
+    "nonlinear-False-1e-10": {
+      "executed": true,
+      "observations": {
+        "kind": "nonlinear",
+        "projected": false,
+        "segmented": false,
+        "options": {
+          "reltol": 1e-10,
+          "abstol": 1e-12,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false
+        },
+        "errors": {
+          "primal": 3.899436329390937e-12,
+          "forward_multiple": 1.3963052936105669e-11,
+          "forward_one": 1.5770162953288036e-11,
+          "adjoint_terminal_x": 1.8058527868358345e-10,
+          "guess_adjoint_terminal_x": 0.0,
+          "adjoint_integral": 3.770858751438356e-11,
+          "guess_adjoint_integral": 0.0,
+          "adjoint_terminal_z": 0.004726278828721453,
+          "guess_adjoint_terminal_z": 0.0,
+          "algebraic_residual": 1.170175067954915e-13,
+          "total_IC_direct": 2.4895866693798766e-12,
+          "total_IC_adjoint": 0.033750224502031745
+        },
+        "accurate": {
+          "primal": true,
+          "forward_multiple": true,
+          "forward_one": true,
+          "adjoint_terminal_x": true,
+          "guess_adjoint_terminal_x": true,
+          "adjoint_integral": true,
+          "guess_adjoint_integral": true,
+          "adjoint_terminal_z": false,
+          "guess_adjoint_terminal_z": true,
+          "algebraic_residual": true,
+          "total_IC_direct": true,
+          "total_IC_adjoint": false
+        },
+        "finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 3.837928430838744e-06
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 3.8378189737287016e-08
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 3.8469250007722167e-10
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 1.6198242747123004e-10
+          }
+        ],
+        "minimum_fd_error": 1.6198242747123004e-10,
+        "total_finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 2.1026045795652435e-06
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 2.1052473687547695e-08
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 1.0649636728032872e-09
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 1.1759859752658029e-09
+          }
+        ],
+        "minimum_total_fd_error": 1.0649636728032872e-09,
+        "failures": {
+          "adjoint_mixed_observations": "Error in Function::call for 'adj1_flow' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adj1_flow' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj1_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens1_F' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:620: IDASolveB returned \"IDA_ERR_FAIL\". Consult IDAS documentation.",
+          "adjoint_multiple": "Error in Function::call for 'adj2_flow' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adj2_flow' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj2_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens2_F' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:620: IDASolveB returned \"IDA_ERR_FAIL\". Consult IDAS documentation."
+        },
+        "all_modes_accurate": false
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": "At t = 0.7 and h = -9.70386e-17, the error test failed repeatedly or with |h| = hmin."
+    },
+    "nonlinear-False-1e-11": {
+      "executed": true,
+      "observations": {
+        "kind": "nonlinear",
+        "projected": false,
+        "segmented": false,
+        "options": {
+          "reltol": 1e-11,
+          "abstol": 9.999999999999999e-14,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false
+        },
+        "errors": {
+          "primal": 6.252934560294965e-13,
+          "forward_multiple": 1.0317857679353892e-12,
+          "forward_one": 4.79810635667377e-13,
+          "adjoint_terminal_x": 4.1711189720812655e-11,
+          "guess_adjoint_terminal_x": 0.0,
+          "adjoint_integral": 1.2269783906435326e-11,
+          "guess_adjoint_integral": 0.0,
+          "adjoint_terminal_z": 0.015393861878580273,
+          "guess_adjoint_terminal_z": 0.0,
+          "algebraic_residual": 8.881784197001252e-16,
+          "total_IC_direct": 4.442617069019569e-13,
+          "total_IC_adjoint": 0.03019034469619348
+        },
+        "accurate": {
+          "primal": true,
+          "forward_multiple": true,
+          "forward_one": true,
+          "adjoint_terminal_x": true,
+          "guess_adjoint_terminal_x": true,
+          "adjoint_integral": true,
+          "guess_adjoint_integral": true,
+          "adjoint_terminal_z": false,
+          "guess_adjoint_terminal_z": true,
+          "algebraic_residual": true,
+          "total_IC_direct": true,
+          "total_IC_adjoint": false
+        },
+        "finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 3.837928652883349e-06
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 3.8378189737287016e-08
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 3.858027231018468e-10
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 7.258564630345554e-11
+          }
+        ],
+        "minimum_fd_error": 7.258564630345554e-11,
+        "total_finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 2.102582463292377e-06
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 2.102902355386619e-08
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 2.1692234210759038e-10
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 4.358372921823653e-10
+          }
+        ],
+        "minimum_total_fd_error": 2.1692234210759038e-10,
+        "failures": {
+          "adjoint_mixed_observations": "Error in Function::call for 'adj1_flow' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adj1_flow' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj1_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens1_F' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:620: IDASolveB returned \"IDA_ERR_FAIL\". Consult IDAS documentation.",
+          "adjoint_multiple": "Error in Function::call for 'adj2_flow' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adj2_flow' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj2_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens2_F' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:620: IDASolveB returned \"IDA_ERR_FAIL\". Consult IDAS documentation."
+        },
+        "all_modes_accurate": false
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": "At t = 0.7 and h = -9.70153e-18, the error test failed repeatedly or with |h| = hmin."
+    },
+    "nonlinear-False-1e-12": {
+      "executed": true,
+      "observations": {
+        "kind": "nonlinear",
+        "projected": false,
+        "segmented": false,
+        "options": {
+          "reltol": 1e-12,
+          "abstol": 1e-14,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false
+        },
+        "errors": {
+          "primal": 3.4202587356452123e-14,
+          "forward_multiple": 1.2512213487525514e-13,
+          "forward_one": 2.0172752357439094e-13,
+          "adjoint_terminal_x": 3.988887435398429e-12,
+          "guess_adjoint_terminal_x": 0.0,
+          "adjoint_integral": 2.6518559758057124e-12,
+          "guess_adjoint_integral": 0.0,
+          "adjoint_terminal_z": 0.0253724250361701,
+          "guess_adjoint_terminal_z": 0.0,
+          "algebraic_residual": 2.220446049250313e-15,
+          "total_IC_direct": 6.884442915671971e-15,
+          "total_IC_adjoint": 0.01929843796674031
+        },
+        "accurate": {
+          "primal": true,
+          "forward_multiple": true,
+          "forward_one": true,
+          "adjoint_terminal_x": true,
+          "guess_adjoint_terminal_x": true,
+          "adjoint_integral": true,
+          "guess_adjoint_integral": true,
+          "adjoint_terminal_z": false,
+          "guess_adjoint_terminal_z": true,
+          "algebraic_residual": true,
+          "total_IC_direct": true,
+          "total_IC_adjoint": false
+        },
+        "finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 3.837928652883349e-06
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 3.837830075958948e-08
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 3.8469250007722167e-10
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 9.291394499906602e-11
+          }
+        ],
+        "minimum_fd_error": 9.291394499906602e-11,
+        "total_finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 2.1025780959739022e-06
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 2.1026011610090584e-08
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 2.104681768741479e-10
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 2.8755516486474634e-11
+          }
+        ],
+        "minimum_total_fd_error": 2.8755516486474634e-11,
+        "failures": {
+          "adjoint_mixed_observations": "Error in Function::call for 'adj1_flow' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adj1_flow' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj1_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens1_F' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:620: IDASolveB returned \"IDA_ERR_FAIL\". Consult IDAS documentation.",
+          "adjoint_multiple": "Error in Function::call for 'adj2_flow' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adj2_flow' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj2_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens2_F' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:620: IDASolveB returned \"IDA_ERR_FAIL\". Consult IDAS documentation."
+        },
+        "all_modes_accurate": false
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": "At t = 0.7 and h = -9.6999e-19, the error test failed repeatedly or with |h| = hmin."
+    },
+    "nonlinear-True-1e-07": {
+      "executed": true,
+      "observations": {
+        "kind": "nonlinear",
+        "projected": true,
+        "segmented": false,
+        "options": {
+          "reltol": 1e-07,
+          "abstol": 9.999999999999999e-10,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false
+        },
+        "errors": {
+          "primal": 4.004680099783749e-09,
+          "forward_multiple": 6.095528470861922e-09,
+          "forward_one": 1.4918408952624418e-08,
+          "adjoint_terminal_x": 3.1602949939802273e-07,
+          "guess_adjoint_terminal_x": 0.0,
+          "adjoint_integral": 3.519822171778717e-08,
+          "guess_adjoint_integral": 0.0,
+          "adjoint_terminal_z": 2.2116779219150118e-07,
+          "guess_adjoint_terminal_z": 0.0,
+          "algebraic_residual": 3.5603742176704145e-11,
+          "total_IC_direct": 5.334801930760415e-09,
+          "total_IC_adjoint": 1.2278958056994567e-07
+        },
+        "accurate": {
+          "primal": true,
+          "forward_multiple": true,
+          "forward_one": true,
+          "adjoint_terminal_x": false,
+          "guess_adjoint_terminal_x": true,
+          "adjoint_integral": true,
+          "guess_adjoint_integral": true,
+          "adjoint_terminal_z": true,
+          "guess_adjoint_terminal_z": true,
+          "algebraic_residual": true,
+          "total_IC_direct": true,
+          "total_IC_adjoint": true
+        },
+        "finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 3.837918505444904e-06
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 4.426724704575946e-07
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 2.562627352162063e-08
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 2.562525710668585e-08
+          }
+        ],
+        "minimum_fd_error": 2.562525710668585e-08,
+        "total_finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 2.193060931603334e-06
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 6.680018397690426e-07
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 1.1598143816460292e-05
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 1.3062061439879829e-06
+          }
+        ],
+        "minimum_total_fd_error": 6.680018397690426e-07,
+        "failures": {
+          "adjoint_mixed_observations": "Error in Function::call for 'adj1_flow' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adj1_flow' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj1_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens1_F' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:620: IDASolveB returned \"IDA_ERR_FAIL\". Consult IDAS documentation.",
+          "adjoint_multiple": "Error in Function::call for 'adj2_flow' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adj2_flow' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj2_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens2_F' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:620: IDASolveB returned \"IDA_ERR_FAIL\". Consult IDAS documentation."
+        },
+        "all_modes_accurate": false
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": "At t = 0.7 and h = -1.00457e-13, the error test failed repeatedly or with |h| = hmin."
+    },
+    "nonlinear-True-1e-10": {
+      "executed": true,
+      "observations": {
+        "kind": "nonlinear",
+        "projected": true,
+        "segmented": false,
+        "options": {
+          "reltol": 1e-10,
+          "abstol": 1e-12,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false
+        },
+        "errors": {
+          "primal": 3.8994918405421686e-12,
+          "forward_multiple": 1.3963052936105669e-11,
+          "forward_one": 1.577038499789296e-11,
+          "adjoint_terminal_x": 1.805847173954828e-10,
+          "guess_adjoint_terminal_x": 0.0,
+          "adjoint_integral": 3.771001049529225e-11,
+          "guess_adjoint_integral": 0.0,
+          "adjoint_terminal_z": 1.668135629628864e-10,
+          "guess_adjoint_terminal_z": 0.0,
+          "algebraic_residual": 6.661338147750939e-15,
+          "total_IC_direct": 5.2091567599114204e-12,
+          "total_IC_adjoint": 1.5693930929006418e-10
+        },
+        "accurate": {
+          "primal": true,
+          "forward_multiple": true,
+          "forward_one": true,
+          "adjoint_terminal_x": true,
+          "guess_adjoint_terminal_x": true,
+          "adjoint_integral": true,
+          "guess_adjoint_integral": true,
+          "adjoint_terminal_z": true,
+          "guess_adjoint_terminal_z": true,
+          "algebraic_residual": true,
+          "total_IC_direct": true,
+          "total_IC_adjoint": true
+        },
+        "finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 3.837928663985579e-06
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 3.837830075958948e-08
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 3.8802316915109714e-10
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 1.6198242747123004e-10
+          }
+        ],
+        "minimum_fd_error": 1.6198242747123004e-10,
+        "total_finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 2.1026045580513596e-06
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 2.1052688826388812e-08
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 1.0686644162187045e-09
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 1.1019711069574592e-09
+          }
+        ],
+        "minimum_total_fd_error": 1.0686644162187045e-09,
+        "failures": {
+          "adjoint_mixed_observations": "Error in Function::call for 'adj1_flow' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adj1_flow' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj1_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens1_F' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:620: IDASolveB returned \"IDA_ERR_FAIL\". Consult IDAS documentation.",
+          "adjoint_multiple": "Error in Function::call for 'adj2_flow' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adj2_flow' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj2_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens2_F' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:620: IDASolveB returned \"IDA_ERR_FAIL\". Consult IDAS documentation."
+        },
+        "all_modes_accurate": false
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": "At t = 0.7 and h = -1.00457e-16, the error test failed repeatedly or with |h| = hmin."
+    },
+    "nonlinear-True-1e-11": {
+      "executed": true,
+      "observations": {
+        "kind": "nonlinear",
+        "projected": true,
+        "segmented": false,
+        "options": {
+          "reltol": 1e-11,
+          "abstol": 9.999999999999999e-14,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false
+        },
+        "errors": {
+          "primal": 6.248549613197985e-13,
+          "forward_multiple": 1.0317857679353892e-12,
+          "forward_one": 4.798383912429927e-13,
+          "adjoint_terminal_x": 4.171493164148376e-11,
+          "guess_adjoint_terminal_x": 0.0,
+          "adjoint_integral": 1.2309214821710549e-11,
+          "guess_adjoint_integral": 0.0,
+          "adjoint_terminal_z": 3.733691134044648e-11,
+          "guess_adjoint_terminal_z": 0.0,
+          "algebraic_residual": 6.661338147750939e-15,
+          "total_IC_direct": 8.799178601593239e-13,
+          "total_IC_adjoint": 2.7931215995462735e-11
+        },
+        "accurate": {
+          "primal": true,
+          "forward_multiple": true,
+          "forward_one": true,
+          "adjoint_terminal_x": true,
+          "guess_adjoint_terminal_x": true,
+          "adjoint_integral": true,
+          "guess_adjoint_integral": true,
+          "adjoint_terminal_z": true,
+          "guess_adjoint_terminal_z": true,
+          "algebraic_residual": true,
+          "total_IC_direct": true,
+          "total_IC_adjoint": true
+        },
+        "finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 3.837928663985579e-06
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 3.837830075958948e-08
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 3.858027231018468e-10
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 4.4408920985006255e-11
+          }
+        ],
+        "minimum_fd_error": 4.4408920985006255e-11,
+        "total_finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 2.102582527834029e-06
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 2.1030529525753993e-08
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 2.0269045701108246e-10
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 3.9882985802819343e-10
+          }
+        ],
+        "minimum_total_fd_error": 2.0269045701108246e-10,
+        "failures": {
+          "adjoint_mixed_observations": "Error in Function::call for 'adj1_flow' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adj1_flow' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj1_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens1_F' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:620: IDASolveB returned \"IDA_ERR_FAIL\". Consult IDAS documentation.",
+          "adjoint_multiple": "Error in Function::call for 'adj2_flow' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adj2_flow' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj2_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens2_F' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:620: IDASolveB returned \"IDA_ERR_FAIL\". Consult IDAS documentation."
+        },
+        "all_modes_accurate": false
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": "At t = 0.7 and h = -1.00457e-17, the error test failed repeatedly or with |h| = hmin."
+    },
+    "nonlinear-True-1e-12": {
+      "executed": true,
+      "observations": {
+        "kind": "nonlinear",
+        "projected": true,
+        "segmented": false,
+        "options": {
+          "reltol": 1e-12,
+          "abstol": 1e-14,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false
+        },
+        "errors": {
+          "primal": 3.4202587356452123e-14,
+          "forward_multiple": 1.2512213487525514e-13,
+          "forward_one": 2.0183854587685346e-13,
+          "adjoint_terminal_x": 4.004416406183517e-12,
+          "guess_adjoint_terminal_x": 0.0,
+          "adjoint_integral": 2.447424449400269e-12,
+          "guess_adjoint_integral": 0.0,
+          "adjoint_terminal_z": 3.344990950893134e-12,
+          "guess_adjoint_terminal_z": 0.0,
+          "algebraic_residual": 6.661338147750939e-15,
+          "total_IC_direct": 1.8246698709267384e-13,
+          "total_IC_adjoint": 4.123098338280922e-12
+        },
+        "accurate": {
+          "primal": true,
+          "forward_multiple": true,
+          "forward_one": true,
+          "adjoint_terminal_x": true,
+          "guess_adjoint_terminal_x": true,
+          "adjoint_integral": true,
+          "guess_adjoint_integral": true,
+          "adjoint_terminal_z": true,
+          "guess_adjoint_terminal_z": true,
+          "algebraic_residual": true,
+          "total_IC_direct": true,
+          "total_IC_adjoint": true
+        },
+        "finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 3.837928663985579e-06
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 3.837830075958948e-08
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 3.8469250007722167e-10
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 5.2257347607845035e-11
+          }
+        ],
+        "minimum_fd_error": 5.2257347607845035e-11,
+        "total_finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 2.1025780744600184e-06
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 2.1025796471249467e-08
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 2.104681768741479e-10
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 6.576295064064651e-11
+          }
+        ],
+        "minimum_total_fd_error": 6.576295064064651e-11,
+        "failures": {
+          "adjoint_mixed_observations": "Error in Function::call for 'adj1_flow' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adj1_flow' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj1_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens1_F' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:620: IDASolveB returned \"IDA_ERR_FAIL\". Consult IDAS documentation.",
+          "adjoint_multiple": "Error in Function::call for 'adj2_flow' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adj2_flow' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj2_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens2_F' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:620: IDASolveB returned \"IDA_ERR_FAIL\". Consult IDAS documentation."
+        },
+        "all_modes_accurate": false
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": "At t = 0.7 and h = -1.00457e-18, the error test failed repeatedly or with |h| = hmin."
+    },
+    "coupled-segmented-1e-07": {
+      "executed": true,
+      "observations": {
+        "kind": "coupled",
+        "projected": true,
+        "segmented": true,
+        "options": {
+          "reltol": 1e-07,
+          "abstol": 9.999999999999999e-10,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false
+        },
+        "errors": {
+          "primal": 1.918973520837388e-07,
+          "forward_multiple": 2.0681537404865225e-07,
+          "forward_one": 2.2930747107076528e-07,
+          "adjoint_terminal_x": 3.485008897019526e-07,
+          "guess_adjoint_terminal_x": 0.0,
+          "adjoint_integral": 2.0434664520975228e-07,
+          "guess_adjoint_integral": 0.0,
+          "adjoint_terminal_z": 1.0128584987389999e-07,
+          "guess_adjoint_terminal_z": 0.0,
+          "adjoint_mixed_observations": 1.9936476022310302e-08,
+          "guess_adjoint_mixed_observations": 0.0,
+          "adjoint_multiple": 2.755587447111907e-08,
+          "duality": 1.4858995367461603e-08,
+          "algebraic_residual": 3.3306690738754696e-16,
+          "total_IC_direct": 6.940709296188174e-08,
+          "total_IC_adjoint": 1.682698052007936e-07
+        },
+        "accurate": {
+          "primal": true,
+          "forward_multiple": true,
+          "forward_one": true,
+          "adjoint_terminal_x": false,
+          "guess_adjoint_terminal_x": true,
+          "adjoint_integral": true,
+          "guess_adjoint_integral": true,
+          "adjoint_terminal_z": true,
+          "guess_adjoint_terminal_z": true,
+          "adjoint_mixed_observations": true,
+          "guess_adjoint_mixed_observations": true,
+          "adjoint_multiple": true,
+          "duality": true,
+          "algebraic_residual": true,
+          "total_IC_direct": true,
+          "total_IC_adjoint": true
+        },
+        "finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 0.00018820105095616917
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 2.232358854215022e-06
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 2.9830659062923814e-06
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 1.7536375681581617e-06
+          }
+        ],
+        "minimum_fd_error": 1.7536375681581617e-06,
+        "total_finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 1.6665403878235452e-05
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 1.4241792304167268e-07
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 1.1362677539613247e-07
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 1.1367858580394831e-07
+          }
+        ],
+        "minimum_total_fd_error": 1.1362677539613247e-07,
+        "failures": {},
+        "all_modes_accurate": false
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    },
+    "coupled-segmented-1e-10": {
+      "executed": true,
+      "observations": {
+        "kind": "coupled",
+        "projected": true,
+        "segmented": true,
+        "options": {
+          "reltol": 1e-10,
+          "abstol": 1e-12,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false
+        },
+        "errors": {
+          "primal": 3.8295409522325455e-10,
+          "forward_multiple": 1.83274830958469e-10,
+          "forward_one": 3.451602031021528e-10,
+          "adjoint_terminal_x": 6.71838140675618e-10,
+          "guess_adjoint_terminal_x": 0.0,
+          "adjoint_integral": 3.4338924211134415e-10,
+          "guess_adjoint_integral": 0.0,
+          "adjoint_terminal_z": 9.65862057000777e-10,
+          "guess_adjoint_terminal_z": 0.0,
+          "adjoint_mixed_observations": 4.0816108020266444e-10,
+          "guess_adjoint_mixed_observations": 0.0,
+          "adjoint_multiple": 2.597384730554484e-10,
+          "duality": 7.593436990305236e-11,
+          "algebraic_residual": 1.1657341758564144e-15,
+          "total_IC_direct": 9.674794299030509e-11,
+          "total_IC_adjoint": 8.114806604453406e-10
+        },
+        "accurate": {
+          "primal": true,
+          "forward_multiple": true,
+          "forward_one": true,
+          "adjoint_terminal_x": true,
+          "guess_adjoint_terminal_x": true,
+          "adjoint_integral": true,
+          "guess_adjoint_integral": true,
+          "adjoint_terminal_z": true,
+          "guess_adjoint_terminal_z": true,
+          "adjoint_mixed_observations": true,
+          "guess_adjoint_mixed_observations": true,
+          "adjoint_multiple": true,
+          "duality": true,
+          "algebraic_residual": true,
+          "total_IC_direct": true,
+          "total_IC_adjoint": true
+        },
+        "finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 0.00018817302894109768
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 1.8815768142608382e-06
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 1.8789396511407594e-08
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 3.69004860001354e-09
+          }
+        ],
+        "minimum_fd_error": 3.69004860001354e-09,
+        "total_finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 1.70752868657522e-05
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 1.697540982753352e-07
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 7.021160689883268e-09
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 5.041262962635073e-09
+          }
+        ],
+        "minimum_total_fd_error": 5.041262962635073e-09,
+        "failures": {},
+        "all_modes_accurate": true
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    },
+    "coupled-segmented-1e-11": {
+      "executed": true,
+      "observations": {
+        "kind": "coupled",
+        "projected": true,
+        "segmented": true,
+        "options": {
+          "reltol": 1e-11,
+          "abstol": 9.999999999999999e-14,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false
+        },
+        "errors": {
+          "primal": 8.663043309241502e-11,
+          "forward_multiple": 1.728216458829479e-10,
+          "forward_one": 6.600089216711927e-11,
+          "adjoint_terminal_x": 4.4516779151848596e-11,
+          "guess_adjoint_terminal_x": 0.0,
+          "adjoint_integral": 4.565891473867754e-11,
+          "guess_adjoint_integral": 0.0,
+          "adjoint_terminal_z": 1.464340870782621e-10,
+          "guess_adjoint_terminal_z": 0.0,
+          "adjoint_mixed_observations": 4.382544470957939e-11,
+          "guess_adjoint_mixed_observations": 0.0,
+          "adjoint_multiple": 1.8871459950275948e-11,
+          "duality": 3.3304470292705446e-11,
+          "algebraic_residual": 3.880229471064922e-14,
+          "total_IC_direct": 3.4758640410359476e-11,
+          "total_IC_adjoint": 4.80551154424802e-11
+        },
+        "accurate": {
+          "primal": true,
+          "forward_multiple": true,
+          "forward_one": true,
+          "adjoint_terminal_x": true,
+          "guess_adjoint_terminal_x": true,
+          "adjoint_integral": true,
+          "guess_adjoint_integral": true,
+          "adjoint_terminal_z": true,
+          "guess_adjoint_terminal_z": true,
+          "adjoint_mixed_observations": true,
+          "guess_adjoint_mixed_observations": true,
+          "adjoint_multiple": true,
+          "duality": true,
+          "algebraic_residual": true,
+          "total_IC_direct": true,
+          "total_IC_adjoint": true
+        },
+        "finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 0.0001881708282636756
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 1.881812367184098e-06
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 1.3973744339423888e-07
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 2.7362577420531053e-06
+          }
+        ],
+        "minimum_fd_error": 1.3973744339423888e-07,
+        "total_finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 1.7074242777829767e-05
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 1.7107138801815225e-07
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 1.877102103383284e-08
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 3.043113909010723e-10
+          }
+        ],
+        "minimum_total_fd_error": 3.043113909010723e-10,
+        "failures": {},
+        "all_modes_accurate": true
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    },
+    "coupled-segmented-1e-12": {
+      "executed": true,
+      "observations": {
+        "kind": "coupled",
+        "projected": true,
+        "segmented": true,
+        "options": {
+          "reltol": 1e-12,
+          "abstol": 1e-14,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false
+        },
+        "errors": {
+          "primal": 8.216468548058475e-12,
+          "forward_multiple": 1.942501715035405e-11,
+          "forward_one": 3.609201650789965e-11,
+          "adjoint_terminal_x": 3.5805802767185924e-12,
+          "guess_adjoint_terminal_x": 0.0,
+          "adjoint_integral": 6.1208178877489714e-12,
+          "guess_adjoint_integral": 0.0,
+          "adjoint_terminal_z": 6.672773444904578e-12,
+          "guess_adjoint_terminal_z": 0.0,
+          "adjoint_mixed_observations": 1.9855006580801146e-12,
+          "guess_adjoint_mixed_observations": 0.0,
+          "adjoint_multiple": 3.1032398872810063e-12,
+          "duality": 1.957989326228926e-12,
+          "algebraic_residual": 3.2751579226442118e-15,
+          "total_IC_direct": 1.967204177333315e-11
+        },
+        "accurate": {
+          "primal": true,
+          "forward_multiple": true,
+          "forward_one": true,
+          "adjoint_terminal_x": true,
+          "guess_adjoint_terminal_x": true,
+          "adjoint_integral": true,
+          "guess_adjoint_integral": true,
+          "adjoint_terminal_z": true,
+          "guess_adjoint_terminal_z": true,
+          "adjoint_mixed_observations": true,
+          "guess_adjoint_mixed_observations": true,
+          "adjoint_multiple": true,
+          "duality": true,
+          "algebraic_residual": true,
+          "total_IC_direct": true
+        },
+        "finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 0.0001881706077714665
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 1.8815002006070437e-06
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 3.7648883122187726e-08
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 3.964596419677354e-07
+          }
+        ],
+        "minimum_fd_error": 3.7648883122187726e-08,
+        "total_finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 1.707423519691431e-05
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 1.7087446739820392e-07
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 1.2951527850191269e-08
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 1.1299194839035444e-07
+          }
+        ],
+        "minimum_total_fd_error": 1.2951527850191269e-08,
+        "failures": {
+          "total_IC_adjoint": "Error in Function::call for 'adj1_total' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj1_flow' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'adj1_phases' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'adj1_phase' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'adj1_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens1_F' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:620: IDACalcICB returned \"IDA_LINESEARCH_FAIL\". Consult IDAS documentation."
+        },
+        "all_modes_accurate": false
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": "The linesearch algorithm failed with too small a step."
+    },
+    "coupled-False-1e-07": {
+      "executed": false,
+      "error": "Error in Function::call for 'fwd5_flow' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'fwd5_flow' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'fwd5_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'fsens5_F' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:620: IDACalcIC returned \"IDA_LINESEARCH_FAIL\". Consult IDAS documentation.",
+      "process_exit_code": 0,
+      "stderr_first_line": "The linesearch algorithm failed with too small a step."
+    },
+    "coupled-False-1e-10": {
+      "executed": false,
+      "error": "Error in Function::call for 'fwd5_flow' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'fwd5_flow' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'fwd5_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'fsens5_F' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:620: IDACalcIC returned \"IDA_LINESEARCH_FAIL\". Consult IDAS documentation.",
+      "process_exit_code": 0,
+      "stderr_first_line": "The linesearch algorithm failed with too small a step."
+    },
+    "coupled-False-1e-11": {
+      "executed": false,
+      "error": "Error in Function::call for 'fwd5_flow' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'fwd5_flow' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'fwd5_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'fsens5_F' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:620: IDACalcIC returned \"IDA_CONV_FAIL\". Consult IDAS documentation.",
+      "process_exit_code": 0,
+      "stderr_first_line": "Newton/Linesearch algorithm failed to converge."
+    },
+    "coupled-False-1e-12": {
+      "executed": false,
+      "error": "Error in Function::call for 'fwd5_flow' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'fwd5_flow' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'fwd5_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'fsens5_F' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:620: IDACalcIC returned \"IDA_CONV_FAIL\". Consult IDAS documentation.",
+      "process_exit_code": 0,
+      "stderr_first_line": "Newton/Linesearch algorithm failed to converge."
+    },
+    "coupled-True-1e-07": {
+      "executed": true,
+      "observations": {
+        "kind": "coupled",
+        "projected": true,
+        "segmented": false,
+        "options": {
+          "reltol": 1e-07,
+          "abstol": 9.999999999999999e-10,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false
+        },
+        "errors": {
+          "primal": 1.2608484898390912e-07,
+          "forward_multiple": 1.0550241069662292e-07,
+          "forward_one": 3.3486161150290516e-07,
+          "adjoint_terminal_x": 1.371421859408528e-07,
+          "guess_adjoint_terminal_x": 0.0,
+          "adjoint_integral": 3.175878935744774e-07,
+          "guess_adjoint_integral": 0.0,
+          "adjoint_terminal_z": 1.2317055442245817e-07,
+          "guess_adjoint_terminal_z": 0.0,
+          "algebraic_residual": 3.4645619706452635e-12,
+          "total_IC_direct": 3.083317579033462e-08,
+          "total_IC_adjoint": 2.495086568465865e-07
+        },
+        "accurate": {
+          "primal": true,
+          "forward_multiple": true,
+          "forward_one": false,
+          "adjoint_terminal_x": true,
+          "guess_adjoint_terminal_x": true,
+          "adjoint_integral": false,
+          "guess_adjoint_integral": true,
+          "adjoint_terminal_z": true,
+          "guess_adjoint_terminal_z": true,
+          "algebraic_residual": true,
+          "total_IC_direct": true,
+          "total_IC_adjoint": true
+        },
+        "finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 0.00018814122693830822
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 4.983145228898422e-06
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 2.9431080896813455e-06
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 7.585980871896788e-07
+          }
+        ],
+        "minimum_fd_error": 7.585980871896788e-07,
+        "total_finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 1.645694004137371e-05
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 7.1717408685797076e-06
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 2.6721892469142947e-06
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 2.6725001093611898e-06
+          }
+        ],
+        "minimum_total_fd_error": 2.6721892469142947e-06,
+        "failures": {
+          "adjoint_mixed_observations": "Error in Function::call for 'adj1_flow' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adj1_flow' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj1_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens1_F' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:620: IDASolveB returned \"IDA_ERR_FAIL\". Consult IDAS documentation.",
+          "adjoint_multiple": "Error in Function::call for 'adj2_flow' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adj2_flow' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj2_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens2_F' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:620: IDASolveB returned \"IDA_ERR_FAIL\". Consult IDAS documentation."
+        },
+        "all_modes_accurate": false
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": "At t = 0.7 and h = -5.63569e-14, the error test failed repeatedly or with |h| = hmin."
+    },
+    "coupled-True-1e-10": {
+      "executed": true,
+      "observations": {
+        "kind": "coupled",
+        "projected": true,
+        "segmented": false,
+        "options": {
+          "reltol": 1e-10,
+          "abstol": 1e-12,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false
+        },
+        "errors": {
+          "primal": 3.414731121199962e-10,
+          "forward_multiple": 1.0001855916244979e-10,
+          "forward_one": 1.8042535726879207e-10,
+          "adjoint_terminal_x": 3.2074615186061806e-10,
+          "guess_adjoint_terminal_x": 0.0,
+          "adjoint_integral": 3.010898376092959e-10,
+          "guess_adjoint_integral": 0.0,
+          "adjoint_terminal_z": 5.165659011652224e-10,
+          "guess_adjoint_terminal_z": 0.0,
+          "algebraic_residual": 1.7841284005726266e-13,
+          "total_IC_direct": 7.525791101414825e-10,
+          "total_IC_adjoint": 1.5537742203974858e-09
+        },
+        "accurate": {
+          "primal": true,
+          "forward_multiple": true,
+          "forward_one": true,
+          "adjoint_terminal_x": true,
+          "guess_adjoint_terminal_x": true,
+          "adjoint_integral": true,
+          "guess_adjoint_integral": true,
+          "adjoint_terminal_z": true,
+          "guess_adjoint_terminal_z": true,
+          "algebraic_residual": true,
+          "total_IC_direct": true,
+          "total_IC_adjoint": true
+        },
+        "finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 0.00018817057400800742
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 1.881553599590092e-06
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 1.8812978005393556e-08
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 3.0905281667159556e-09
+          }
+        ],
+        "minimum_fd_error": 3.0905281667159556e-09,
+        "total_finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 1.707274558929948e-05
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 1.696310140810419e-07
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 2.0513505782915328e-07
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 3.033828843701514e-08
+          }
+        ],
+        "minimum_total_fd_error": 3.033828843701514e-08,
+        "failures": {
+          "adjoint_mixed_observations": "Error in Function::call for 'adj1_flow' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adj1_flow' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj1_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens1_F' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:620: IDASolveB returned \"IDA_ERR_FAIL\". Consult IDAS documentation.",
+          "adjoint_multiple": "Error in Function::call for 'adj2_flow' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adj2_flow' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj2_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens2_F' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:620: IDASolveB returned \"IDA_ERR_FAIL\". Consult IDAS documentation."
+        },
+        "all_modes_accurate": false
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": "At t = 0.7 and h = -5.63569e-17, the error test failed repeatedly or with |h| = hmin."
+    },
+    "coupled-True-1e-11": {
+      "executed": true,
+      "observations": {
+        "kind": "coupled",
+        "projected": true,
+        "segmented": false,
+        "options": {
+          "reltol": 1e-11,
+          "abstol": 9.999999999999999e-14,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false
+        },
+        "errors": {
+          "primal": 1.230059247903292e-10,
+          "forward_multiple": 4.10343981016581e-11,
+          "forward_one": 1.219214467808355e-10,
+          "adjoint_terminal_x": 1.77253767219554e-11,
+          "guess_adjoint_terminal_x": 0.0,
+          "adjoint_integral": 5.1904654541566587e-11,
+          "guess_adjoint_integral": 0.0,
+          "adjoint_terminal_z": 1.2083545275487495e-10,
+          "guess_adjoint_terminal_z": 0.0,
+          "algebraic_residual": 3.9968028886505635e-15,
+          "total_IC_direct": 4.272515674585975e-11,
+          "total_IC_adjoint": 9.568967840323239e-11
+        },
+        "accurate": {
+          "primal": true,
+          "forward_multiple": true,
+          "forward_one": true,
+          "adjoint_terminal_x": true,
+          "guess_adjoint_terminal_x": true,
+          "adjoint_integral": true,
+          "guess_adjoint_integral": true,
+          "adjoint_terminal_z": true,
+          "guess_adjoint_terminal_z": true,
+          "algebraic_residual": true,
+          "total_IC_direct": true,
+          "total_IC_adjoint": true
+        },
+        "finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 0.00018817055712889806
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 1.8809699314122795e-06
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 5.307410948340408e-07
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 7.202025012476021e-06
+          }
+        ],
+        "minimum_fd_error": 5.307410948340408e-07,
+        "total_finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 1.7073715460341394e-05
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 1.815504404589774e-07
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 5.439274595175903e-07
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 3.1295789285993667e-06
+          }
+        ],
+        "minimum_total_fd_error": 1.815504404589774e-07,
+        "failures": {
+          "adjoint_mixed_observations": "Error in Function::call for 'adj1_flow' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adj1_flow' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj1_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens1_F' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:620: IDASolveB returned \"IDA_ERR_FAIL\". Consult IDAS documentation.",
+          "adjoint_multiple": "Error in Function::call for 'adj2_flow' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adj2_flow' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj2_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens2_F' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:620: IDASolveB returned \"IDA_ERR_FAIL\". Consult IDAS documentation."
+        },
+        "all_modes_accurate": false
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": "At t = 0.7 and h = -5.63569e-18, the error test failed repeatedly or with |h| = hmin."
+    },
+    "coupled-True-1e-12": {
+      "executed": true,
+      "observations": {
+        "kind": "coupled",
+        "projected": true,
+        "segmented": false,
+        "options": {
+          "reltol": 1e-12,
+          "abstol": 1e-14,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false
+        },
+        "errors": {
+          "primal": 1.860515668553618e-11,
+          "forward_multiple": 2.2796986520745577e-11,
+          "forward_one": 1.1826201604730054e-11,
+          "adjoint_terminal_x": 1.9268475703881904e-12,
+          "guess_adjoint_terminal_x": 0.0,
+          "adjoint_integral": 6.86891935248212e-12,
+          "guess_adjoint_integral": 0.0,
+          "adjoint_terminal_z": 3.1211699891287026e-12,
+          "guess_adjoint_terminal_z": 0.0,
+          "algebraic_residual": 7.16093850883226e-15,
+          "total_IC_direct": 6.456279955102673e-12
+        },
+        "accurate": {
+          "primal": true,
+          "forward_multiple": true,
+          "forward_one": true,
+          "adjoint_terminal_x": true,
+          "guess_adjoint_terminal_x": true,
+          "adjoint_integral": true,
+          "guess_adjoint_integral": true,
+          "adjoint_terminal_z": true,
+          "guess_adjoint_terminal_z": true,
+          "algebraic_residual": true,
+          "total_IC_direct": true
+        },
+        "finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 0.00018817061229911333
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 1.8816908962884102e-06
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 1.1959225898472425e-07
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 4.0239622711712997e-07
+          }
+        ],
+        "minimum_fd_error": 1.1959225898472425e-07,
+        "total_finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 1.7074252972611056e-05
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 1.6996658936290734e-07
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 2.6021073296078612e-08
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 1.392507228044811e-07
+          }
+        ],
+        "minimum_total_fd_error": 2.6021073296078612e-08,
+        "failures": {
+          "adjoint_mixed_observations": "Error in Function::call for 'adj1_flow' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adj1_flow' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj1_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens1_F' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:620: IDASolveB returned \"IDA_ERR_FAIL\". Consult IDAS documentation.",
+          "adjoint_multiple": "Error in Function::call for 'adj2_flow' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adj2_flow' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj2_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens2_F' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:620: IDASolveB returned \"IDA_ERR_FAIL\". Consult IDAS documentation.",
+          "total_IC_adjoint": "Error in Function::call for 'adj1_total' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj1_flow' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'adj1_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens1_F' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:620: IDACalcICB returned \"IDA_LINESEARCH_FAIL\". Consult IDAS documentation."
+        },
+        "all_modes_accurate": false
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": "At t = 0.7 and h = -5.63569e-19, the error test failed repeatedly or with |h| = hmin."
+    },
+    "initial-linear-0": {
+      "executed": true,
+      "observations": {
+        "kind": "linear",
+        "point": [
+          1.3,
+          0.0,
+          0.7,
+          1.4
+        ],
+        "guess": [
+          0.3
+        ],
+        "options": {
+          "reltol": 1e-11,
+          "abstol": 9.999999999999999e-14,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false
+        },
+        "primal_error": 4.5307091411928013e-11,
+        "adjoint_error": 2.2950155267554944e-11,
+        "guess_adjoint_error": 0.0,
+        "branch": 1,
+        "initial_x": 1.3,
+        "initial_z": [
+          1.8199999999999998
+        ],
+        "initial_gz_condition": 1.0,
+        "initial_gz_norm": 1.0,
+        "completed": true
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    },
+    "initial-linear-1": {
+      "executed": true,
+      "observations": {
+        "kind": "linear",
+        "point": [
+          1.3,
+          0.0,
+          0.7,
+          1.4
+        ],
+        "guess": [
+          3
+        ],
+        "options": {
+          "reltol": 1e-11,
+          "abstol": 9.999999999999999e-14,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false
+        },
+        "primal_error": 4.5307091411928013e-11,
+        "adjoint_error": 2.2950155267554944e-11,
+        "guess_adjoint_error": 0.0,
+        "branch": 1,
+        "initial_x": 1.3,
+        "initial_z": [
+          1.8199999999999998
+        ],
+        "initial_gz_condition": 1.0,
+        "initial_gz_norm": 1.0,
+        "completed": true
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    },
+    "initial-nonlinear-0": {
+      "executed": true,
+      "observations": {
+        "kind": "nonlinear",
+        "point": [
+          1.3,
+          0.0,
+          0.3,
+          1.4
+        ],
+        "guess": [
+          0.2
+        ],
+        "options": {
+          "reltol": 1e-11,
+          "abstol": 9.999999999999999e-14,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false
+        },
+        "analytic_initial_gz_norm": 2.698147512646408,
+        "analytic_initial_inverse_gz_norm": 0.37062465833055064,
+        "primal_error": 3.4917014950389464e-11,
+        "adjoint_error": 1.1967200739201504e-11,
+        "guess_adjoint_error": 0.0,
+        "branch": 1,
+        "initial_x": 1.3,
+        "initial_z": [
+          1.3490737563232076
+        ],
+        "initial_gz_condition": 1.0,
+        "initial_gz_norm": 2.698147512646415,
+        "completed": true
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    },
+    "initial-nonlinear-1": {
+      "executed": true,
+      "observations": {
+        "kind": "nonlinear",
+        "point": [
+          1.3,
+          0.0,
+          0.3,
+          1.4
+        ],
+        "guess": [
+          3
+        ],
+        "options": {
+          "reltol": 1e-11,
+          "abstol": 9.999999999999999e-14,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false
+        },
+        "analytic_initial_gz_norm": 2.698147512646408,
+        "analytic_initial_inverse_gz_norm": 0.37062465833055064,
+        "primal_error": 3.4917014950389464e-11,
+        "adjoint_error": 1.1967405962749241e-11,
+        "guess_adjoint_error": 0.0,
+        "branch": 1,
+        "initial_x": 1.3,
+        "initial_z": [
+          1.349073756323204
+        ],
+        "initial_gz_condition": 1.0,
+        "initial_gz_norm": 2.698147512646408,
+        "completed": true
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    },
+    "initial-nonlinear-2": {
+      "executed": true,
+      "observations": {
+        "kind": "nonlinear",
+        "point": [
+          1.3,
+          0.0,
+          0.3,
+          1.4
+        ],
+        "guess": [
+          -0.2
+        ],
+        "options": {
+          "reltol": 1e-11,
+          "abstol": 9.999999999999999e-14,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false
+        },
+        "analytic_initial_gz_norm": 2.698147512646408,
+        "analytic_initial_inverse_gz_norm": 0.37062465833055064,
+        "primal_error": 9.956147017931016e-12,
+        "adjoint_error": 8.08769105665016e-12,
+        "guess_adjoint_error": 0.0,
+        "branch": -1,
+        "initial_x": 1.3,
+        "initial_z": [
+          -1.3490737563232076
+        ],
+        "initial_gz_condition": 1.0,
+        "initial_gz_norm": 2.698147512646415,
+        "completed": true
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    },
+    "initial-nonlinear-3": {
+      "executed": true,
+      "observations": {
+        "kind": "nonlinear",
+        "point": [
+          1.3,
+          0.0,
+          0.3,
+          1.4
+        ],
+        "guess": [
+          -3
+        ],
+        "options": {
+          "reltol": 1e-11,
+          "abstol": 9.999999999999999e-14,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false
+        },
+        "analytic_initial_gz_norm": 2.698147512646408,
+        "analytic_initial_inverse_gz_norm": 0.37062465833055064,
+        "primal_error": 9.956147017931016e-12,
+        "adjoint_error": 8.088192245908178e-12,
+        "guess_adjoint_error": 0.0,
+        "branch": -1,
+        "initial_x": 1.3,
+        "initial_z": [
+          -1.349073756323204
+        ],
+        "initial_gz_condition": 1.0,
+        "initial_gz_norm": 2.698147512646408,
+        "completed": true
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    },
+    "initial-coupled-0": {
+      "executed": true,
+      "observations": {
+        "kind": "coupled",
+        "point": [
+          1.3,
+          0.0,
+          0.7,
+          1.4,
+          0.2
+        ],
+        "guess": [
+          0.3,
+          0.5
+        ],
+        "options": {
+          "reltol": 1e-11,
+          "abstol": 9.999999999999999e-14,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false
+        },
+        "primal_error": 8.663043309241502e-11,
+        "adjoint_error": 1.5005109316728567e-11,
+        "guess_adjoint_error": 0.0,
+        "branch": 1,
+        "initial_x": 1.3,
+        "initial_z": [
+          1.8199999999999998,
+          3.512399999999999
+        ],
+        "initial_gz_condition": 15.18374007384634,
+        "initial_gz_norm": 3.8966318884193223,
+        "completed": true
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    },
+    "initial-coupled-1": {
+      "executed": true,
+      "observations": {
+        "kind": "coupled",
+        "point": [
+          1.3,
+          0.0,
+          0.7,
+          1.4,
+          0.2
+        ],
+        "guess": [
+          3,
+          5
+        ],
+        "options": {
+          "reltol": 1e-11,
+          "abstol": 9.999999999999999e-14,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false
+        },
+        "primal_error": 8.663043309241502e-11,
+        "adjoint_error": 1.5005109316728567e-11,
+        "guess_adjoint_error": 0.0,
+        "branch": 1,
+        "initial_x": 1.3,
+        "initial_z": [
+          1.8199999999999998,
+          3.5123999999999986
+        ],
+        "initial_gz_condition": 15.18374007384634,
+        "initial_gz_norm": 3.8966318884193223,
+        "completed": true
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    },
+    "invalid-guess": {
+      "executed": true,
+      "observations": {
+        "kind": "nonlinear",
+        "point": [
+          1.3,
+          0.0,
+          0.3,
+          1.4
+        ],
+        "guess": [
+          0
+        ],
+        "options": {
+          "reltol": 1e-11,
+          "abstol": 9.999999999999999e-14,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false
+        },
+        "analytic_initial_gz_norm": 2.698147512646408,
+        "analytic_initial_inverse_gz_norm": 0.37062465833055064,
+        "completed": false,
+        "error": "Error in Function::call for 'flow' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'flow' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'consistent' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'root' [Newton] at .../casadi/core/function.cpp:1736:\n.../casadi/core/oracle_function.cpp:409: root:g failed: Inf detected for output g, at (row 0, col 0)."
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": "Function root (0x124167000)"
+    },
+    "singular-initial": {
+      "executed": true,
+      "observations": {
+        "kind": "nonlinear",
+        "point": [
+          0.0,
+          0.0,
+          0.3,
+          1.4
+        ],
+        "guess": [
+          0
+        ],
+        "options": {
+          "reltol": 1e-11,
+          "abstol": 9.999999999999999e-14,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false
+        },
+        "completed": false,
+        "error": "Error in Function::call for 'flow' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'flow' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'consistent' [MXFunction] at .../casadi/core/function.cpp:1736:\n.../casadi/core/assertion.cpp:71: Assertion error: Algebraic root must be finite, locally regular and satisfy its residual"
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": "Function consistent (0x113822400)"
+    },
+    "invalid-gain": {
+      "executed": true,
+      "observations": {
+        "kind": "nonlinear",
+        "point": [
+          1.3,
+          0.0,
+          0.3,
+          -1.0
+        ],
+        "guess": [
+          1
+        ],
+        "options": {
+          "reltol": 1e-11,
+          "abstol": 9.999999999999999e-14,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false
+        },
+        "completed": false,
+        "error": "Error in Function::call for 'flow' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'flow' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'consistent' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'root' [Newton] at .../casadi/core/function.cpp:1736:\n.../casadi/core/rootfinder.cpp:296: rootfinder process failed. Set 'error_on_fail' option to false to ignore this error."
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": "Function root (0x11391b400)"
+    },
+    "invalid-differential-IC": {
+      "executed": true,
+      "observations": {
+        "kind": "nonlinear",
+        "point": [
+          -1.0,
+          0.0,
+          0.3,
+          1.4
+        ],
+        "guess": [
+          1
+        ],
+        "options": {
+          "reltol": 1e-11,
+          "abstol": 9.999999999999999e-14,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false
+        },
+        "completed": false,
+        "error": "Error in Function::call for 'flow' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'flow' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'consistent' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'root' [Newton] at .../casadi/core/function.cpp:1736:\n.../casadi/core/rootfinder.cpp:296: rootfinder process failed. Set 'error_on_fail' option to false to ignore this error."
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": "Function root (0x140809800)"
+    },
+    "singular-gain": {
+      "executed": true,
+      "observations": {
+        "kind": "nonlinear",
+        "point": [
+          1.3,
+          0.0,
+          0.3,
+          0.0
+        ],
+        "guess": [
+          0
+        ],
+        "options": {
+          "reltol": 1e-11,
+          "abstol": 9.999999999999999e-14,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false
+        },
+        "completed": false,
+        "error": "Error in Function::call for 'flow' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'flow' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'consistent' [MXFunction] at .../casadi/core/function.cpp:1736:\n.../casadi/core/assertion.cpp:71: Assertion error: Algebraic root must be finite, locally regular and satisfy its residual"
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": "Function consistent (0x1221f5e00)"
+    },
+    "near-singular": {
+      "executed": true,
+      "observations": {
+        "kind": "nonlinear",
+        "point": [
+          1e-12,
+          0.0,
+          0.3,
+          1.4
+        ],
+        "guess": [
+          1e-06
+        ],
+        "options": {
+          "reltol": 1e-11,
+          "abstol": 9.999999999999999e-14,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false
+        },
+        "analytic_initial_gz_norm": 2.3664319132398462e-06,
+        "analytic_initial_inverse_gz_norm": 422577.12736425834,
+        "completed": false,
+        "error": "Error in Function::call for 'flow' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'flow' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'phases' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'phase' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'F' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:620: IDASolve returned \"IDA_CONV_FAIL\". Consult IDAS documentation."
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": "At t = 2.81886e-05 and h = 2.07411e-17, the corrector convergence failed repeatedly or with |h| = hmin."
+    },
+    "structural-singularity": {
+      "executed": true,
+      "observations": {
+        "kind": "structural",
+        "rejected": true,
+        "error": ".../casadi/core/function_internal.cpp:157: Error calling Newton::init for 'root':\n.../casadi/core/rootfinder.cpp:255: Assertion \"!sp_jac_.is_singular()\" failed:\nRootfinder::init: singularity - the jacobian is structurally rank-deficient. sprank(J)=0 (instead of 1)"
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    },
+    "local-singularity": {
+      "executed": true,
+      "observations": {
+        "kind": "local",
+        "rejected": true,
+        "error": "Error in Function::call for 'consistent' [MXFunction] at .../casadi/core/function.cpp:514:\n.../casadi/core/assertion.cpp:71: Assertion error: Algebraic root must be finite, locally regular and satisfy its residual"
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    },
+    "initial-only-linear": {
+      "executed": true,
+      "observations": {
+        "kind": "linear",
+        "primal_error": 0.0,
+        "forward_error": 0.0,
+        "adjoint_error": 0.0,
+        "guess_adjoint_error": 0.0
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    },
+    "initial-only-nonlinear": {
+      "executed": true,
+      "observations": {
+        "kind": "nonlinear",
+        "primal_error": 9.217063053461964e-15,
+        "forward_error": 4.773959005888173e-15,
+        "adjoint_error": 4.551914400963142e-15,
+        "guess_adjoint_error": 0.0
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    },
+    "nonfinite-guess": {
+      "executed": true,
+      "observations": {
+        "input_kind": "guess",
+        "rejected": true,
+        "error": "Error in Function::call for 'flow' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'flow' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'consistent' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'root' [Newton] at .../casadi/core/function.cpp:1736:\n.../casadi/core/oracle_function.cpp:409: root:jac_g_x failed: NaN detected for output jac_g_x, at (row 0, col 0)."
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": "Function root (0x10496c600)"
+    },
+    "nonfinite-parameter": {
+      "executed": true,
+      "observations": {
+        "input_kind": "parameter",
+        "rejected": true,
+        "error": "Error in Function::call for 'flow' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'flow' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'consistent' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'root' [Newton] at .../casadi/core/function.cpp:1736:\n.../casadi/core/oracle_function.cpp:409: root:jac_g_x failed: Inf detected for output g, at (row 0, col 0)."
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": "Function root (0x106816a00)"
+    },
+    "calc_ic-disabled": {
+      "executed": true,
+      "observations": {
+        "options": {
+          "reltol": 1e-11,
+          "abstol": 9.999999999999999e-14,
+          "calc_ic": false,
+          "calc_icB": true,
+          "quad_err_con": true,
+          "suppress_algebraic": false
+        },
+        "completed": false,
+        "error": "Error in Function::call for 'flow' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'flow' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'phases' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'phase' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'F' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:620: IDASolve returned \"IDA_ERR_FAIL\". Consult IDAS documentation."
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": "At t = 0 and h = 3.8147e-09, the error test failed repeatedly or with |h| = hmin."
+    },
+    "calc_ic-enabled": {
+      "executed": true,
+      "observations": {
+        "options": {
+          "reltol": 1e-11,
+          "abstol": 9.999999999999999e-14,
+          "calc_ic": true,
+          "calc_icB": true,
+          "quad_err_con": true,
+          "suppress_algebraic": false
+        },
+        "completed": true,
+        "primal_error": 4.5307091411928013e-11
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    }
+  },
+  "matrix_policy": "Scalar tolerances, required quadrature error control, calc_ic=True, calc_icB=True, algebraic error control retained; serial derivative batching on 3.8.1 only.",
+  "root_policy": "Native Newton on original residuals; max_iter=100; residual tolerance equals scalar abstol; abstolStep=0; error_on_fail and regularity_check enabled. Assert finite root/residual/determinant, nonzero local determinant and residual within target.",
+  "source_sha256": "509c86a79d5d11089b443ae98628d4d27f3e5a7149acef849c1e83fa281f5d5e",
+  "command": " <env-python> examples/dae/sensitivity/dae_qualification.py --output <report.json>",
+  "references": [
+    "https://web.casadi.org/docs/#nonlinear-root-finding-problems",
+    "https://web.casadi.org/api/html/d3/d65/group__rootfinder.html"
+  ]
+}

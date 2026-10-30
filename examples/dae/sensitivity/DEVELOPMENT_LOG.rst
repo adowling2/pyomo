@@ -114,3 +114,35 @@ qualification. No push, PR or external message has been sent.
 Packaging/style/hash checks pass; results/ode_closeout.json records current
 sources and commands. Next action: begin native G4 DAE experiments and write
 DAE_DECISION.rst before any DAE production code.
+
+30 October 2026: G4 native DAE contract
+---------------------------------------
+
+Status: passed as a native design gate; this entry is included in the G4
+checkpoint commit. G3 is committed as f2fcaa0cc. Production Simulator code still rejects DAEs. The native
+experiment runner imports only CasADi/NumPy; no Pyomo, ASL or optimizer.
+
+There are 58 isolated experiments per version, including linear, nonlinear
+and two-algebraic-variable residuals; one/multiple direct and adjoint modes;
+nonlinear IC composition; integral/terminal/mixed costs; four-step FD sweeps;
+branch and guess changes; initial-only maps; invalid/nonfinite inputs and
+structural/local singularity. Raw algebraic-output adjoints are inaccurate,
+and a multi-observation native map can fail at adjoint weight changes.
+
+Generic implicit reconstruction fixes the recorded terminal output path.
+Normalized observation-interval composition also resolves the recorded
+mixed-weight failures. Both mechanisms reuse native solvers. All proposed
+modes pass on all three models at 1e-10/1e-12 and 1e-11/1e-13 settings on
+both versions, with analytic/product errors below 1e-9. Initial state values
+are unchanged; guess derivatives are locally zero on either branch.
+
+A 1e-12 coupled total-cost adjoint still fails native consistency, and the
+near-singular model fails native integration. These are retained as explicit
+limitations. The design does not silently relax tolerances or restrict away
+algebraic objectives to preserve an incorrect output derivative.
+
+DAE_DECISION.rst defines the proposed z0 guess input, consistent zf output,
+initialization/output mathematics, required IDAS options and minimal G5
+boundary. It must be committed before production changes. Next action:
+verify the G4 aggregate, commit the native decision, then implement G5 with
+public-interface regression tests.
