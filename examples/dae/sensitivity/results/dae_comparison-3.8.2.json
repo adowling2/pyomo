@@ -1,0 +1,238 @@
+{
+  "purpose": "G7 public DAE versus implicit Radau direct/adjoint sensitivities",
+  "passed": true,
+  "model": "x'=-k*z, q'=x, z=a*x, x0=k^2, q0=0; J=2*xT+3*qT+4*zT+k^2+.2*a^2",
+  "point": [
+    0.7,
+    1.4
+  ],
+  "public": {
+    "terminal": [
+      0.1511700543893788,
+      0.3457448424598176,
+      0.21163807614513025
+    ],
+    "cost": 3.068126940738731,
+    "direct_gradient": [
+      5.011620102552627,
+      -0.15254821789964856
+    ],
+    "adjoint_gradient": [
+      5.011620102182656,
+      -0.15254821794601792
+    ],
+    "errors": {
+      "terminal": 7.926492221425453e-12,
+      "cost": 7.653640885550123e-12,
+      "terminal_direct": 1.4214661797998559e-11,
+      "cost_direct": 4.3984569866215576e-11,
+      "cost_adjoint": 5.103123178909177e-11
+    }
+  },
+  "meshes": [
+    {
+      "elements": 4,
+      "ncp": 3,
+      "states": 64,
+      "equalities": 64,
+      "residual": 1.0547118733938987e-15,
+      "cost": 3.068127175694378,
+      "terminal": [
+        0.1511701061556886,
+        0.3457447896370483,
+        0.211638148617964
+      ],
+      "direct_gradient": [
+        5.011622605432838,
+        -0.15254709508136755
+      ],
+      "adjoint_gradient": [
+        5.011622605432839,
+        -0.15254709508136755
+      ],
+      "discrete_duality_error": 1.477435424667973e-16,
+      "continuous_errors": {
+        "cost": 5.776289353552347e-08,
+        "terminal": 5.982185541160909e-08,
+        "terminal_sensitivity": 5.621545199377424e-07,
+        "cost_gradient": 9.742490230500378e-07
+      },
+      "finite_differences": [
+        {
+          "step": 0.01,
+          "gradient": [
+            5.011544408577717,
+            -0.15253884514776495
+          ],
+          "discrete_error": 1.3007612129581306e-05
+        },
+        {
+          "step": 0.001,
+          "gradient": [
+            5.011621823569179,
+            -0.15254701258293757
+          ],
+          "discrete_error": 1.3005867308484456e-07
+        },
+        {
+          "step": 0.0001,
+          "gradient": [
+            5.0116225976104545,
+            -0.15254709425427393
+          ],
+          "discrete_error": 1.3012100298279692e-09
+        },
+        {
+          "step": 1e-05,
+          "gradient": [
+            5.011622605333166,
+            -0.15254709508916164
+          ],
+          "discrete_error": 1.657992807916646e-11
+        }
+      ]
+    },
+    {
+      "elements": 8,
+      "ncp": 3,
+      "states": 124,
+      "equalities": 124,
+      "residual": 2.1094237467877974e-15,
+      "cost": 3.068126948215985,
+      "terminal": [
+        0.15117005603680053,
+        0.345744840778767,
+        0.21163807845152074
+      ],
+      "direct_gradient": [
+        5.011620182671125,
+        -0.15254818196864073
+      ],
+      "adjoint_gradient": [
+        5.011620182671125,
+        -0.15254818196864028
+      ],
+      "discrete_duality_error": 3.8531075472395815e-16,
+      "continuous_errors": {
+        "cost": 1.8456627493042998e-09,
+        "terminal": 1.911457373828302e-09,
+        "terminal_sensitivity": 1.8013216545489863e-08,
+        "cost_gradient": 3.121925973503001e-08
+      },
+      "finite_differences": [
+        {
+          "step": 0.01,
+          "gradient": [
+            5.011541983398726,
+            -0.15253993219612738
+          ],
+          "discrete_error": 1.3008019472727348e-05
+        },
+        {
+          "step": 0.001,
+          "gradient": [
+            5.011619400783873,
+            -0.15254809947085057
+          ],
+          "discrete_error": 1.3006265001349434e-07
+        },
+        {
+          "step": 0.0001,
+          "gradient": [
+            5.011620174852904,
+            -0.15254818114041058
+          ],
+          "discrete_error": 1.300518079970045e-09
+        },
+        {
+          "step": 1e-05,
+          "gradient": [
+            5.0116201826044815,
+            -0.15254818206411613
+          ],
+          "discrete_error": 8.283853712423582e-11
+        }
+      ]
+    },
+    {
+      "elements": 16,
+      "ncp": 3,
+      "states": 244,
+      "equalities": 244,
+      "residual": 8.1601392309949e-15,
+      "cost": 3.068126940944962,
+      "terminal": [
+        0.15117005443482687,
+        0.3457448424134259,
+        0.2116380762087576
+      ],
+      "direct_gradient": [
+        5.011620105028664,
+        -0.15254821681059105
+      ],
+      "adjoint_gradient": [
+        5.011620105028666,
+        -0.15254821681059072
+      ],
+      "discrete_duality_error": 4.432308117526448e-16,
+      "continuous_errors": {
+        "cost": 5.834798628265059e-11,
+        "terminal": 6.043998997232994e-11,
+        "terminal_sensitivity": 5.705544046047704e-10,
+        "cost_gradient": 9.888973239511116e-10
+      },
+      "finite_differences": [
+        {
+          "step": 0.01,
+          "gradient": [
+            5.011541905678141,
+            -0.15253996704329698
+          ],
+          "discrete_error": 1.3008032636258487e-05
+        },
+        {
+          "step": 0.001,
+          "gradient": [
+            5.01161932314087,
+            -0.1525481343147561
+          ],
+          "discrete_error": 1.3006274181690351e-07
+        },
+        {
+          "step": 0.0001,
+          "gradient": [
+            5.011620097208347,
+            -0.15254821598809087
+          ],
+          "discrete_error": 1.300866771671998e-09
+        },
+        {
+          "step": 1e-05,
+          "gradient": [
+            5.011620104933279,
+            -0.1525482168140968
+          ],
+          "discrete_error": 1.5866776599121185e-11
+        }
+      ]
+    }
+  ],
+  "environment": {
+    "python": "3.12.14 (main, Sep  3 2026, 03:46:19) [Clang 21.1.8 ]",
+    "pyomo": "6.10.2.dev0",
+    "casadi": "3.8.2",
+    "numpy": "2.5.4",
+    "scipy": "1.18.1",
+    "platform": "macOS-27.0.1-arm64-arm-64bit"
+  },
+  "ASL": {
+    "path": "/Users/adowling/.idaes/bin/libpynumero_ASL.dylib",
+    "sha256": "d7d1877f8768b863185944b40a00de6e5bba19874c56541e0c81f32b47997bf8",
+    "fresh_build": false,
+    "optimization_solver_used": false
+  },
+  "source_sha256": {
+    "examples/dae/sensitivity/dae_comparison.py": "7bb9286537707535e1a95c98b47c987b78fad5df864da1766cb7a47ad20043c1",
+    "pyomo/dae/simulator.py": "05bf7fd6289c120618403156bb101ddd931b8cc3e91044a8728f030d7e214881"
+  }
+}

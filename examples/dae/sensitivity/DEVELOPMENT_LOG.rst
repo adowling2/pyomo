@@ -251,3 +251,24 @@ Next action: G7 final support matrix, contribution/release draft and disclosure,
 full standalone-goal requirement audit (including DAE collocation comparison),
 then final local validation and a focused packaging commit. No publication
 or remote CI is authorized or claimed.
+
+30 October 2026: G7 independent DAE collocation comparison
+----------------------------------------------------------
+
+Status: active; the remaining standalone-goal DAE collocation check passes.
+G6 is committed in 17a021b54. No production changes follow that checkpoint.
+
+The optional dae_comparison.py retains the same original implicit DAE in
+public and discrete models, with nonlinear ICs and a mixed differential/
+integral/algebraic terminal cost. Independent implicit direct and transposed
+adjoint solves agree to roundoff. Four-step discrete FD minima are below
+8.3e-11. The total-cost gradient's continuous error decreases from 9.74e-7
+to 3.12e-8 to 9.89e-10 on 4/8/16 Radau3 elements. The public map passes
+all continuous primal/direct/adjoint checks below 5.6e-11 on both versions.
+
+DAE_COMPARISON.rst and the two versioned records retain the scope, equations,
+source/ASL hashes and commands. This optional comparison uses the existing
+ASL library and no optimizer. Black, typos, RST and hash checks pass. These
+files are included in an intermediate G7 evidence commit. Next: finish the
+support/requirement matrix and local contribution packaging before declaring
+G7 or the overall goal complete.
