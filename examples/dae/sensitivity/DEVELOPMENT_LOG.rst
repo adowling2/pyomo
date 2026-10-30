@@ -61,3 +61,31 @@ working directories or run sequentially.
 Next action: G2 public-interface collocation comparison and controlled-grid
 cost measurements. Current source remains the C implementation; the new
 numerical qualification needed no production fix.
+
+30 October 2026: G2 collocation and cost comparison
+---------------------------------------------------
+
+Status: passed. G1 is committed as 3f66b87d2.
+The G2 script, reports and interpretation are included in the upcoming G2
+checkpoint commit. Production Simulator code is unchanged.
+
+The public map and independently differentiated collocation equations use
+the same nonlinear IC, integral state and explicit cost. Direct and adjoint
+continuous derivatives agree with the exact value within 1.4e-10. Radau
+4/8/16-element derivative errors decrease from 1.67e-7 to 5.32e-9 to
+1.68e-10; discrete FD agreement is below 1.4e-10. Existing ASL binary path
+and hash are recorded; no optimizer was used.
+
+Nine grid sizes cover 10-400 observations and 0-400 control intervals.
+The coarse pilot exposes accumulated integration error above 3e-7 and
+retains gate_passed=false. Explicit tolerance refinement to 1e-11/1e-13
+passes every recorded primal/JVP/VJP check below 4.2e-9 on both versions.
+Final timing matrices run serially after exploratory parallel runs; results
+show controlled runtime increasing with interval work and much cheaper
+uncontrolled multi-observation calls. See ODE_COMPARISON.rst for the measured
+cost and accuracy limits. No default or algorithm was changed.
+
+Command: run ode_comparison.py once per environment with --tolerance 1e-11,
+plus a retained 3.8.2 --tolerance 1e-9 pilot. Next action: G3 local Sphinx
+build, final ODE suite/optional-dependency checks and contribution packaging.
+Black, typo checks, RST parsing, diff checks and source-hash verification pass.

@@ -1,0 +1,473 @@
+{
+  "checkpoint": "G2",
+  "casadi": "3.8.1",
+  "numpy": "2.5.4",
+  "scipy": "1.18.1",
+  "pyomo": "6.10.2.dev0",
+  "python": "3.12.14 (main, Sep  3 2026, 03:46:19) [Clang 21.1.8 ]",
+  "platform": "macOS-27.0.1-arm64-arm-64bit",
+  "public_interface": {
+    "value": 2.1064842137230433,
+    "analytic_value": 2.10648421375943,
+    "analytic_derivative": 4.893876838802868,
+    "direct": 4.893876838722883,
+    "adjoint": 4.893876838663911,
+    "value_error": 3.638689349827473e-11,
+    "direct_error": 7.998490758609478e-11,
+    "adjoint_error": 1.389564019405043e-10
+  },
+  "collocation": {
+    "available": true,
+    "rows": [
+      {
+        "elements": 4,
+        "ncp": 3,
+        "states": 51,
+        "equalities": 51,
+        "residual": 9.992007221626409e-16,
+        "cost": 2.106484191490827,
+        "cost_discretization_error": 2.2268602961617034e-08,
+        "discrete_derivative": 4.893876671691881,
+        "continuous_derivative": 4.893876838802868,
+        "derivative_discretization_error": 1.6711098638211297e-07,
+        "finite_differences": [
+          {
+            "step": 0.01,
+            "derivative": 4.893780767290146,
+            "discrete_fd_error": 9.590440173568027e-05
+          },
+          {
+            "step": 0.001,
+            "derivative": 4.893875712672413,
+            "discrete_fd_error": 9.590194682829178e-07
+          },
+          {
+            "step": 0.0001,
+            "derivative": 4.893876662097618,
+            "discrete_fd_error": 9.594263161716299e-09
+          },
+          {
+            "step": 1e-05,
+            "derivative": 4.8938766715522775,
+            "discrete_fd_error": 1.3960388400846568e-10
+          }
+        ]
+      },
+      {
+        "elements": 8,
+        "ncp": 3,
+        "states": 99,
+        "equalities": 99,
+        "residual": 2.886579864025407e-15,
+        "cost": 2.1064842130519414,
+        "cost_discretization_error": 7.074887342639613e-10,
+        "discrete_derivative": 4.8938768334786324,
+        "continuous_derivative": 4.893876838802868,
+        "derivative_discretization_error": 5.324235274883904e-09,
+        "finite_differences": [
+          {
+            "step": 0.01,
+            "derivative": 4.893780929113878,
+            "discrete_fd_error": 9.59043647545954e-05
+          },
+          {
+            "step": 0.001,
+            "derivative": 4.893875874459663,
+            "discrete_fd_error": 9.59018969126646e-07
+          },
+          {
+            "step": 0.0001,
+            "derivative": 4.893876823885979,
+            "discrete_fd_error": 9.592653782419802e-09
+          },
+          {
+            "step": 1e-05,
+            "derivative": 4.893876833356181,
+            "discrete_fd_error": 1.2245138236721687e-10
+          }
+        ]
+      },
+      {
+        "elements": 16,
+        "ncp": 3,
+        "states": 195,
+        "equalities": 195,
+        "residual": 7.382983113757291e-15,
+        "cost": 2.10648421373708,
+        "cost_discretization_error": 2.235012175333395e-11,
+        "discrete_derivative": 4.893876838634648,
+        "continuous_derivative": 4.893876838802868,
+        "derivative_discretization_error": 1.6822010451278402e-10,
+        "finite_differences": [
+          {
+            "step": 0.01,
+            "derivative": 4.893780934271108,
+            "discrete_fd_error": 9.590436353956733e-05
+          },
+          {
+            "step": 0.001,
+            "derivative": 4.893875879615539,
+            "discrete_fd_error": 9.590191085706579e-07
+          },
+          {
+            "step": 0.0001,
+            "derivative": 4.893876829041854,
+            "discrete_fd_error": 9.592793226431695e-09
+          },
+          {
+            "step": 1e-05,
+            "derivative": 4.89387683852982,
+            "discrete_fd_error": 1.0482725798510728e-10
+          }
+        ]
+      }
+    ],
+    "passed": true,
+    "asl_library": "/Users/adowling/.idaes/bin/libpynumero_ASL.dylib",
+    "asl_fingerprint": {
+      "bytes": 401784,
+      "sha256": "d7d1877f8768b863185944b40a00de6e5bba19874c56541e0c81f32b47997bf8"
+    }
+  },
+  "benchmarks": [
+    {
+      "observations": 10,
+      "control_intervals": 0,
+      "state_count": 2,
+      "compile_seconds_median": 0.0005050827749073505,
+      "derivative_construction_seconds": 0.001124208327382803,
+      "execution_seconds_median": {
+        "primal": 0.00015812506899237633,
+        "jvp": 0.0007554581388831139,
+        "vjp": 0.0007075830362737179
+      },
+      "repeats": 5,
+      "compile_repeats": 3,
+      "primal_error": 8.349942959284817e-11,
+      "direct_error": 3.57975871168037e-11,
+      "adjoint_parameter_error": 1.0982548204196974e-10,
+      "accuracy_passed": true,
+      "integrator_options": {
+        "reltol": 1e-11,
+        "abstol": 9.999999999999999e-14
+      },
+      "function_nodes": 7,
+      "input_shapes": {
+        "x0": [
+          2,
+          1
+        ],
+        "p": [
+          1,
+          1
+        ]
+      },
+      "process_exit_code": 0
+    },
+    {
+      "observations": 10,
+      "control_intervals": 4,
+      "state_count": 2,
+      "compile_seconds_median": 0.0010269172489643097,
+      "derivative_construction_seconds": 0.0017513749189674854,
+      "execution_seconds_median": {
+        "primal": 0.0009310836903750896,
+        "jvp": 0.004287790972739458,
+        "vjp": 0.00449208403006196
+      },
+      "repeats": 5,
+      "compile_repeats": 3,
+      "primal_error": 1.1050671488987973e-10,
+      "direct_error": 5.16650056070489e-11,
+      "adjoint_parameter_error": 1.7754686609805503e-10,
+      "accuracy_passed": true,
+      "integrator_options": {
+        "reltol": 1e-11,
+        "abstol": 9.999999999999999e-14
+      },
+      "function_nodes": 20,
+      "input_shapes": {
+        "x0": [
+          2,
+          1
+        ],
+        "p": [
+          1,
+          1
+        ],
+        "u": [
+          1,
+          4
+        ]
+      },
+      "process_exit_code": 0
+    },
+    {
+      "observations": 50,
+      "control_intervals": 0,
+      "state_count": 2,
+      "compile_seconds_median": 0.000488791149109602,
+      "derivative_construction_seconds": 0.0014772918075323105,
+      "execution_seconds_median": {
+        "primal": 0.00016175024211406708,
+        "jvp": 0.000734957866370678,
+        "vjp": 0.0006980421021580696
+      },
+      "repeats": 5,
+      "compile_repeats": 3,
+      "primal_error": 1.0667422500887369e-10,
+      "direct_error": 2.4417023958278605e-11,
+      "adjoint_parameter_error": 1.4834133921226567e-10,
+      "accuracy_passed": true,
+      "integrator_options": {
+        "reltol": 1e-11,
+        "abstol": 9.999999999999999e-14
+      },
+      "function_nodes": 7,
+      "input_shapes": {
+        "x0": [
+          2,
+          1
+        ],
+        "p": [
+          1,
+          1
+        ]
+      },
+      "process_exit_code": 0
+    },
+    {
+      "observations": 50,
+      "control_intervals": 20,
+      "state_count": 2,
+      "compile_seconds_median": 0.0013044998049736023,
+      "derivative_construction_seconds": 0.002340874634683132,
+      "execution_seconds_median": {
+        "primal": 0.0035761669278144836,
+        "jvp": 0.01875258330255747,
+        "vjp": 0.01975587522611022
+      },
+      "repeats": 5,
+      "compile_repeats": 3,
+      "primal_error": 3.0761593272643495e-10,
+      "direct_error": 1.9233670212059906e-10,
+      "adjoint_parameter_error": 4.697575661793962e-12,
+      "accuracy_passed": true,
+      "integrator_options": {
+        "reltol": 1e-11,
+        "abstol": 9.999999999999999e-14
+      },
+      "function_nodes": 20,
+      "input_shapes": {
+        "x0": [
+          2,
+          1
+        ],
+        "p": [
+          1,
+          1
+        ],
+        "u": [
+          1,
+          20
+        ]
+      },
+      "process_exit_code": 0
+    },
+    {
+      "observations": 100,
+      "control_intervals": 0,
+      "state_count": 2,
+      "compile_seconds_median": 0.0004714997485280037,
+      "derivative_construction_seconds": 0.001972875092178583,
+      "execution_seconds_median": {
+        "primal": 0.000167124904692173,
+        "jvp": 0.0007709581404924393,
+        "vjp": 0.0006775828078389168
+      },
+      "repeats": 5,
+      "compile_repeats": 3,
+      "primal_error": 9.66708935123961e-11,
+      "direct_error": 4.233424721888923e-11,
+      "adjoint_parameter_error": 1.7520962458661415e-10,
+      "accuracy_passed": true,
+      "integrator_options": {
+        "reltol": 1e-11,
+        "abstol": 9.999999999999999e-14
+      },
+      "function_nodes": 7,
+      "input_shapes": {
+        "x0": [
+          2,
+          1
+        ],
+        "p": [
+          1,
+          1
+        ]
+      },
+      "process_exit_code": 0
+    },
+    {
+      "observations": 100,
+      "control_intervals": 100,
+      "state_count": 2,
+      "compile_seconds_median": 0.0018001249991357327,
+      "derivative_construction_seconds": 0.0035328753292560577,
+      "execution_seconds_median": {
+        "primal": 0.008159707766026258,
+        "jvp": 0.04426195891574025,
+        "vjp": 0.04752174997702241
+      },
+      "repeats": 5,
+      "compile_repeats": 3,
+      "primal_error": 2.3403500248875275e-09,
+      "direct_error": 1.3643441931776579e-09,
+      "adjoint_parameter_error": 1.9208119539371182e-09,
+      "accuracy_passed": true,
+      "integrator_options": {
+        "reltol": 1e-11,
+        "abstol": 9.999999999999999e-14
+      },
+      "function_nodes": 20,
+      "input_shapes": {
+        "x0": [
+          2,
+          1
+        ],
+        "p": [
+          1,
+          1
+        ],
+        "u": [
+          1,
+          100
+        ]
+      },
+      "process_exit_code": 0
+    },
+    {
+      "observations": 400,
+      "control_intervals": 0,
+      "state_count": 2,
+      "compile_seconds_median": 0.00061029102653265,
+      "derivative_construction_seconds": 0.004521000199019909,
+      "execution_seconds_median": {
+        "primal": 0.0001794169656932354,
+        "jvp": 0.0007864166982471943,
+        "vjp": 0.0007842499762773514
+      },
+      "repeats": 5,
+      "compile_repeats": 3,
+      "primal_error": 9.286593716240077e-11,
+      "direct_error": 2.53452814291677e-11,
+      "adjoint_parameter_error": 2.4705038015326863e-10,
+      "accuracy_passed": true,
+      "integrator_options": {
+        "reltol": 1e-11,
+        "abstol": 9.999999999999999e-14
+      },
+      "function_nodes": 7,
+      "input_shapes": {
+        "x0": [
+          2,
+          1
+        ],
+        "p": [
+          1,
+          1
+        ]
+      },
+      "process_exit_code": 0
+    },
+    {
+      "observations": 400,
+      "control_intervals": 100,
+      "state_count": 2,
+      "compile_seconds_median": 0.002077708952128887,
+      "derivative_construction_seconds": 0.004888583905994892,
+      "execution_seconds_median": {
+        "primal": 0.017538916785269976,
+        "jvp": 0.10372150037437677,
+        "vjp": 0.10516416700556874
+      },
+      "repeats": 5,
+      "compile_repeats": 3,
+      "primal_error": 4.015695775905215e-09,
+      "direct_error": 3.869523368393857e-09,
+      "adjoint_parameter_error": 3.6699292493835856e-09,
+      "accuracy_passed": true,
+      "integrator_options": {
+        "reltol": 1e-11,
+        "abstol": 9.999999999999999e-14
+      },
+      "function_nodes": 20,
+      "input_shapes": {
+        "x0": [
+          2,
+          1
+        ],
+        "p": [
+          1,
+          1
+        ],
+        "u": [
+          1,
+          100
+        ]
+      },
+      "process_exit_code": 0
+    },
+    {
+      "observations": 100,
+      "control_intervals": 400,
+      "state_count": 2,
+      "compile_seconds_median": 0.002092708833515644,
+      "derivative_construction_seconds": 0.004933208227157593,
+      "execution_seconds_median": {
+        "primal": 0.017866458278149366,
+        "jvp": 0.1033117501065135,
+        "vjp": 0.10442445799708366
+      },
+      "repeats": 5,
+      "compile_repeats": 3,
+      "primal_error": 4.157175714780692e-09,
+      "direct_error": 3.877117960016108e-09,
+      "adjoint_parameter_error": 3.859024211294582e-09,
+      "accuracy_passed": true,
+      "integrator_options": {
+        "reltol": 1e-11,
+        "abstol": 9.999999999999999e-14
+      },
+      "function_nodes": 20,
+      "input_shapes": {
+        "x0": [
+          2,
+          1
+        ],
+        "p": [
+          1,
+          1
+        ],
+        "u": [
+          1,
+          400
+        ]
+      },
+      "process_exit_code": 0
+    }
+  ],
+  "benchmark_qualification": "Timing medians on one machine; no portable performance guarantee. VJPs return control-amplitude gradients only on controlled maps.",
+  "gate_passed": true,
+  "source_files": {
+    "pyomo/dae/simulator.py": {
+      "bytes": 58540,
+      "sha256": "be9d88a68a042fc321cd7e3779bddc6f59858fae2bc81af3cdd7506800344d45"
+    },
+    "examples/dae/sensitivity/ode_comparison.py": {
+      "bytes": 14659,
+      "sha256": "621f6b2d7b2a21a74045e72b10511f87988a1e05e7fb3240ed3e3168f3cddfda"
+    }
+  },
+  "command": "PYTHONPATH=<checkout> <env-python> examples/dae/sensitivity/ode_comparison.py --tolerance 1e-11 --output <report.json>"
+}
