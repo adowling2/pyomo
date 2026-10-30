@@ -1,0 +1,999 @@
+{
+  "checkpoint": "G6 native control qualification",
+  "casadi": "3.8.1",
+  "numpy": "2.5.4",
+  "python": "3.12.14 (main, Sep  3 2026, 03:46:19) [Clang 21.1.8 ]",
+  "platform": "macOS-27.0.1-arm64-arm-64bit",
+  "cases": {
+    "affine-switches": {
+      "executed": true,
+      "observations": {
+        "kind": "affine",
+        "branch": 1,
+        "times": [
+          0.0,
+          0.2,
+          0.5,
+          0.7,
+          1.2
+        ],
+        "control_times": [
+          0.0,
+          0.2,
+          0.7,
+          1.2
+        ],
+        "options": {
+          "reltol": 1e-10,
+          "abstol": 1e-12,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false,
+          "max_num_dir": 1
+        },
+        "errors": {
+          "primal": 2.3487489730911193e-10,
+          "direct": 3.1573788028538274e-10,
+          "adjoint": 2.949029127638726e-10,
+          "guess_adjoint": 0.0,
+          "duality": 4.4456149872473816e-10
+        },
+        "accurate": true,
+        "finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 5.057282596165891e-05
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 7.256312120063058e-07
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 4.5077992255615484e-07
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 4.531143480951405e-06
+          }
+        ],
+        "minimum_fd_error": 4.5077992255615484e-07
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    },
+    "affine-initial": {
+      "executed": true,
+      "observations": {
+        "kind": "affine",
+        "branch": 1,
+        "times": [
+          0
+        ],
+        "control_times": [
+          0.0,
+          0.2,
+          0.7,
+          1.2
+        ],
+        "options": {
+          "reltol": 1e-10,
+          "abstol": 1e-12,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false,
+          "max_num_dir": 1
+        },
+        "errors": {
+          "primal": 0.0,
+          "direct": 0.0,
+          "adjoint": 0.0,
+          "guess_adjoint": 0.0,
+          "duality": 0.0
+        },
+        "accurate": true,
+        "finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 9.516197353929913e-16
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 1.1016828475126553e-13
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 5.858805504236184e-13
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 1.1675276130500395e-11
+          }
+        ],
+        "minimum_fd_error": 9.516197353929913e-16
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    },
+    "affine-at_switch": {
+      "executed": true,
+      "observations": {
+        "kind": "affine",
+        "branch": 1,
+        "times": [
+          0.2
+        ],
+        "control_times": [
+          0.0,
+          0.2,
+          0.7,
+          1.2
+        ],
+        "options": {
+          "reltol": 1e-10,
+          "abstol": 1e-12,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false,
+          "max_num_dir": 1
+        },
+        "errors": {
+          "primal": 2.6711965972481266e-12,
+          "direct": 2.0518864385365987e-11,
+          "adjoint": 2.0006635237379555e-11,
+          "guess_adjoint": 0.0,
+          "duality": 1.739117183596761e-11
+        },
+        "accurate": true,
+        "finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 9.858173465326914e-07
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 9.870423256508332e-09
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 1.1356127149753092e-10
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 1.0725409449463541e-10
+          }
+        ],
+        "minimum_fd_error": 1.0725409449463541e-10
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    },
+    "affine-sparse": {
+      "executed": true,
+      "observations": {
+        "kind": "affine",
+        "branch": 1,
+        "times": [
+          0.2,
+          0.7
+        ],
+        "control_times": [
+          0.0,
+          0.2,
+          0.7,
+          1.2
+        ],
+        "options": {
+          "reltol": 1e-10,
+          "abstol": 1e-12,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false,
+          "max_num_dir": 1
+        },
+        "errors": {
+          "primal": 1.2243361879882286e-10,
+          "direct": 4.17345906612799e-10,
+          "adjoint": 4.521616414621121e-11,
+          "guess_adjoint": 0.0,
+          "duality": 1.6449996920187004e-10
+        },
+        "accurate": true,
+        "finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 1.517944368615017e-05
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 1.5150818483796045e-07
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 1.2174900129304107e-09
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 1.2434497875801753e-09
+          }
+        ],
+        "minimum_fd_error": 1.2174900129304107e-09
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    },
+    "affine-terminal": {
+      "executed": true,
+      "observations": {
+        "kind": "affine",
+        "branch": 1,
+        "times": [
+          1.2
+        ],
+        "control_times": [
+          0.0,
+          0.2,
+          0.7,
+          1.2
+        ],
+        "options": {
+          "reltol": 1e-10,
+          "abstol": 1e-12,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false,
+          "max_num_dir": 1
+        },
+        "errors": {
+          "primal": 8.761297243253807e-11,
+          "direct": 2.7928481749484035e-10,
+          "adjoint": 2.0327062255631745e-10,
+          "guess_adjoint": 0.0,
+          "duality": 1.295303864168318e-10
+        },
+        "accurate": true,
+        "finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 5.057274039399484e-05
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 7.255823621932223e-07
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 4.4385429642801455e-07
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 4.518217709387207e-06
+          }
+        ],
+        "minimum_fd_error": 4.4385429642801455e-07
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    },
+    "affine-adjacent": {
+      "executed": true,
+      "observations": {
+        "kind": "affine",
+        "branch": 1,
+        "times": [
+          0.19999999999999998,
+          0.2,
+          0.20000000000000004,
+          1.2
+        ],
+        "control_times": [
+          0.0,
+          0.2,
+          0.7,
+          1.2
+        ],
+        "options": {
+          "reltol": 1e-10,
+          "abstol": 1e-12,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false,
+          "max_num_dir": 1
+        },
+        "errors": {
+          "primal": 8.657369265918646e-11,
+          "direct": 3.7980324441022617e-10,
+          "adjoint": 6.10047012905568e-11,
+          "guess_adjoint": 0.0,
+          "duality": 8.044115373806449e-11
+        },
+        "accurate": true,
+        "finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 5.057274066599948e-05
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 7.256924685616895e-07
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 4.554363455255839e-07
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 4.482079043688358e-06
+          }
+        ],
+        "minimum_fd_error": 4.554363455255839e-07
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    },
+    "affine-dense": {
+      "executed": true,
+      "observations": {
+        "kind": "affine",
+        "branch": 1,
+        "times": [
+          0.0,
+          0.06,
+          0.12,
+          0.18,
+          0.24,
+          0.3,
+          0.36,
+          0.42,
+          0.48,
+          0.54,
+          0.6,
+          0.6599999999999999,
+          0.72,
+          0.78,
+          0.84,
+          0.8999999999999999,
+          0.96,
+          1.02,
+          1.08,
+          1.14,
+          1.2
+        ],
+        "control_times": [
+          0.0,
+          0.2,
+          0.7,
+          1.2
+        ],
+        "options": {
+          "reltol": 1e-10,
+          "abstol": 1e-12,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false,
+          "max_num_dir": 1
+        },
+        "errors": {
+          "primal": 9.232410391746271e-10,
+          "direct": 1.3127572917603914e-09,
+          "adjoint": 2.543967259072133e-10,
+          "guess_adjoint": 0.0,
+          "duality": 1.91695592732799e-09
+        },
+        "accurate": true,
+        "finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 5.0537154423713204e-05
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 5.114256420579721e-07
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 4.864265878978813e-09
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 4.318767565791859e-09
+          }
+        ],
+        "minimum_fd_error": 4.318767565791859e-09
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    },
+    "nonlinear-switches": {
+      "executed": true,
+      "observations": {
+        "kind": "nonlinear",
+        "branch": 1,
+        "times": [
+          0.0,
+          0.2,
+          0.5,
+          0.7,
+          1.2
+        ],
+        "control_times": [
+          0.0,
+          0.2,
+          0.7,
+          1.2
+        ],
+        "options": {
+          "reltol": 1e-10,
+          "abstol": 1e-12,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false,
+          "max_num_dir": 1
+        },
+        "errors": {
+          "primal": 4.954076849987225e-10,
+          "direct": 1.7344372101706098e-10,
+          "adjoint": 1.540196469200566e-11,
+          "guess_adjoint": 0.0,
+          "duality": 4.4853454284066174e-11
+        },
+        "accurate": true,
+        "finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 4.2909258091139435e-06
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 4.2902686958612435e-08
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 3.3505429541946796e-09
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 3.2928113569141715e-09
+          }
+        ],
+        "minimum_fd_error": 3.2928113569141715e-09
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    },
+    "nonlinear-initial": {
+      "executed": true,
+      "observations": {
+        "kind": "nonlinear",
+        "branch": 1,
+        "times": [
+          0
+        ],
+        "control_times": [
+          0.0,
+          0.2,
+          0.7,
+          1.2
+        ],
+        "options": {
+          "reltol": 1e-10,
+          "abstol": 1e-12,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false,
+          "max_num_dir": 1
+        },
+        "errors": {
+          "primal": 1.6986170396388147e-14,
+          "direct": 8.548717289613705e-15,
+          "adjoint": 2.1094237467877974e-15,
+          "guess_adjoint": 0.0,
+          "duality": 6.938893903907228e-18
+        },
+        "accurate": true,
+        "finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 3.357539441584123e-06
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 3.3574238500477804e-08
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 3.360485223424803e-10
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 1.4083845201184886e-11
+          }
+        ],
+        "minimum_fd_error": 1.4083845201184886e-11
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    },
+    "nonlinear-at_switch": {
+      "executed": true,
+      "observations": {
+        "kind": "nonlinear",
+        "branch": 1,
+        "times": [
+          0.2
+        ],
+        "control_times": [
+          0.0,
+          0.2,
+          0.7,
+          1.2
+        ],
+        "options": {
+          "reltol": 1e-10,
+          "abstol": 1e-12,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false,
+          "max_num_dir": 1
+        },
+        "errors": {
+          "primal": 4.5421444383464404e-12,
+          "direct": 3.1813301992755783e-12,
+          "adjoint": 1.4497847367067607e-11,
+          "guess_adjoint": 0.0,
+          "duality": 1.4327428132787645e-11
+        },
+        "accurate": true,
+        "finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 2.4140873831624e-06
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 2.4140109744497096e-08
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 2.4389140707015144e-10
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 8.149125818590619e-11
+          }
+        ],
+        "minimum_fd_error": 8.149125818590619e-11
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    },
+    "nonlinear-sparse": {
+      "executed": true,
+      "observations": {
+        "kind": "nonlinear",
+        "branch": 1,
+        "times": [
+          0.2,
+          0.7
+        ],
+        "control_times": [
+          0.0,
+          0.2,
+          0.7,
+          1.2
+        ],
+        "options": {
+          "reltol": 1e-10,
+          "abstol": 1e-12,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false,
+          "max_num_dir": 1
+        },
+        "errors": {
+          "primal": 2.3097889418136194e-10,
+          "direct": 2.472710924905641e-11,
+          "adjoint": 3.5308089785246466e-11,
+          "guess_adjoint": 0.0,
+          "duality": 2.600253345974579e-11
+        },
+        "accurate": true,
+        "finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 4.290928029559993e-06
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 4.290524047156907e-08
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 2.190359893461391e-09
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 2.182588332289015e-09
+          }
+        ],
+        "minimum_fd_error": 2.182588332289015e-09
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    },
+    "nonlinear-terminal": {
+      "executed": true,
+      "observations": {
+        "kind": "nonlinear",
+        "branch": 1,
+        "times": [
+          1.2
+        ],
+        "control_times": [
+          0.0,
+          0.2,
+          0.7,
+          1.2
+        ],
+        "options": {
+          "reltol": 1e-10,
+          "abstol": 1e-12,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false,
+          "max_num_dir": 1
+        },
+        "errors": {
+          "primal": 2.1780615706668947e-10,
+          "direct": 1.177589172878904e-10,
+          "adjoint": 3.364183376319829e-10,
+          "guess_adjoint": 0.0,
+          "duality": 3.8604164309674616e-10
+        },
+        "accurate": true,
+        "finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 4.290924510153005e-06
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 4.2901798780192735e-08
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 2.6122446428189505e-09
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 2.5045530094303103e-09
+          }
+        ],
+        "minimum_fd_error": 2.5045530094303103e-09
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    },
+    "nonlinear-adjacent": {
+      "executed": true,
+      "observations": {
+        "kind": "nonlinear",
+        "branch": 1,
+        "times": [
+          0.19999999999999998,
+          0.2,
+          0.20000000000000004,
+          1.2
+        ],
+        "control_times": [
+          0.0,
+          0.2,
+          0.7,
+          1.2
+        ],
+        "options": {
+          "reltol": 1e-10,
+          "abstol": 1e-12,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false,
+          "max_num_dir": 1
+        },
+        "errors": {
+          "primal": 2.1780592151806804e-10,
+          "direct": 1.177587235315273e-10,
+          "adjoint": 6.256445361785268e-11,
+          "guess_adjoint": 0.0,
+          "duality": 4.20177226345686e-11
+        },
+        "accurate": true,
+        "finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 4.290924510153005e-06
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 4.290157673558781e-08
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 2.6133548658435757e-09
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 2.537859700169065e-09
+          }
+        ],
+        "minimum_fd_error": 2.537859700169065e-09
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    },
+    "nonlinear-dense": {
+      "executed": true,
+      "observations": {
+        "kind": "nonlinear",
+        "branch": 1,
+        "times": [
+          0.0,
+          0.06,
+          0.12,
+          0.18,
+          0.24,
+          0.3,
+          0.36,
+          0.42,
+          0.48,
+          0.54,
+          0.6,
+          0.6599999999999999,
+          0.72,
+          0.78,
+          0.84,
+          0.8999999999999999,
+          0.96,
+          1.02,
+          1.08,
+          1.14,
+          1.2
+        ],
+        "control_times": [
+          0.0,
+          0.2,
+          0.7,
+          1.2
+        ],
+        "options": {
+          "reltol": 1e-10,
+          "abstol": 1e-12,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false,
+          "max_num_dir": 1
+        },
+        "errors": {
+          "primal": 3.076088452145663e-09,
+          "direct": 2.9493967540694875e-09,
+          "adjoint": 1.3399775733446972e-10,
+          "guess_adjoint": 0.0,
+          "duality": 2.8962768294782393e-09
+        },
+        "accurate": true,
+        "finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 4.2909032825777516e-06
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 4.272527320825503e-08
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 1.992327127006428e-08
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 1.9860795493123506e-08
+          }
+        ],
+        "minimum_fd_error": 1.9860795493123506e-08
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    },
+    "nonlinear-negative": {
+      "executed": true,
+      "observations": {
+        "kind": "nonlinear",
+        "branch": -1,
+        "times": [
+          0.0,
+          0.2,
+          0.5,
+          0.7,
+          1.2
+        ],
+        "control_times": [
+          0.0,
+          0.2,
+          0.7,
+          1.2
+        ],
+        "options": {
+          "reltol": 1e-10,
+          "abstol": 1e-12,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false,
+          "max_num_dir": 1
+        },
+        "errors": {
+          "primal": 2.0718293759247963e-10,
+          "direct": 1.5519928289578628e-10,
+          "adjoint": 1.6880653125328493e-11,
+          "guess_adjoint": 0.0,
+          "duality": 5.757297416586482e-11
+        },
+        "accurate": true,
+        "finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 6.838103006279184e-06
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 6.836665700227229e-08
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 9.154890179274844e-10
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 8.594228662062164e-10
+          }
+        ],
+        "minimum_fd_error": 8.594228662062164e-10
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    },
+    "nonlinear-tolerance-1e-07": {
+      "executed": true,
+      "observations": {
+        "kind": "nonlinear",
+        "branch": 1,
+        "times": [
+          0.0,
+          0.2,
+          0.7,
+          1.2
+        ],
+        "control_times": [
+          0.0,
+          0.2,
+          0.7,
+          1.2
+        ],
+        "options": {
+          "reltol": 1e-07,
+          "abstol": 9.999999999999999e-10,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false,
+          "max_num_dir": 1
+        },
+        "errors": {
+          "primal": 2.459685027622413e-07,
+          "direct": 1.2292827040318006e-07,
+          "adjoint": 2.550108191279321e-08,
+          "guess_adjoint": 0.0,
+          "duality": 2.672419940896731e-08
+        },
+        "accurate": true,
+        "finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 4.288023186527212e-06
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 4.748401561727178e-06
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 1.709915432357434e-06
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 1.709849929198981e-06
+          }
+        ],
+        "minimum_fd_error": 1.709849929198981e-06
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    },
+    "nonlinear-tolerance-1e-11": {
+      "executed": true,
+      "observations": {
+        "kind": "nonlinear",
+        "branch": 1,
+        "times": [
+          0.0,
+          0.2,
+          0.7,
+          1.2
+        ],
+        "control_times": [
+          0.0,
+          0.2,
+          0.7,
+          1.2
+        ],
+        "options": {
+          "reltol": 1e-11,
+          "abstol": 9.999999999999999e-14,
+          "quad_err_con": true,
+          "calc_ic": true,
+          "calc_icB": true,
+          "suppress_algebraic": false,
+          "max_num_dir": 1
+        },
+        "errors": {
+          "primal": 3.354023930224213e-11,
+          "direct": 2.054301839756055e-11,
+          "adjoint": 4.7630788202468466e-12,
+          "guess_adjoint": 0.0,
+          "duality": 3.8611336350413694e-12
+        },
+        "accurate": true,
+        "finite_differences": [
+          {
+            "step": 0.01,
+            "scaled_error": 4.290930571970719e-06
+          },
+          {
+            "step": 0.001,
+            "scaled_error": 4.290413024854445e-08
+          },
+          {
+            "step": 0.0001,
+            "scaled_error": 5.796465529783745e-10
+          },
+          {
+            "step": 1e-05,
+            "scaled_error": 1.8418688796373317e-10
+          }
+        ],
+        "minimum_fd_error": 1.8418688796373317e-10
+      },
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    }
+  },
+  "convention": "Continuous differential states; right-side algebraics at internal switches; last interval at terminal time.",
+  "source_files": {
+    "dae_control_probe.py": "635d4c631df6f524e3d241b45cd55b817b9d5ffe84dc0ecafc54dfb78ce667fc",
+    "dae_qualification.py": "509c86a79d5d11089b443ae98628d4d27f3e5a7149acef849c1e83fa281f5d5e"
+  },
+  "command": " <env-python> examples/dae/sensitivity/dae_control_probe.py --output <report.json>"
+}

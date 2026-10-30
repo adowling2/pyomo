@@ -194,3 +194,26 @@ pass. results/dae_compile_validation.json records this source snapshot.
 G5 does not enable DAE controls; a clear refusal remains until G6. Next:
 qualify fixed-grid DAE amplitudes, right-side algebraic observations and
 phase consistency derivatives, then implement that bounded extension.
+
+30 October 2026: G6 native control qualification
+------------------------------------------------
+
+Status: active; native qualification and switch contract passed, public
+implementation pending. G5 is committed in 78818eef2.
+
+DAE_CONTROLS.rst fixes right-held interval amplitudes, continuous differential
+states, right-side algebraic observations at internal switches and the last
+interval at the terminal time. An interval starting at the final observation
+can immediately affect its algebraic value even before affecting dynamics.
+
+The pure-CasADi dae_control_probe.py executes 17 bounded cases per version.
+Exact affine and nonlinear phase formulas check all independent initial,
+parameter and amplitude derivatives, two adjoint weights, identities,
+branch/guess semantics, and FD sweeps on several grids. The main-setting
+analytic/product maximum is below 4.7e-9 and FD minima below 4.6e-7 on both
+versions. The coarse-tolerance sweep remains separately qualified.
+
+The probe, convention note and versioned native records are included in
+this intermediate G6 evidence commit. Production DAE controls are still
+refused. Next action: extend the existing DAE helper and add independent
+public tests, preserving the committed switch convention and ODE behavior.
