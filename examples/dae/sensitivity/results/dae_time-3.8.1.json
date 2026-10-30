@@ -1,0 +1,467 @@
+{
+  "purpose": "G5 native explicit-time dependency reduction and internal clock qualification",
+  "casadi": "3.8.1",
+  "numpy": "2.5.4",
+  "python": "3.12.14 (main, Sep  3 2026, 03:46:19) [Clang 21.1.8 ]",
+  "platform": "macOS-27.0.1-arm64-arm-64bit",
+  "cases": {
+    "False-False-1e-07": {
+      "clocked": false,
+      "normalized": false,
+      "options": {
+        "reltol": 1e-07,
+        "abstol": 9.999999999999999e-10,
+        "quad_err_con": true,
+        "calc_ic": true,
+        "calc_icB": true,
+        "suppress_algebraic": false,
+        "max_num_dir": 1
+      },
+      "physical_bounds": [
+        2.7,
+        3.2
+      ],
+      "initial_xq": [
+        0.8065,
+        0.84585
+      ],
+      "parameters": [
+        -0.3,
+        1.4
+      ],
+      "primal_error": 2.1883464551564202e-07,
+      "direct_error": 1.2410789063110883e-09,
+      "analytic_rate_gradient": 3.898333333333335,
+      "rate_gradient": 3.8983587994633493,
+      "adjoint_error": 2.5466130014084598e-05,
+      "accurate": false,
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    },
+    "False-False-1e-10": {
+      "clocked": false,
+      "normalized": false,
+      "options": {
+        "reltol": 1e-10,
+        "abstol": 1e-12,
+        "quad_err_con": true,
+        "calc_ic": true,
+        "calc_icB": true,
+        "suppress_algebraic": false,
+        "max_num_dir": 1
+      },
+      "physical_bounds": [
+        2.7,
+        3.2
+      ],
+      "initial_xq": [
+        0.8065,
+        0.84585
+      ],
+      "parameters": [
+        -0.3,
+        1.4
+      ],
+      "primal_error": 1.9426438235825572e-10,
+      "direct_error": 3.099520640148512e-12,
+      "accurate": false,
+      "error": "Error in Function::call for 'gradient' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'gradient' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj1_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens1_F' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:608: IDASolveB returned \"IDA_TOO_MUCH_WORK\". Consult IDAS documentation.",
+      "process_exit_code": 0,
+      "stderr_first_line": "At t = 3.14106, , mxstep steps taken before reaching tout."
+    },
+    "False-False-1e-12": {
+      "clocked": false,
+      "normalized": false,
+      "options": {
+        "reltol": 1e-12,
+        "abstol": 1e-14,
+        "quad_err_con": true,
+        "calc_ic": true,
+        "calc_icB": true,
+        "suppress_algebraic": false,
+        "max_num_dir": 1
+      },
+      "physical_bounds": [
+        2.7,
+        3.2
+      ],
+      "initial_xq": [
+        0.8065,
+        0.84585
+      ],
+      "parameters": [
+        -0.3,
+        1.4
+      ],
+      "primal_error": 2.5923707624997405e-12,
+      "direct_error": 1.1513012765362873e-13,
+      "accurate": false,
+      "error": "Error in Function::call for 'gradient' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'gradient' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj1_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens1_F' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:608: IDASolveB returned \"IDA_TOO_MUCH_WORK\". Consult IDAS documentation.",
+      "process_exit_code": 0,
+      "stderr_first_line": "At t = 3.19812, , mxstep steps taken before reaching tout."
+    },
+    "False-True-1e-07": {
+      "clocked": false,
+      "normalized": true,
+      "options": {
+        "reltol": 1e-07,
+        "abstol": 9.999999999999999e-10,
+        "quad_err_con": true,
+        "calc_ic": true,
+        "calc_icB": true,
+        "suppress_algebraic": false,
+        "max_num_dir": 1
+      },
+      "physical_bounds": [
+        2.7,
+        3.2
+      ],
+      "initial_xq": [
+        0.8065,
+        0.84585
+      ],
+      "parameters": [
+        -0.3,
+        1.4
+      ],
+      "primal_error": 2.1883464551564202e-07,
+      "direct_error": 1.2410791838668445e-09,
+      "analytic_rate_gradient": 3.898333333333335,
+      "rate_gradient": 3.898342657527538,
+      "adjoint_error": 9.324194202964264e-06,
+      "accurate": false,
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    },
+    "False-True-1e-10": {
+      "clocked": false,
+      "normalized": true,
+      "options": {
+        "reltol": 1e-10,
+        "abstol": 1e-12,
+        "quad_err_con": true,
+        "calc_ic": true,
+        "calc_icB": true,
+        "suppress_algebraic": false,
+        "max_num_dir": 1
+      },
+      "physical_bounds": [
+        2.7,
+        3.2
+      ],
+      "initial_xq": [
+        0.8065,
+        0.84585
+      ],
+      "parameters": [
+        -0.3,
+        1.4
+      ],
+      "primal_error": 1.9426371622444094e-10,
+      "direct_error": 3.0976332610066493e-12,
+      "accurate": false,
+      "error": "Error in Function::call for 'gradient' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'gradient' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj1_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens1_F' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:608: IDASolveB returned \"IDA_TOO_MUCH_WORK\". Consult IDAS documentation.",
+      "process_exit_code": 0,
+      "stderr_first_line": "At t = 0.961243, , mxstep steps taken before reaching tout."
+    },
+    "False-True-1e-12": {
+      "clocked": false,
+      "normalized": true,
+      "options": {
+        "reltol": 1e-12,
+        "abstol": 1e-14,
+        "quad_err_con": true,
+        "calc_ic": true,
+        "calc_icB": true,
+        "suppress_algebraic": false,
+        "max_num_dir": 1
+      },
+      "physical_bounds": [
+        2.7,
+        3.2
+      ],
+      "initial_xq": [
+        0.8065,
+        0.84585
+      ],
+      "parameters": [
+        -0.3,
+        1.4
+      ],
+      "primal_error": 2.5923707624997405e-12,
+      "direct_error": 1.0136336214827679e-13,
+      "accurate": false,
+      "error": "Error in Function::call for 'gradient' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'gradient' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj1_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens1_F' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:608: IDASolveB returned \"IDA_TOO_MUCH_WORK\". Consult IDAS documentation.",
+      "process_exit_code": 0,
+      "stderr_first_line": "At t = 0.997893, , mxstep steps taken before reaching tout."
+    },
+    "True-False-1e-07": {
+      "clocked": true,
+      "normalized": false,
+      "options": {
+        "reltol": 1e-07,
+        "abstol": 9.999999999999999e-10,
+        "quad_err_con": true,
+        "calc_ic": true,
+        "calc_icB": true,
+        "suppress_algebraic": false,
+        "max_num_dir": 1
+      },
+      "physical_bounds": [
+        2.7,
+        3.2
+      ],
+      "initial_xq": [
+        0.8065,
+        0.84585
+      ],
+      "parameters": [
+        -0.3,
+        1.4
+      ],
+      "primal_error": 4.337196874981686e-07,
+      "direct_error": 1.6786799728052415e-09,
+      "analytic_rate_gradient": 3.898333333333335,
+      "rate_gradient": 3.8983333279779084,
+      "adjoint_error": 5.355426768716143e-09,
+      "accurate": false,
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    },
+    "True-False-1e-10": {
+      "clocked": true,
+      "normalized": false,
+      "options": {
+        "reltol": 1e-10,
+        "abstol": 1e-12,
+        "quad_err_con": true,
+        "calc_ic": true,
+        "calc_icB": true,
+        "suppress_algebraic": false,
+        "max_num_dir": 1
+      },
+      "physical_bounds": [
+        2.7,
+        3.2
+      ],
+      "initial_xq": [
+        0.8065,
+        0.84585
+      ],
+      "parameters": [
+        -0.3,
+        1.4
+      ],
+      "primal_error": 2.0787682686318476e-10,
+      "direct_error": 4.8339110492179316e-12,
+      "analytic_rate_gradient": 3.898333333333335,
+      "rate_gradient": 3.898333333332454,
+      "adjoint_error": 8.810729923425242e-13,
+      "accurate": true,
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    },
+    "True-False-1e-12": {
+      "clocked": true,
+      "normalized": false,
+      "options": {
+        "reltol": 1e-12,
+        "abstol": 1e-14,
+        "quad_err_con": true,
+        "calc_ic": true,
+        "calc_icB": true,
+        "suppress_algebraic": false,
+        "max_num_dir": 1
+      },
+      "physical_bounds": [
+        2.7,
+        3.2
+      ],
+      "initial_xq": [
+        0.8065,
+        0.84585
+      ],
+      "parameters": [
+        -0.3,
+        1.4
+      ],
+      "primal_error": 5.079048293055166e-12,
+      "direct_error": 7.294165271787278e-14,
+      "analytic_rate_gradient": 3.898333333333335,
+      "rate_gradient": 3.8983333333334045,
+      "adjoint_error": 6.927791673660977e-14,
+      "accurate": true,
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    },
+    "True-True-1e-07": {
+      "clocked": true,
+      "normalized": true,
+      "options": {
+        "reltol": 1e-07,
+        "abstol": 9.999999999999999e-10,
+        "quad_err_con": true,
+        "calc_ic": true,
+        "calc_icB": true,
+        "suppress_algebraic": false,
+        "max_num_dir": 1
+      },
+      "physical_bounds": [
+        2.7,
+        3.2
+      ],
+      "initial_xq": [
+        0.8065,
+        0.84585
+      ],
+      "parameters": [
+        -0.3,
+        1.4
+      ],
+      "primal_error": 4.337196877202132e-07,
+      "direct_error": 1.6786791956491243e-09,
+      "analytic_rate_gradient": 3.898333333333335,
+      "rate_gradient": 3.898333326099512,
+      "adjoint_error": 7.233823318131272e-09,
+      "accurate": false,
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    },
+    "True-True-1e-10": {
+      "clocked": true,
+      "normalized": true,
+      "options": {
+        "reltol": 1e-10,
+        "abstol": 1e-12,
+        "quad_err_con": true,
+        "calc_ic": true,
+        "calc_icB": true,
+        "suppress_algebraic": false,
+        "max_num_dir": 1
+      },
+      "physical_bounds": [
+        2.7,
+        3.2
+      ],
+      "initial_xq": [
+        0.8065,
+        0.84585
+      ],
+      "parameters": [
+        -0.3,
+        1.4
+      ],
+      "primal_error": 2.0787660481857984e-10,
+      "direct_error": 4.831246513958831e-12,
+      "analytic_rate_gradient": 3.898333333333335,
+      "rate_gradient": 3.8983333333352386,
+      "adjoint_error": 1.9033663534173684e-12,
+      "accurate": true,
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    },
+    "True-True-1e-12": {
+      "clocked": true,
+      "normalized": true,
+      "options": {
+        "reltol": 1e-12,
+        "abstol": 1e-14,
+        "quad_err_con": true,
+        "calc_ic": true,
+        "calc_icB": true,
+        "suppress_algebraic": false,
+        "max_num_dir": 1
+      },
+      "physical_bounds": [
+        2.7,
+        3.2
+      ],
+      "initial_xq": [
+        0.8065,
+        0.84585
+      ],
+      "parameters": [
+        -0.3,
+        1.4
+      ],
+      "primal_error": 5.079492382265016e-12,
+      "direct_error": 7.349676423018536e-14,
+      "analytic_rate_gradient": 3.898333333333335,
+      "rate_gradient": 3.8983333333333543,
+      "adjoint_error": 1.9095836023552692e-14,
+      "accurate": true,
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    },
+    "unsafe-quad-disabled-False": {
+      "clocked": false,
+      "normalized": false,
+      "options": {
+        "reltol": 1e-10,
+        "abstol": 1e-12,
+        "quad_err_con": false,
+        "calc_ic": true,
+        "calc_icB": true,
+        "suppress_algebraic": false,
+        "max_num_dir": 1
+      },
+      "physical_bounds": [
+        2.7,
+        3.2
+      ],
+      "initial_xq": [
+        0.8065,
+        0.84585
+      ],
+      "parameters": [
+        -0.3,
+        1.4
+      ],
+      "primal_error": 1.9426438235825572e-10,
+      "direct_error": 3.099520640148512e-12,
+      "analytic_rate_gradient": 3.898333333333335,
+      "rate_gradient": 3.9035656297736234,
+      "adjoint_error": 0.00523229644028822,
+      "accurate": false,
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    },
+    "unsafe-quad-disabled-True": {
+      "clocked": false,
+      "normalized": true,
+      "options": {
+        "reltol": 1e-10,
+        "abstol": 1e-12,
+        "quad_err_con": false,
+        "calc_ic": true,
+        "calc_icB": true,
+        "suppress_algebraic": false,
+        "max_num_dir": 1
+      },
+      "physical_bounds": [
+        2.7,
+        3.2
+      ],
+      "initial_xq": [
+        0.8065,
+        0.84585
+      ],
+      "parameters": [
+        -0.3,
+        1.4
+      ],
+      "primal_error": 1.9426371622444094e-10,
+      "direct_error": 3.0976332610066493e-12,
+      "analytic_rate_gradient": 3.898333333333335,
+      "rate_gradient": 3.9035656297736248,
+      "adjoint_error": 0.005232296440289552,
+      "accurate": false,
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    }
+  },
+  "clock_cases_accurate": false,
+  "clock_tight_cases_accurate": true,
+  "source_sha256": "2696c845b4bb90a9a6915c2b31dc74866482e6eb09015091102042550fd89584",
+  "command": " <env-python> examples/dae/sensitivity/dae_time_reproducer.py --output <report.json>"
+}

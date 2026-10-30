@@ -563,7 +563,7 @@ class TestSimulatorCompile(unittest.TestCase):
             self.assert_close(gradient, [[expected, 2 * expected]])
 
     def test_unsupported_models(self):
-        """Reject algebraic equations and controls instead of returning incomplete maps."""
+        """Require explicit IDAS selection and complete time-varying input selection."""
         for controlled in (False, True):
             with self.subTest(controlled=controlled):
                 model = exponential_model()
@@ -578,7 +578,7 @@ class TestSimulatorCompile(unittest.TestCase):
                     )
                 sim = Simulator(model, package='casadi')
                 with self.assertRaisesRegex(
-                    DAE_Error, 'algebraic equations|time-varying inputs'
+                    DAE_Error, "integrator='idas'|time-varying inputs"
                 ):
                     sim.compile(parameters=[model.k], times=[1])
         model = exponential_model()

@@ -759,7 +759,7 @@ class Simulator:
         integrator='cvodes',
         integrator_options=None,
     ):
-        """Compile a differentiable ODE map without evaluating a trajectory.
+        """Compile a differentiable ODE or index-one DAE map without evaluation.
 
         Parameters
         ----------
@@ -772,7 +772,8 @@ class Simulator:
             ContinuousSet bounds. The initial time may be included.
         controls : iterable of time-indexed Var or Param components, optional
             Ordered scalar controls, each indexed solely by the ContinuousSet.
-            All time-varying inputs appearing in the ODE must be selected.
+            All independent time-varying inputs must be selected. DAE controls
+            are not yet supported.
         control_times : sequence of float, optional
             Fixed, strictly increasing interval boundaries, including both
             ContinuousSet bounds. Required when controls are selected. Input
@@ -780,8 +781,8 @@ class Simulator:
             apply on [control_times[j], control_times[j+1]); the terminal state
             is reached with the last interval's amplitude.
         integrator : str
-            Only 'cvodes' is currently supported. Requires package='casadi'
-            and CasADi 3.8.1 or later.
+            Use 'cvodes' for ODEs or explicitly select 'idas' for DAEs.
+            Requires package='casadi' and CasADi 3.8.1 or later.
         integrator_options : dict, optional
             CasADi integration options, copied before use. Only positive scalar
             tolerances are supported; time-grid and derivative augmentation
@@ -789,26 +790,37 @@ class Simulator:
             defaults to True to control adjoint parameter-gradient accuracy.
             On CasADi 3.8.1, max_num_dir is restricted to 1: CasADi composes
             single-direction calls to avoid its batched-adjoint defect.
+            DAEs also require calc_ic=True, calc_icB=True and
+            suppress_algebraic=False. Their default abstol is 1e-8; it also
+            sets the algebraic root residual target.
 
         Returns
         -------
         casadi.Function
             A function with inputs 'x0' and 'p', plus 'u' when controls are
-            selected, and output 'xf'. State rows follow
+            selected, and output 'xf'. DAEs additionally have input 'z0' and
+            output 'zf'. z0 is an algebraic solver guess, not an independent
+            physical IC; its local derivative is zero on a fixed branch.
+            Differential state rows follow
             get_variable_order(), parameter entries follow parameters, and output
-            columns follow times. CasADi forward/reverse factories provide direct
+            columns follow times. Algebraic rows follow the remaining
+            get_variable_order('time-varying') entries after controls are removed.
+            CasADi forward/reverse factories provide direct
             and adjoint derivative products. x0, p, and u are independent inputs;
             compose their dependencies explicitly for total derivatives.
 
         Notes
         -----
-        Algebraic equations and derivatives of switch times are not supported. The
+        DAEs require a locally nonsingular algebraic Jacobian on the selected
+        branch. Initial and observed algebraic states are reconstructed with a
+        differentiable root solve. No global index or branch analysis is done.
+        Derivatives of switch times are not supported. The
         model, caller options, and previous simulation results are not modified.
         This method does not call initialize_model().
         """
-        if self._intpackage != 'casadi' or integrator != 'cvodes':
+        if self._intpackage != 'casadi' or integrator not in ('cvodes', 'idas'):
             raise DAE_Error(
-                "Simulator.compile requires package='casadi' and integrator='cvodes'"
+                "Simulator.compile requires package='casadi' and integrator='cvodes' or 'idas'"
             )
         if not numpy_available:
             raise ValueError(
@@ -816,14 +828,14 @@ class Simulator:
             )
         if not check_min_version(casadi, '3.8.1'):
             raise DAE_Error("Simulator.compile requires CasADi 3.8.1 or later")
-        if self._alglist:
-            raise DAE_Error(
-                "Simulator.compile does not yet support algebraic equations"
-            )
         if not self._diffvars:
             raise DAE_Error(
                 "Simulator.compile requires at least one differential equation"
             )
+        if self._alglist and integrator != 'idas':
+            raise DAE_Error("Algebraic equations require integrator='idas'")
+        if not self._alglist and integrator != 'cvodes':
+            raise DAE_Error("ODE compilation requires integrator='cvodes'")
 
         times = np.asarray(times, dtype=float)
         if (
@@ -867,8 +879,15 @@ class Simulator:
             if matches[0] in control_variables:
                 raise ValueError("Duplicate selected control %s" % control.name)
             control_variables.append(matches[0])
-        if len(control_variables) != len(self._algvars):
+        algebraic_variables = [v for v in self._algvars if v not in control_variables]
+        if not self._alglist and algebraic_variables:
             raise DAE_Error("Select all time-varying inputs through controls")
+        if self._alglist and len(algebraic_variables) != len(self._alglist):
+            raise DAE_Error(
+                "Algebraic equations must form a square system; select independent inputs through controls"
+            )
+        if self._alglist and controls:
+            raise DAE_Error("Simulator.compile does not yet support DAE controls")
         if controls:
             control_times = np.asarray(control_times, dtype=float)
             if (
@@ -953,6 +972,18 @@ class Simulator:
                 "Simulator.compile requires quad_err_con=True for adjoint accuracy"
             )
         options['quad_err_con'] = True
+        if self._alglist:
+            for name, required in (
+                ('calc_ic', True),
+                ('calc_icB', True),
+                ('suppress_algebraic', False),
+            ):
+                if options.get(name, required) is not required:
+                    raise ValueError(
+                        "DAE compilation requires %s=%s" % (name, required)
+                    )
+                options[name] = required
+            options.setdefault('abstol', 1e-8)
         if not check_min_version(casadi, '3.8.2'):
             if options.get('max_num_dir', 1) != 1:
                 raise ValueError(
@@ -962,14 +993,25 @@ class Simulator:
 
         time = casadi.SX.sym('t')
         states, ode = self._get_casadi_ode(time, substitutions)
+        dae = {'x': states, 'p': symbols, 'ode': ode, 't': time}
+        equations = ode
+        if self._alglist:
+            dae['z'] = casadi.vertcat(
+                *(self._templatemap[v] for v in algebraic_variables)
+            )
+            dae['alg'] = casadi.vertcat(
+                *(convert_pyomo2casadi(v, time, substitutions) for v in self._alglist)
+            )
+            equations = casadi.vertcat(ode, dae['alg'])
         for index, parameter in enumerate(parameters):
-            if not casadi.depends_on(ode, symbols[index]):
+            if not casadi.depends_on(equations, symbols[index]):
                 raise ValueError(
-                    "Selected parameter %s is unused in the ODE" % parameter.name
+                    "Selected parameter %s is unused in the equations" % parameter.name
                 )
+        if self._alglist:
+            return self._compile_casadi_dae(dae, times, options)
         x0 = casadi.MX.sym('x0', len(self._diffvars))
         p = casadi.MX.sym('p', len(parameters))
-        dae = {'x': states, 'p': symbols, 'ode': ode, 't': time}
         if controls:
             control_symbols = casadi.vertcat(
                 *(self._templatemap[v] for v in control_variables)
@@ -1014,6 +1056,127 @@ class Simulator:
         )
         return casadi.Function(
             'simulator', [x0, p], [integrate(x0=x0, p=p)['xf']], ['x0', 'p'], ['xf']
+        )
+
+    def _compile_casadi_dae(self, dae, times, options):
+        """Compose implicit IDAS intervals and differentiable consistent outputs."""
+        time, x, z, p = (dae[k] for k in ('t', 'x', 'z', 'p'))
+        packed = casadi.vertcat(time, x, p)
+        root = casadi.rootfinder(
+            'root',
+            'newton',
+            {'x': z, 'p': packed, 'g': dae['alg']},
+            {
+                'abstol': options['abstol'],
+                'abstolStep': 0,
+                'max_iter': 100,
+                'regularity_check': True,
+                'error_on_fail': True,
+            },
+        )
+        guess, data = casadi.MX.sym('guess', z.numel()), casadi.MX.sym(
+            'data', packed.numel()
+        )
+        solution = root(guess, data)
+        check = casadi.Function(
+            'check',
+            [z, packed],
+            # QR avoids factorial symbolic expansion for dense algebraic Jacobians.
+            [casadi.det(casadi.jacobian(dae['alg'], z), 'symbolicqr'), dae['alg']],
+        )
+        determinant, residual = check(solution, data)
+        valid = casadi.logic_and(
+            casadi.logic_and(
+                casadi.sum1(casadi.fabs(solution)) < casadi.inf,
+                casadi.logic_and(
+                    casadi.fabs(determinant) > 0, casadi.fabs(determinant) < casadi.inf
+                ),
+            ),
+            casadi.logic_and(
+                casadi.sum1(casadi.fabs(residual)) < casadi.inf,
+                casadi.mmax(casadi.fabs(residual)) <= options['abstol'],
+            ),
+        )
+        consistent = casadi.Function(
+            'consistent',
+            [guess, data],
+            [
+                solution.attachAssert(
+                    valid,
+                    'Algebraic root must be finite, locally regular and satisfy its residual',
+                )
+            ],
+        )
+        x0, z0, parameters = (
+            casadi.MX.sym('x0', x.numel()),
+            casadi.MX.sym('z0', z.numel()),
+            casadi.MX.sym('p', p.numel()),
+        )
+        initial_time = self._contset.first()
+        initial_z = consistent(z0, casadi.vertcat(initial_time, x0, parameters))
+        grid = np.union1d([initial_time], times)
+        intervals = len(grid) - 1
+        xf, zf = x0, initial_z
+        if intervals:
+            start, duration = casadi.SX.sym('start'), casadi.SX.sym('duration')
+            phase_parameters = casadi.MX.sym('p', p.numel() + 2)
+            phase_dae = dict(dae)
+            phase_dae['p'] = casadi.vertcat(p, start, duration)
+            phase_dae['ode'] = duration * casadi.substitute(
+                dae['ode'], time, start + duration * time
+            )
+            phase_dae['alg'] = casadi.substitute(
+                dae['alg'], time, start + duration * time
+            )
+            # IDAS explicit-time adjoints can fail even on a polynomial ODE.
+            # An internal physical clock makes the same DAE autonomous.
+            clocked = casadi.depends_on(casadi.vertcat(dae['ode'], dae['alg']), time)
+            phase_x0 = x0
+            if clocked:
+                clock = casadi.SX.sym('clock')
+                phase_dae['x'] = casadi.vertcat(x, clock)
+                phase_dae['ode'] = casadi.vertcat(
+                    duration * casadi.substitute(dae['ode'], time, clock), duration
+                )
+                phase_dae['alg'] = casadi.substitute(dae['alg'], time, clock)
+                phase_x0 = casadi.vertcat(x0, phase_parameters[-2])
+            integrate = casadi.integrator('F', 'idas', phase_dae, 0.0, 1.0, options)
+            phase_z = consistent(
+                z0, casadi.vertcat(phase_parameters[-2], x0, phase_parameters[:-2])
+            )
+            out = integrate(x0=phase_x0, z0=phase_z, p=phase_parameters)
+            phase_xf = out['xf'][: x.numel()]
+            final_z = consistent(
+                out['zf'],
+                casadi.vertcat(
+                    phase_parameters[-2] + phase_parameters[-1],
+                    phase_xf,
+                    phase_parameters[:-2],
+                ),
+            )
+            phase = casadi.Function(
+                'phase',
+                [x0, z0, phase_parameters],
+                [phase_xf, final_z],
+                ['x0', 'z0', 'p'],
+                ['xf', 'zf'],
+            )
+            inputs = casadi.vertcat(
+                casadi.repmat(parameters, 1, intervals),
+                casadi.DM(grid[:-1]).T,
+                casadi.DM(np.diff(grid)).T,
+            )
+            out = phase.mapaccum('intervals', intervals, ['x0', 'z0'], ['xf', 'zf'])(
+                x0=x0, z0=initial_z, p=inputs
+            )
+            xf, zf = casadi.horzcat(x0, out['xf']), casadi.horzcat(initial_z, out['zf'])
+        columns = np.searchsorted(grid, times).tolist()
+        return casadi.Function(
+            'simulator',
+            [x0, parameters, z0],
+            [xf[:, columns], zf[:, columns]],
+            ['x0', 'p', 'z0'],
+            ['xf', 'zf'],
         )
 
     def simulate(

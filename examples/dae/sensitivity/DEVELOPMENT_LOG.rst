@@ -146,3 +146,51 @@ initialization/output mathematics, required IDAS options and minimal G5
 boundary. It must be committed before production changes. Next action:
 verify the G4 aggregate, commit the native decision, then implement G5 with
 public-interface regression tests.
+
+30 October 2026: G5 public index-one DAE bridge
+-----------------------------------------------
+
+Status: passed; this entry is included in the G5 implementation commit.
+G4's native decision was committed in 2ad776409 before these production
+changes. The public compile method now accepts explicit integrator='idas',
+adds the native z0 guess input and consistent zf output, and retains the
+ODE API. No compile keyword, result wrapper or derivative algorithm was
+added. Existing simulate behavior is unchanged.
+
+Sixteen new public-interface test methods cover the three native model
+families, mixed observation weights, multiple directions, total nonlinear
+IC/cost derivatives and four-step FD checks, both branches, guess invariance,
+initial-only/sparse/dense grids, indexed ordering, empty/uninitialized
+parameters, nonlinear parameter expressions used only in g, invalid and
+singular systems, numerical-policy refusals and state/options preservation.
+A ten-variable dense algebraic block checks the generic root/Jacobian path.
+
+All three full DAE suites pass 283 tests and 271 subtests: Python 3.12.14
+with CasADi 3.8.1/3.8.2 and Python 3.14.3 with 3.8.2. The lean check runs
+145 tests: seven pass and 138 skip. Fresh coverage is 68/68 modified
+executable lines and 42/42 DAE helper statements. The instrumented run's
+existing semaphore cleanup diagnostic is recorded separately.
+
+Shifted-time tests exposed a further native IDAS explicit-time adjoint
+failure. The pure-CasADi reduction is dae_time_reproducer.py, with 14 cases
+per version. An internal physical clock makes those equations autonomous
+without changing public state layouts, tolerances or backend. Tight-setting
+rate adjoint errors are below 2e-12. Disabling quadrature error control gives
+about 5.23e-3 error and remains forbidden. Coarse clocked primals miss the
+fixed accuracy target and remain explicitly flagged as such.
+
+The default symbolic determinant check expands rapidly for dense matrices.
+Selecting CasADi's symbolicqr determinant avoids that expansion while
+preserving finite/nonzero local checks. The bounded guard reproducer retains
+construction and regular/singular evaluation evidence. No timing threshold
+was added to core tests. See the G5 addendum in DAE_DECISION.rst.
+
+Five guide blocks, three analytic runnable examples and the focused
+Sphinx guide/API build pass; downloaded example hashes are verified.
+The new example is examples/dae/simulator_dae_sensitivity_example.py.
+Black, typo checks, standalone RST parsing, diff and evidence-hash checks
+pass. results/dae_compile_validation.json records this source snapshot.
+
+G5 does not enable DAE controls; a clear refusal remains until G6. Next:
+qualify fixed-grid DAE amplitudes, right-side algebraic observations and
+phase consistency derivatives, then implement that bounded extension.

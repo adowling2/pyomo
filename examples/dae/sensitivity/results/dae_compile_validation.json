@@ -1,0 +1,245 @@
+{
+  "checkpoint": "G5",
+  "date": "2026-10-30",
+  "source_parent_commit": "2ad776409",
+  "gate_passed": true,
+  "snapshot_context": "Public DAE bridge validation working tree on G4 parent; hashes identify these exact validated files. Historical A/B/C/G1-G4 records retain their source hashes.",
+  "api": {
+    "method": "Simulator.compile (existing keyword signature unchanged)",
+    "dae_integrator": "idas (explicit)",
+    "inputs": [
+      "x0",
+      "p",
+      "z0"
+    ],
+    "outputs": [
+      "xf",
+      "zf"
+    ],
+    "z0_semantics": "Algebraic consistency guess and branch seed, not an independent physical IC; local derivative zero on fixed branch",
+    "derivatives": "Native IDAS direct/adjoint products plus generic implicit algebraic reconstruction",
+    "time_handling": "Normalized observation intervals; internal physical clock only when f/g explicitly depend on time; clock hidden from public layout",
+    "regularity_check": "Native symbolicqr determinant, finite residual/root/determinant, nonzero local determinant, residual within scalar abstol",
+    "absolute_tolerance_default": 1e-08,
+    "required_options": {
+      "quad_err_con": true,
+      "calc_ic": true,
+      "calc_icB": true,
+      "suppress_algebraic": false
+    },
+    "controls": "ODE controls retained; DAE controls explicitly refused until G6"
+  },
+  "environment": {
+    "numpy": "2.5.4",
+    "scipy": "1.18.1",
+    "platform": "macOS 27.0.1 ARM64"
+  },
+  "validation": {
+    "3.8.1": {
+      "python": "3.12.14",
+      "casadi": "3.8.1",
+      "full_dae_tests_passed": 283,
+      "subtests_passed": 271,
+      "failures": 0,
+      "process_exit_code": 0,
+      "new_dae_methods": 16,
+      "guide_blocks": 5,
+      "analytic_examples": 3,
+      "instrumented": true,
+      "harness_cleanup_diagnostic": true
+    },
+    "3.8.2": {
+      "python": "3.12.14",
+      "casadi": "3.8.2",
+      "full_dae_tests_passed": 283,
+      "subtests_passed": 271,
+      "failures": 0,
+      "process_exit_code": 0,
+      "new_dae_methods": 16,
+      "guide_blocks": 5,
+      "analytic_examples": 3,
+      "instrumented": false,
+      "harness_cleanup_diagnostic": false
+    },
+    "3.14": {
+      "python": "3.14.3",
+      "casadi": "3.8.2",
+      "full_dae_tests_passed": 283,
+      "subtests_passed": 271,
+      "failures": 0,
+      "process_exit_code": 0,
+      "new_dae_methods": 16,
+      "guide_blocks": 5,
+      "analytic_examples": 3,
+      "instrumented": false,
+      "harness_cleanup_diagnostic": false
+    }
+  },
+  "optional_dependencies_absent": {
+    "run": 145,
+    "passed": 7,
+    "skipped": 138,
+    "simulator_modules": 6,
+    "process_exit_code": 0
+  },
+  "coverage": {
+    "module": {
+      "covered_lines": 650,
+      "num_statements": 676,
+      "percent_covered": 96.15384615384616,
+      "percent_covered_display": "96",
+      "missing_lines": 26,
+      "excluded_lines": 0,
+      "percent_statements_covered": 96.15384615384616,
+      "percent_statements_covered_display": "96"
+    },
+    "modified_executable_lines": 68,
+    "modified_covered_lines": 68,
+    "modified_percent": 100.0,
+    "missing_modified_lines": [],
+    "compile": {
+      "statements": 124,
+      "covered": 121,
+      "missing": [
+        826,
+        830,
+        878
+      ]
+    },
+    "_compile_casadi_dae": {
+      "statements": 42,
+      "covered": 42,
+      "missing": []
+    }
+  },
+  "analytic_validation": {
+    "comparison_tolerances": {
+      "rtol": 3e-07,
+      "atol": 3e-07
+    },
+    "total_FD_steps": [
+      0.01,
+      0.001,
+      0.0001,
+      1e-05
+    ],
+    "total_FD_acceptance": "minimum scaled error below 1e-6, improvement by factor greater than ten",
+    "multiple_directions": "Two JVPs and VJPs, analytic x0/p/z output checks and four forward-adjoint identities per model",
+    "model_families": [
+      "Linear index-one with integral state",
+      "Nonlinear positive and negative algebraic branches",
+      "Coupled nonlinear algebraic residuals with parameter only in g",
+      "Dense ten-variable algebraic block",
+      "Shifted explicit time in f/g and in g alone"
+    ],
+    "state_preservation": "Model values/fixity/activation, caller options/arrays and previous simulation caches/order survive graph success, backend constructor failure and failed root evaluation; successful evaluation after failure also verified",
+    "ASL_or_optimizer_required": false
+  },
+  "dependency_qualification": {
+    "time_reduction_cases_per_version": 14,
+    "tight_clocked_cases_pass": true,
+    "coarse_clocked_accuracy_misses_preserved": true,
+    "unsafe_quad_disabled_error": "about 5.23e-3; diagnostic only, not allowed by compile",
+    "dense_guard_cases_per_version": 9,
+    "default_dense_symbolic_determinant_timeout": "10x10 exceeds 5 seconds in recorded bounded runs",
+    "symbolicqr_regular_and_singular_values_verified": true,
+    "timing_based_unit_tests": false
+  },
+  "sphinx": {
+    "version": "9.1.1",
+    "focused_guide_API_build": true,
+    "warnings_as_errors": true,
+    "warnings": 0,
+    "process_exit_code": 0,
+    "download_hashes_verified": 3,
+    "full_manual_or_external_links_checked": false
+  },
+  "checks": {
+    "black": "passed",
+    "typos": "passed",
+    "standalone_RST": "passed",
+    "git_diff_check": "passed"
+  },
+  "commands": [
+    "PYTHONPATH=<checkout> COVERAGE_FILE=<unique-file> <3.8.1-env-python> -m coverage run --source=pyomo.dae.simulator -m pytest <absolute-checkout>/pyomo/dae/tests -q",
+    "PYTHONPATH=<checkout> <other-env-python> -m pytest <absolute-checkout>/pyomo/dae/tests -q",
+    "PYTHONPATH=<checkout> <lean-python> -m unittest pyomo.dae.tests.test_simulator pyomo.dae.tests.test_simulator_interface pyomo.dae.tests.test_simulator_compile pyomo.dae.tests.test_simulator_controls pyomo.dae.tests.test_simulator_ode_qualification pyomo.dae.tests.test_simulator_dae_compile -q",
+    "PYTHONPATH=<checkout> <sphinx-and-casadi-python> examples/dae/sensitivity/check_ode_docs.py",
+    "PYTHONPATH=<checkout> <other-casadi-python> examples/dae/sensitivity/check_ode_docs.py --skip-build",
+    "<casadi-env-python> examples/dae/sensitivity/dae_time_reproducer.py --output <report.json>",
+    "<casadi-env-python> examples/dae/sensitivity/dae_guard_reproducer.py --output <report.json>"
+  ],
+  "known_limits": [
+    "DAE controls remain gated on G6",
+    "Local regularity checks do not establish global index-one or branch robustness",
+    "Native tight-tolerance consistency and near-singular failures retained in G4 evidence; no fallback or silent tolerance changes",
+    "Only first derivative products are qualified; scalar tolerances; no event/switch-time derivatives",
+    "Linux/Windows/other Python-CasADi combinations and remote CI remain pending release qualification"
+  ],
+  "repository_files": {
+    "pyomo/dae/simulator.py": {
+      "bytes": 65871,
+      "sha256": "ee1ca3520286742fea26b8bf71e7198ad4199a9d6a13a6197b2dcec7a3af86eb"
+    },
+    "pyomo/dae/tests/test_simulator_compile.py": {
+      "bytes": 29621,
+      "sha256": "acfc184714e7313bc5d47c35a76318fedc71c0f78ca3999c26290e0befeb1932"
+    },
+    "pyomo/dae/tests/test_simulator_dae_compile.py": {
+      "bytes": 36044,
+      "sha256": "61eef7bc8bf88439332ce15acd4d61e934f02c93e84173400f5bda064053dbf9"
+    },
+    "doc/OnlineDocs/explanation/modeling/dae.rst": {
+      "bytes": 51082,
+      "sha256": "ffbcea6ebe3a91fc89954ea736e7a6e0d67124d4b1f4ab08a8c4321775266267"
+    },
+    "examples/dae/simulator_dae_sensitivity_example.py": {
+      "bytes": 4540,
+      "sha256": "56581533ed0cc9c6bb0917d575aad900b3918d3c4f0b7e0b893879f4b2bb4c22"
+    },
+    "examples/dae/sensitivity/check_ode_docs.py": {
+      "bytes": 6557,
+      "sha256": "00d319ddb38f2863257a3c79a6336229254018545565cc174d0c9de472814315"
+    },
+    "examples/dae/sensitivity/dae_time_reproducer.py": {
+      "bytes": 6723,
+      "sha256": "2696c845b4bb90a9a6915c2b31dc74866482e6eb09015091102042550fd89584"
+    },
+    "examples/dae/sensitivity/dae_guard_reproducer.py": {
+      "bytes": 3881,
+      "sha256": "d680de1ae721f98b29a35bc68020655654acd833a8206c86ab0b0aa8529cadad"
+    },
+    "examples/dae/sensitivity/DAE_DECISION.rst": {
+      "bytes": 14832,
+      "sha256": "f7d9711534891c56a1e85aa46ed862f00c888766b05fadc6a38432b04647719b"
+    },
+    "examples/dae/sensitivity/API_DECISION.rst": {
+      "bytes": 18359,
+      "sha256": "59d3fa5d8b1b98b59dc294249897b819ed3119592157dc69758e19664fa9769d"
+    },
+    "examples/dae/sensitivity/README.rst": {
+      "bytes": 10729,
+      "sha256": "5e1d184ca2f1e5f4087a587b2273450d38223d20461c59b20ca73789aa468eb2"
+    },
+    "examples/dae/sensitivity/DEVELOPMENT_LOG.rst": {
+      "bytes": 11015,
+      "sha256": "0a664690548d2328cd0f752e142ee70745ae8fa9a049ad267c01813cd4168894"
+    },
+    "examples/dae/sensitivity/results/dae_time-3.8.1.json": {
+      "bytes": 13577,
+      "sha256": "debe72fd1717f0c374446ea826c5565b3e5588336c9d732e256f0d89b11bfcb1"
+    },
+    "examples/dae/sensitivity/results/dae_time-3.8.2.json": {
+      "bytes": 13213,
+      "sha256": "d7309df83da8e7cd7ef0f5ddab75767aed9a811cae5758a8438b63dbecfb4f70"
+    },
+    "examples/dae/sensitivity/results/dae_guard-3.8.1.json": {
+      "bytes": 2158,
+      "sha256": "950280e69da8c3522c119e9a7592b4b9e9aa894864f7edcaa133b7054795f416"
+    },
+    "examples/dae/sensitivity/results/dae_guard-3.8.2.json": {
+      "bytes": 2156,
+      "sha256": "84dde849efe51dd712fc3d9343be4631d162e62b627af6a5c799e8854a817519"
+    }
+  }
+}

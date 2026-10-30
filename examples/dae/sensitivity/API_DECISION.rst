@@ -1,10 +1,12 @@
 Simulator sensitivity API decision
 ==================================
 
-30 October 2026. Work packages B and C are implemented locally; upstream
-maintainer review is pending. The ODE API is provisionally frozen after G3;
-validation is recorded in ``results/ode_closeout.json`` and
-``ODE_CLOSEOUT.rst``. The work package C snapshot is
+30 October 2026. Work packages B/C and the G5 index-one DAE bridge are
+implemented locally; upstream maintainer review is pending. The ODE API
+was provisionally frozen after G3, recorded in ``results/ode_closeout.json``
+and ``ODE_CLOSEOUT.rst``. Current DAE validation is in
+``results/dae_compile_validation.json``; the contract and native qualifications
+are in ``DAE_DECISION.rst``. The work package C snapshot is
 ``results/controls_validation.json``. The work package B snapshot is
 ``results/compile_validation.json``, committed in ``74e516a11``.
 
@@ -23,6 +25,13 @@ statistics, and named forward/reverse factories. Reusing it avoids a second
 result type, a parameter registry class, and Pyomo wrappers for every CasADi
 derivative operation. The caller retains the function. No compilation cache
 or hidden model synchronization is needed.
+
+G5 extends the same method to index-one DAEs with explicit integrator='idas'.
+The additional native z0 input is a branch/solver guess; zf is reconstructed
+from the original algebraic residual using an implicit root solve. Native
+IDAS intervals provide derivative integration. Explicit time uses an internal
+clock. No new compile keyword or result wrapper is introduced. DAE controls
+remain gated on G6; the fixed-grid controls below currently apply to ODEs.
 
 The supplied handoff proposed a compiler/result wrapper with ``evaluate``,
 ``jvp`` and ``vjp`` methods. Defer those conveniences until a demonstrated
@@ -210,8 +219,8 @@ First patch boundary
 --------------------
 
 ODE primal maps and first derivative products, including fixed-grid control
-amplitudes, are the bounded first patch. Reject algebraic equations in
-``compile``.
+amplitudes, form the initial contribution. G5 adds the separately qualified
+index-one DAE path described in DAE_DECISION.rst.
 The two tested CasADi versions are validation targets, not justification for
 restricting the existing Simulator's dependency support.
 
@@ -222,14 +231,13 @@ avoids new output-expression and quadrature APIs. Native quadrature
 extraction and custom outputs can follow separately. Duration parameters in
 explicitly normalized models already use ordinary parameter selection.
 
-Forward DAE results and differential/quadrature-only DAE adjoints are
-promising, but a raw Function exposing zf cannot enforce a prohibition on
-reverse seeds for zf. Keep all DAEs out of the first compile contract.
-Before extending it, detect singular algebraic Jacobians and verify the
-derivative contract for initialization. The primal audit now uses
-model-provided algebraic guesses and holds independent differential ICs
-fixed. Do not implement a general algebraic elimination or insert a
-model-specific correction for the terminal z discrepancy.
+The G4 dependency matrix established a correct algebraic-output derivative
+path through generic implicit reconstruction and normalized IDAS interval
+composition. G5 implements this path with local consistency/regularity
+checks, instead of exposing an inaccurate native zf and attempting to limit
+its reverse seeds. Independent differential ICs are held fixed; algebraic
+guesses select a branch. The implementation does not insert model-specific
+gradient corrections. Numerical convergence limitations remain explicit.
 
 Control boundaries are fixed and only amplitudes are Function inputs.
 Event times, resets, second derivatives, and a new adaptive

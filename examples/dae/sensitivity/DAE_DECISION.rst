@@ -1,11 +1,13 @@
 Index-one DAE API and numerical decision
 ========================================
 
-G4, 30 October 2026. ODE closeout is committed in f2fcaa0cc. This note
-specifies the next bounded implementation; Simulator.compile still rejects
-DAEs at this checkpoint. Native evidence is in results/dae_native-3.8.1.json
+G4/G5, 30 October 2026. ODE closeout is committed in f2fcaa0cc. This note
+was committed at G4 before production DAE changes, in 2ad776409. The G5
+interface below is now implemented; its validation is recorded in
+results/dae_compile_validation.json. The historical G4 native evidence is
+in results/dae_native-3.8.1.json
 and results/dae_native-3.8.2.json, with an aggregate in
-results/dae_decision.json. No production DAE change has been made yet.
+results/dae_decision.json. Those records retain their original source hashes.
 
 Decision
 --------
@@ -110,12 +112,12 @@ p=p(theta), followed by a symbolic cost. No new IC mapping class or callback
 is needed. Derivatives are local to a branch. Moving a guess across branches
 can change the solution and is not a smooth sensitivity operation.
 
-Proposed public interface
--------------------------
+Public interface
+----------------
 
 No additional compile keyword is required for this initial extension. The
 existing integrator selector must be 'idas' for DAEs; 'cvodes' remains the
-ODE default. Illustrative G5 usage, not an already implemented method:
+ODE default. G5 usage is:
 
 .. code-block:: python
 
@@ -176,8 +178,8 @@ Numerical policy
   The caller must stay on an index-one branch throughout integration;
   checks at initial/observation points do not detect every interior event.
 
-The initial implementation should use documented scalar defaults when an
-absolute tolerance is omitted and state those defaults explicitly. A
+The DAE default absolute tolerance is 1e-8 when omitted; it also sets the
+algebraic residual target. A
 separate algebraic-solver configuration API is deferred until a concrete
 case needs independent settings; do not add a speculative solver registry.
 All solver options must be copied and no model, Simulator cache or caller
@@ -200,10 +202,49 @@ preservation. Root failure must not overwrite a previously simulated model.
 Then G6 adds controls and specifies right-side algebraic observations at
 switches, with consistency and its derivatives propagated through phases.
 
-G4 passes as a native design gate once the aggregate checks and source
-hashes are verified; it does not complete G5 or qualify DAE controls. The
+G4 passed its native design gate after aggregate checks and source-hash
+verification. G5 public tests now verify the implemented bridge; neither
+checkpoint qualifies DAE controls. The
 1e-12 consistency failure and near-singular failure are outstanding native
 limitations, not reasons to preserve an inaccurate algebraic-output API.
+
+G5 refinements from public-interface testing
+--------------------------------------------
+
+The public tests reproduce the G4 autonomous results and also exercise
+shifted physical time. A new native reduction xdot=k*t, qdot=x,
+z=a*x+t fails its IDAS adjoint with IDA_TOO_MUCH_WORK at the tested tight
+settings. Physical-time and normalized-time formulations both fail. Turning
+off quadrature error control returns a gradient with about 5.23e-3 absolute
+error; that is diagnostic evidence, not a supported workaround.
+
+For explicitly time-dependent equations, introduce one internal physical
+clock, cdot=1 (duration on a normalized interval), initialized to the phase
+start. Substitute c for time in f/g. This mathematically equivalent
+autonomous DAE retains native IDAS integration and sensitivity equations.
+It passes the reduced tight-setting rate adjoints within 2e-12 on both
+versions. The public tests also verify full x0/parameter derivatives of
+algebraic outputs, including time appearing only in g. The internal clock
+is absent from x0, xf and the variable-order contract. Autonomous models
+retain the G4 construction. No options are relaxed or solver fallback used.
+
+The 14-case per-version records are results/dae_time-<version>.json;
+dae_time_reproducer.py reproduces them. Coarse-tolerance clocked primals
+miss the fixed accuracy target and remain marked inaccurate; the tight
+clocked cases pass. The overall all-settings flag therefore remains false,
+with a separate, explicit tight-setting qualification.
+
+The G4 local Jacobian determinant check also needs a bounded implementation.
+CasADi's default SX determinant expands rapidly for a dense Jacobian; an
+8-by-8 symbolic example exceeds 100000 nodes and a 10-by-10 example exceeds
+the five-second experiment limit. The implementation selects CasADi's
+native symbolicqr determinant, retaining the same finite/nonzero check
+without Laplace expansion. This is a backend selection, not a Pyomo linear
+algebra algorithm. The dense ten-algebraic-variable public test verifies
+primal/direct/adjoint products with a parameter occurring only in g.
+dae_guard_reproducer.py and results/dae_guard-<version>.json retain bounded
+construction measurements and regular/singular evaluation checks. Timings
+are not portable performance guarantees or unit-test thresholds.
 
 Sources and provenance
 ----------------------

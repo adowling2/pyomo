@@ -7,7 +7,7 @@
 # software.  This software is distributed under the 3-clause BSD License.
 # ____________________________________________________________________________________
 
-"""Build the ODE guide/API with project Sphinx settings and execute its examples.
+"""Build the Simulator sensitivity guide/API and execute its examples.
 
 The build uses a temporary source copy so project-generated files do not
 modify the checkout. Only the DAE guide, compile API and referenced citation
@@ -31,14 +31,14 @@ from pyomo.common.fileutils import import_file
 
 
 def check_examples(root):
-    """Execute all four differentiable-map guide blocks and both analytic examples."""
+    """Execute all five map guide blocks and three analytic examples."""
     source = (root / 'doc/OnlineDocs/explanation/modeling/dae.rst').read_text()
     section = source.split('Differentiable ODE Simulation\n', 1)[1].split(
         'Specifying Time-Varying Inputs\n', 1
     )[0]
     blocks = re.findall(r'\.\. code-block:: python\n\n((?:   [^\n]*\n|\n)+)', section)
-    if len(blocks) != 4:
-        raise AssertionError('Expected four guide blocks, found %s' % len(blocks))
+    if len(blocks) != 5:
+        raise AssertionError('Expected five guide blocks, found %s' % len(blocks))
     namespace = {}
     for index, block in enumerate(blocks):
         exec(textwrap.dedent(block), namespace)
@@ -58,12 +58,30 @@ def check_examples(root):
                 float(namespace['total_adjoint']['adj_theta']),
                 rel_tol=3e-7,
             )
+        if index == 4:
+            x = 1.3 * math.exp(-0.7 * 1.4 * 1.2)
+            expected = [-(1.4**2) * 1.2 * x, x * (1 - 0.7 * 1.4 * 1.2)]
+            for i, derivative in enumerate(expected):
+                assert math.isclose(
+                    float(namespace['dae_gradient']['adj_p'][i]),
+                    derivative,
+                    rel_tol=3e-7,
+                    abs_tol=3e-7,
+                )
+            for i, t in enumerate((0, 0.2, 0.7, 1.2)):
+                assert math.isclose(
+                    float(namespace['dae_direction']['fwd_zf'][i]),
+                    -(1.4**2) * t * 1.3 * math.exp(-0.7 * 1.4 * t),
+                    rel_tol=3e-7,
+                    abs_tol=3e-7,
+                )
     for name in (
         'simulator_sensitivity_example.py',
         'simulator_control_sensitivity_example.py',
+        'simulator_dae_sensitivity_example.py',
     ):
         import_file(str(root / 'examples/dae' / name)).run_example()
-    print('Four guide snippets and both analytic examples passed.')
+    print('Five guide snippets and three analytic examples passed.')
 
 
 def build_guide(root, target):
@@ -127,6 +145,7 @@ Compiled map API
     for name in (
         'simulator_sensitivity_example.py',
         'simulator_control_sensitivity_example.py',
+        'simulator_dae_sensitivity_example.py',
     ):
         matches = list((target / 'html/_downloads').rglob(name))
         expected = hashlib.sha256(
@@ -136,7 +155,7 @@ Compiled map API
             len(matches) == 1
             and hashlib.sha256(matches[0].read_bytes()).hexdigest() == expected
         )
-    print('Guide/API HTML and both download hashes passed:', target / 'html')
+    print('Guide/API HTML and three download hashes passed:', target / 'html')
 
 
 def main():

@@ -954,9 +954,8 @@ avoid a batched-adjoint defect; multiple requested directions are still
 supported through native composition. CasADi 3.8.2 permits native batching.
 These restrictions do not alter ``simulate()``'s dependency support or options.
 
-Algebraic equations are not yet supported by ``compile()``. Fixed-grid
-piecewise controls are supported as described below. Convergence still
-depends on the model and integrator options.
+Fixed-grid piecewise controls and an index-one DAE extension are described
+below. Convergence still depends on the model and integrator options.
 For example, native BDF adjoints failed on a tested 1000:1 fast/slow linear
 system with CasADi 3.8.1/3.8.2, while an explicit Adams configuration passed;
 that is a case-specific result, not a general stiff-solver recommendation.
@@ -1064,6 +1063,90 @@ A runnable example with an integral state, piecewise controls, a nonlinear
 initial condition, and analytic checks for both derivative modes is available
 at :download:`simulator_control_sensitivity_example.py
 <../../../../examples/dae/simulator_control_sensitivity_example.py>`.
+
+Differentiable DAE Simulation
+*****************************
+
+For semi-explicit index-one DAEs, select ``integrator='idas'`` explicitly.
+The equations must have the form xdot=f(t,x,z,p), 0=g(t,x,z,p), with a
+square, locally nonsingular algebraic Jacobian g_z on the selected branch.
+The map adds input ``z0`` and output ``zf``. ``x0`` remains an independent
+differential initial state; ``z0`` is a solver guess and branch seed.
+Compiling reads neither initial state values nor guesses from the model.
+
+.. code-block:: python
+
+   import casadi as ca
+   import pyomo.environ as pyo
+   from pyomo.dae import ContinuousSet, DerivativeVar, Simulator
+
+   m = pyo.ConcreteModel()
+   m.t = ContinuousSet(bounds=(0, 1.2))
+   m.k = pyo.Param(mutable=True, initialize=0.7)
+   m.a = pyo.Param(mutable=True, initialize=1.4)
+   m.x = pyo.Var(m.t)
+   m.z = pyo.Var(m.t)
+   m.dx = DerivativeVar(m.x)
+   m.ode = pyo.Constraint(m.t, rule=lambda m, t: m.dx[t] == -m.k * m.z[t])
+   m.alg = pyo.Constraint(m.t, rule=lambda m, t: m.z[t] == m.a * m.x[t])
+   dae_flow = Simulator(m, package='casadi').compile(
+       parameters=[m.k, m.a], times=[0, 0.2, 0.7, 1.2],
+       integrator='idas',
+       integrator_options={'reltol': 1e-10, 'abstol': 1e-12},
+   )
+   dae_states = dae_flow(x0=[1.3], p=[0.7, 1.4], z0=[1])
+   dae_direction = dae_flow.factory(
+       'dae_direct', ['x0', 'p', 'z0', 'fwd:p'], ['fwd:xf', 'fwd:zf']
+   )(x0=[1.3], p=[0.7, 1.4], z0=[1], fwd_p=[1, 0])
+   dae_gradient = dae_flow.factory(
+       'dae_adjoint', ['x0', 'p', 'z0', 'adj:zf'], ['adj:x0', 'adj:p']
+   )(x0=[1.3], p=[0.7, 1.4], z0=[1], adj_zf=ca.DM([[0, 0, 0, 1]]))
+
+Both outputs have one column per requested observation. Differential rows
+follow ``get_variable_order()``; algebraic rows follow
+``get_variable_order('time-varying')``. Selected mutable parameters remain
+symbolic in both differential and algebraic equations, including parameters
+appearing only in g. Integral costs can still be ordinary differential states.
+
+The algebraic output solves the original residual with a differentiable
+rootfinder, including at the initial time. CasADi supplies its implicit
+derivatives with respect to x and p. This retains the direct parameter term
+in an algebraic terminal cost. The local derivative with respect to the
+solver guess is zero on a fixed branch; changing the guess across branches
+is not a smooth sensitivity operation. An omitted native ``z0`` defaults
+to zero, which may be an invalid nonlinear guess. Supply a meaningful guess
+for the intended branch. No differential IC is adjusted to satisfy g.
+
+To obtain total derivatives, compose x0(theta), p(theta), and a symbolic
+terminal/integral objective before differentiating, as for ODEs. A runnable
+example verifies both modes for z*z=a*x, a nonlinear initial condition,
+an integral state and a cost involving the final algebraic state:
+:download:`simulator_dae_sensitivity_example.py
+<../../../../examples/dae/simulator_dae_sensitivity_example.py>`.
+
+The implementation composes normalized IDAS intervals over observations.
+It uses implicit reconstruction to avoid measured inaccuracies in native
+algebraic-output adjoints. Equations with explicit time use an internal
+clock state so IDAS integrates an equivalent autonomous system; that state
+is absent from the public input/output layout. Derivative integration remains
+native IDAS. No separate Pyomo sensitivity equations are constructed.
+
+DAE maps require ``quad_err_con=True``, ``calc_ic=True``, ``calc_icB=True``
+and ``suppress_algebraic=False``. Unsupported overrides raise an error.
+Scalar ``abstol`` also sets the algebraic residual target; its DAE default
+is 1e-8. Newton iteration uses a residual stopping test, finite-value checks,
+a nonzero local Jacobian determinant and a 100-iteration limit. Nonsquare,
+structurally singular or failed consistency solves raise errors. These are
+local checks, not global index or branch analysis. Scale state and residual
+equations appropriately and verify convergence for the complete map.
+
+The initial DAE extension supports independent initial states, selected
+parameters and multiple observations/directions; fixed-grid DAE controls
+are not yet supported. Native IDAS convergence failures remain possible,
+including a recorded tight-tolerance adjoint consistency failure and a
+near-singular example. Such failures propagate without relaxing tolerances
+or changing the initial state. Higher-index DAEs and event-time derivatives
+remain outside this interface.
 
 Specifying Time-Varying Inputs
 ******************************

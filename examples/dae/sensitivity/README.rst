@@ -14,6 +14,11 @@ the prior B snapshot is ``results/compile_validation.json`` (commit
 ``74e516a11``). The ODE closeout and provisional API freeze are described
 in ``ODE_CLOSEOUT.rst`` and ``results/ode_closeout.json``. See
 ``DEVELOPMENT_GOAL.rst`` and ``DEVELOPMENT_LOG.rst`` for the gated DAE work.
+G5 now implements the index-one DAE bridge described in ``DAE_DECISION.rst``;
+its public-interface evidence is ``results/dae_compile_validation.json``
+and its runnable example is
+``examples/dae/simulator_dae_sensitivity_example.py``. DAE controls remain
+the next gated extension.
 
 The supplied probes reproduce: eight of twelve native cases meet their
 analytic checks with both CasADi versions. Four cases remain outside the
@@ -216,8 +221,10 @@ identify their own validated source snapshots. The work package B compile
 record retains its original results and source hashes.
 
 This matrix covers one Python version, operating system, architecture, and
-ASL binary. Older CasADi releases, Windows/Linux, stiff-system sensitivities, singular or
-high-index DAEs, DAE control sensitivities, and reverse derivatives through
-parameter-dependent DAE initialization remain unverified. New Simulator
-functionality still needs analytic and finite-difference tests through the
-actual public Pyomo interface.
+ASL binary. Older CasADi releases, Windows/Linux, singular or high-index
+DAE support, and DAE control sensitivities remain unqualified. G5 adds
+public-interface checks for parameter-dependent differential ICs and
+consistent algebraic initialization on tested index-one branches, including
+reverse products. The versioned native and public records distinguish
+accurate derivative paths from numerical failures; they do not establish
+arbitrary stiff-system or branch robustness.

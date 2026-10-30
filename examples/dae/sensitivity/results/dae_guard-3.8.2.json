@@ -1,0 +1,86 @@
+{
+  "casadi": "3.8.2",
+  "python": "3.12.14 (main, Sep  3 2026, 03:46:19) [Clang 21.1.8 ]",
+  "platform": "macOS-27.0.1-arm64-arm-64bit",
+  "cases": [
+    {
+      "size": 4,
+      "strategy": "default",
+      "construction_seconds": 0.00032520899549126625,
+      "nodes": 87,
+      "identity_value": 1.0,
+      "singular_value": 0.0,
+      "process_exit_code": 0
+    },
+    {
+      "size": 6,
+      "strategy": "default",
+      "construction_seconds": 0.007751083001494408,
+      "nodes": 2003,
+      "identity_value": 1.0,
+      "singular_value": 0.0,
+      "process_exit_code": 0
+    },
+    {
+      "size": 8,
+      "strategy": "default",
+      "construction_seconds": 0.4355842908844352,
+      "nodes": 109679,
+      "identity_value": 1.0,
+      "singular_value": 0.0,
+      "process_exit_code": 0
+    },
+    {
+      "size": 10,
+      "strategy": "default",
+      "timeout_s": 5
+    },
+    {
+      "size": 4,
+      "strategy": "qr",
+      "construction_seconds": 0.001234124880284071,
+      "nodes": 208,
+      "identity_value": 1.0,
+      "singular_value": 0.0,
+      "process_exit_code": 0
+    },
+    {
+      "size": 6,
+      "strategy": "qr",
+      "construction_seconds": 0.0012477501295506954,
+      "nodes": 506,
+      "identity_value": 1.0,
+      "singular_value": 0.0,
+      "process_exit_code": 0
+    },
+    {
+      "size": 8,
+      "strategy": "qr",
+      "construction_seconds": 0.00144595792517066,
+      "nodes": 1012,
+      "identity_value": 1.0,
+      "singular_value": 0.0,
+      "process_exit_code": 0
+    },
+    {
+      "size": 10,
+      "strategy": "qr",
+      "construction_seconds": 0.0013788328506052494,
+      "nodes": 1790,
+      "identity_value": 1.0,
+      "singular_value": 0.0,
+      "process_exit_code": 0
+    },
+    {
+      "size": 20,
+      "strategy": "qr",
+      "construction_seconds": 0.0030492087826132774,
+      "nodes": 12000,
+      "identity_value": 1.0,
+      "singular_value": 0.0,
+      "process_exit_code": 0
+    }
+  ],
+  "source_sha256": "d680de1ae721f98b29a35bc68020655654acd833a8206c86ab0b0aa8529cadad",
+  "command": " <env-python> examples/dae/sensitivity/dae_guard_reproducer.py --output <report.json>"
+}
