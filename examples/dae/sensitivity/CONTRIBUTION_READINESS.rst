@@ -7,6 +7,14 @@ G7, 30 October 2026. Local implementation is complete through G6 commit
 submission or a claim of maintainer approval. Historical A/B/C and G0-G6
 records retain their original source snapshots and test counts.
 
+Post-qualification review is active. The user selected one targeted Pyomo.DAE
+PR covering the bug fixes, ODE/DAE maps and both sensitivity modes. The current
+Markdown draft is PR_DESCRIPTION.md at the repository root. An independent
+full-diff audit has reproduced endpoint, algebraic-guard scaling and complex-IC
+regressions that the recorded suites missed. These require fixes and regression
+tests before submission readiness can be claimed. Development artifacts remain
+in the tree during this review.
+
 Public contract and measured support
 -------------------------------------
 
@@ -148,10 +156,11 @@ native phase/root functions. G6 changes 26 executable lines, all covered.
 The full Simulator diff from upstream includes the independently justified
 legacy fixes, input validation and documentation as well as compile; it is
 642 added and 70 removed lines. compile spans 309 lines including its docstring
-and validation; the DAE helper spans 144. That is substantial enough to split
-for review, even though the interface itself stays additive and small.
+and validation; the DAE helper spans 144. These counts describe the G7 snapshot.
+The user chose to submit this as one targeted Pyomo.DAE PR. Organize the review
+around the following related parts while keeping the interface additive.
 
-Recommended review units, without rewriting the local checkpoint history:
+Review outline for the single PR:
 
 1. Existing Simulator fixes and regression tests, including the independently
    verified SciPy reference correction. See INTERFACE_AUDIT.rst.
@@ -247,8 +256,9 @@ submission. No human review or legal authorization is asserted by this draft.
 Local completion
 ------------------
 
-All bounded local development gates G0-G7 are satisfied with the recorded
-native limitations and release exclusions. The source and validation hashes,
+The recorded G0-G7 qualification passed with the listed native limitations
+and release exclusions. The subsequent independent full-diff review is active;
+its findings must be resolved before submission. The source and validation hashes,
 checkpoint history and final checks are in results/contribution_readiness.json.
 Historical source claims are checked against retained Git snapshots, not
 misrepresented as hashes of today's files. The next user decision is when

@@ -28,6 +28,10 @@ are in ``CONTRIBUTION_READINESS.rst`` and
 independent refined DAE collocation check. ``EQUATION_SENSITIVITIES.rst``
 keeps a future explicit Pyomo equation transformation separate from the
 implemented native direct/adjoint interface.
+The user has selected one targeted Pyomo.DAE PR. PR_DESCRIPTION.md at the
+repository root is the current Markdown draft, including validation details
+and the status of the independent full-diff audit. Development artifacts are
+retained until the correctness review is complete and cleanup is approved.
 
 The supplied probes reproduce: eight of twelve native cases meet their
 analytic checks with both CasADi versions. Four cases remain outside the
