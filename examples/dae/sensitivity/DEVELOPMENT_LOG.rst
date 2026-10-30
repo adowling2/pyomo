@@ -32,9 +32,8 @@ contract. This plan does not authorize pushing or external messages.
 30 October 2026: G1 ODE numerical qualification
 -----------------------------------------------
 
-Status: passed. The G0
-plan commit is 70fa93fb3. Numerical evidence and two new test methods are
-included in the upcoming G1 checkpoint commit; production code is unchanged.
+Status: passed. The G0 plan commit is 70fa93fb3. Numerical evidence and two
+new test methods are committed in 3f66b87d2; production code is unchanged.
 
 The nonlinear shared-control model has states six orders of magnitude apart.
 Exact state/derivative checks, two-direction products and scaled identities
@@ -66,8 +65,8 @@ numerical qualification needed no production fix.
 ---------------------------------------------------
 
 Status: passed. G1 is committed as 3f66b87d2.
-The G2 script, reports and interpretation are included in the upcoming G2
-checkpoint commit. Production Simulator code is unchanged.
+The G2 script, reports and interpretation are committed in 5adc03eac.
+Production Simulator code is unchanged.
 
 The public map and independently differentiated collocation equations use
 the same nonlinear IC, integral state and explicit cost. Direct and adjoint
@@ -89,3 +88,29 @@ Command: run ode_comparison.py once per environment with --tolerance 1e-11,
 plus a retained 3.8.2 --tolerance 1e-9 pilot. Next action: G3 local Sphinx
 build, final ODE suite/optional-dependency checks and contribution packaging.
 Black, typo checks, RST parsing, diff checks and source-hash verification pass.
+
+30 October 2026: G3 ODE closeout
+--------------------------------
+
+Status: passed; this entry is included in the G3 checkpoint commit.
+G2 is committed as 5adc03eac.
+The ODE API is unchanged and the checkpoint's guide update explains local
+tolerance accumulation, dense-grid cost and consistent state/seed scaling.
+
+All three full suites pass 267 tests and 236 subtests: Python 3.12.14 with
+CasADi 3.8.1/3.8.2, plus Python 3.14.3 with 3.8.2. The lean environment
+runs 129 tests: seven pass and 122 skip. Fresh modified-line coverage is
+208/212 (98.1%). The instrumented run's multiprocessing shutdown diagnostic
+is retained separately from the successful numerical checks.
+
+The focused Sphinx 9.1.1 build passes with warnings treated as errors.
+check_ode_docs.py reproduces its temporary-copy setup and verifies example
+download hashes, all four guide snippets and both analytic examples.
+No source configuration changes were made for unrelated theme/bibliography
+warnings in exploratory builds. See ODE_CLOSEOUT.rst for the exact build
+scope, contribution breakdown, release-note draft and remaining remote-CI
+qualification. No push, PR or external message has been sent.
+
+Packaging/style/hash checks pass; results/ode_closeout.json records current
+sources and commands. Next action: begin native G4 DAE experiments and write
+DAE_DECISION.rst before any DAE production code.

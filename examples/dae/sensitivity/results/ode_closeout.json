@@ -1,0 +1,179 @@
+{
+  "checkpoint": "G3",
+  "date": "2026-10-30",
+  "source_parent_commit": "5adc03eac",
+  "gate_passed": true,
+  "snapshot_context": "G3 ODE closeout working tree on the parent commit; hashes identify the exact validated files. Later DAE or log changes do not update this historical snapshot.",
+  "platform": "macOS 27.0.1 ARM64",
+  "numpy": "2.5.4",
+  "scipy": "1.18.1",
+  "environments": {
+    "3.8.1": {
+      "python": "3.12.14",
+      "casadi": "3.8.1",
+      "tests_passed": 267,
+      "subtests_passed": 236,
+      "process_exit_code": 0,
+      "guide_blocks": 4,
+      "analytic_examples": 2,
+      "instrumented": true,
+      "harness_cleanup_diagnostic": true
+    },
+    "3.8.2": {
+      "python": "3.12.14",
+      "casadi": "3.8.2",
+      "tests_passed": 267,
+      "subtests_passed": 236,
+      "process_exit_code": 0,
+      "guide_blocks": 4,
+      "analytic_examples": 2,
+      "instrumented": false,
+      "harness_cleanup_diagnostic": false
+    },
+    "python314": {
+      "python": "3.14.3",
+      "casadi": "3.8.2",
+      "tests_passed": 267,
+      "subtests_passed": 236,
+      "process_exit_code": 0,
+      "guide_blocks": 4,
+      "analytic_examples": 2,
+      "instrumented": false,
+      "harness_cleanup_diagnostic": false
+    }
+  },
+  "optional_dependencies_absent": {
+    "run": 129,
+    "passed": 7,
+    "skipped": 122,
+    "modules": 5,
+    "process_exit_code": 0
+  },
+  "coverage": {
+    "module": {
+      "covered_lines": 587,
+      "num_statements": 614,
+      "percent_covered": 95.60260586319218,
+      "percent_covered_display": "96",
+      "missing_lines": 27,
+      "excluded_lines": 0,
+      "percent_statements_covered": 95.60260586319218,
+      "percent_statements_covered_display": "96"
+    },
+    "modified_executable_lines": 212,
+    "modified_covered_lines": 208,
+    "modified_coverage_percent": 98.11320754716981,
+    "modified_missing_lines": [
+      814,
+      818,
+      866,
+      1254
+    ],
+    "compile_executable_lines": 104,
+    "compile_covered_lines": 101,
+    "compile_coverage_percent": 97.11538461538461
+  },
+  "sphinx": {
+    "version": "9.1.1",
+    "docutils": "0.22.4",
+    "scope": "DAE guide, Simulator.compile API, referenced citation; project configuration in temporary source copy",
+    "warnings_as_errors": true,
+    "warnings": 0,
+    "process_exit_code": 0,
+    "example_download_hashes_verified": true,
+    "temporary_configuration_changes": [
+      "Select guide/API and only referenced bibliography entry",
+      "Disable external intersphinx inventory fetching",
+      "Use installed-theme discovery instead of deprecated get_html_theme_path"
+    ],
+    "full_manual_built": false,
+    "external_links_checked": false
+  },
+  "prior_gates": {
+    "G1": "passed; ode_numerics-3.8.1.json and ode_numerics-3.8.2.json",
+    "G2": "passed at explicit tight settings; coarse pilot remains a failed accuracy gate"
+  },
+  "commands": [
+    "PYTHONPATH=<checkout> COVERAGE_FILE=<unique-file> <3.8.1-env-python> -m coverage run --source=pyomo.dae.simulator -m pytest <absolute-checkout>/pyomo/dae/tests -q",
+    "PYTHONPATH=<checkout> <other-env-python> -m pytest <absolute-checkout>/pyomo/dae/tests -q",
+    "PYTHONPATH=<checkout> <lean-python> -m unittest pyomo.dae.tests.test_simulator pyomo.dae.tests.test_simulator_interface pyomo.dae.tests.test_simulator_compile pyomo.dae.tests.test_simulator_controls pyomo.dae.tests.test_simulator_ode_qualification -q",
+    "PYTHONPATH=<checkout> <sphinx-and-casadi-python> examples/dae/sensitivity/check_ode_docs.py",
+    "PYTHONPATH=<checkout> <other-casadi-python> examples/dae/sensitivity/check_ode_docs.py --skip-build"
+  ],
+  "checks": {
+    "black": "passed",
+    "typos": "passed",
+    "standalone_RST": "passed",
+    "git_diff_check": "passed"
+  },
+  "unexecuted_release_matrix": [
+    "Linux",
+    "Windows",
+    "Python 3.10/3.11/3.13 and other CasADi combinations",
+    "Remote branch CI"
+  ],
+  "known_limits": [
+    "Native stiff BDF adjoint failure remains reproduced",
+    "Controlled dense-grid runtime and local-error accumulation are documented",
+    "DAEs still refused by compile pending G4 decision",
+    "Only first derivative products qualified; scalar tolerances, no switch-time derivatives"
+  ],
+  "repository_files": {
+    "pyomo/dae/simulator.py": {
+      "bytes": 58540,
+      "sha256": "be9d88a68a042fc321cd7e3779bddc6f59858fae2bc81af3cdd7506800344d45"
+    },
+    "pyomo/dae/tests/test_simulator.py": {
+      "bytes": 50558,
+      "sha256": "e08cec8b406025e9dea0168e5f8fae5dd949b381be82c3803c395c7134145a63"
+    },
+    "pyomo/dae/tests/test_simulator_interface.py": {
+      "bytes": 30177,
+      "sha256": "8142d436c3fbc888a99239a307e0eea7ac12f3e5b1dd700255cb13bd0224e51f"
+    },
+    "pyomo/dae/tests/test_simulator_compile.py": {
+      "bytes": 29626,
+      "sha256": "16c39c3a793da8372ecaa46bb9ba43e7597c3664d0f25f26ae9b443f2debb9e2"
+    },
+    "pyomo/dae/tests/test_simulator_controls.py": {
+      "bytes": 29969,
+      "sha256": "3c256b471e749a6fb894a5fe82423b153006e3bc469b973fc4de9246750cbf7d"
+    },
+    "pyomo/dae/tests/test_simulator_ode_qualification.py": {
+      "bytes": 10098,
+      "sha256": "13b6e84cf557aca4e4b86adaf310a84d20ffe4d3daa6ef04c01a6155d06df995"
+    },
+    "doc/OnlineDocs/explanation/modeling/dae.rst": {
+      "bytes": 46640,
+      "sha256": "51d2c080199a848acf4c28915c07dec9b5860ed62887e6dfa2f02578052946f8"
+    },
+    "examples/dae/simulator_sensitivity_example.py": {
+      "bytes": 3067,
+      "sha256": "545c716442c650f90fd4ca7a90c928117cce9a993557f3f7e4f38acf92e547c4"
+    },
+    "examples/dae/simulator_control_sensitivity_example.py": {
+      "bytes": 3865,
+      "sha256": "a2a9f2d1f43b168b6f2c05b46ba0f120f295102bd9f017cb915fdee034c41061"
+    },
+    "examples/dae/sensitivity/check_ode_docs.py": {
+      "bytes": 5751,
+      "sha256": "a712e0f6a2e95295129fff84e75c5c21728c0ea85e1642b752b61a329c116059"
+    },
+    "examples/dae/sensitivity/ODE_CLOSEOUT.rst": {
+      "bytes": 6603,
+      "sha256": "222ef2d293f8b0dc4b8c6beb24dd698a7ebe7636aed36f265f683205d28452f7"
+    },
+    "examples/dae/sensitivity/API_DECISION.rst": {
+      "bytes": 17738,
+      "sha256": "c980ed856bfb0383b25ef49b295217a771a565f943c5777e0ec563d72edc8649"
+    },
+    "examples/dae/sensitivity/README.rst": {
+      "bytes": 10316,
+      "sha256": "55148869f442af883418d82a1cfe4184112a83c3cccee535bad938abe49760b9"
+    },
+    "examples/dae/sensitivity/DEVELOPMENT_LOG.rst": {
+      "bytes": 6338,
+      "sha256": "aad9f31c5f5716bfe6ed53aee1807b24eb7099febdf2f2774b402775f8389f17"
+    }
+  }
+}

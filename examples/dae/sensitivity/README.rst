@@ -9,8 +9,11 @@ API described in ``API_DECISION.rst``, including fixed-grid controls and total
 derivatives through initial conditions. Executable examples are
 ``examples/dae/simulator_sensitivity_example.py`` and
 ``examples/dae/simulator_control_sensitivity_example.py``. Current validation
-is recorded in ``results/controls_validation.json``; the prior B snapshot is
-``results/compile_validation.json`` (commit ``74e516a11``).
+for the C snapshot is recorded in ``results/controls_validation.json``;
+the prior B snapshot is ``results/compile_validation.json`` (commit
+``74e516a11``). The ODE closeout and provisional API freeze are described
+in ``ODE_CLOSEOUT.rst`` and ``results/ode_closeout.json``. See
+``DEVELOPMENT_GOAL.rst`` and ``DEVELOPMENT_LOG.rst`` for the gated DAE work.
 
 The supplied probes reproduce: eight of twelve native cases meet their
 analytic checks with both CasADi versions. Four cases remain outside the
@@ -208,9 +211,9 @@ deprecation warnings per run. The portable probes and formatting checks
 are recorded in ``results/provenance.json``. These are the original work
 package A checks. The later audit extends production test coverage and fixes
 existing defects; see ``INTERFACE_AUDIT.rst``. These earlier test counts and
-hashes are historical snapshots; the controls validation record describes
-the current working tree. The work package B compile record retains its
-original results and source hashes.
+hashes are historical snapshots; later controls and ODE-closeout records
+identify their own validated source snapshots. The work package B compile
+record retains its original results and source hashes.
 
 This matrix covers one Python version, operating system, architecture, and
 ASL binary. Older CasADi releases, Windows/Linux, stiff-system sensitivities, singular or

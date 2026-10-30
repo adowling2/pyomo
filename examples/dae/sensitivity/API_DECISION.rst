@@ -2,7 +2,9 @@ Simulator sensitivity API decision
 ==================================
 
 30 October 2026. Work packages B and C are implemented locally; upstream
-maintainer review is pending. Current validation is recorded in
+maintainer review is pending. The ODE API is provisionally frozen after G3;
+validation is recorded in ``results/ode_closeout.json`` and
+``ODE_CLOSEOUT.rst``. The work package C snapshot is
 ``results/controls_validation.json``. The work package B snapshot is
 ``results/compile_validation.json``, committed in ``74e516a11``.
 

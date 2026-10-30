@@ -1024,6 +1024,15 @@ distinct observations immediately beside switches and very short control
 intervals. The implementation does not differentiate numeric switching
 times or introduce events or resets.
 
+Each interval is integrated with the requested local tolerances. Errors can
+accumulate as more observations or control intervals are added; check
+convergence of the complete trajectory and its derivatives when tightening
+tolerances. Dense observations also increase the work of a controlled map.
+The implementation does not adjust tolerances automatically for grid length.
+For states with different units or magnitudes, nondimensionalize the model
+and scale tangent directions and adjoint weights consistently. Scalar
+tolerances alone do not provide a general unit-aware sensitivity policy.
+
 As with ``p``, the map treats ``u`` and ``x0`` as independent inputs. Compose
 their dependencies before differentiating to obtain total derivatives:
 

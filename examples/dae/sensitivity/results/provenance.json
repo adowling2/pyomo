@@ -275,7 +275,7 @@
     "implements_proposed_pyomo_method": false
   },
   "baseline_checkout_commit": "a6c7d20b27b379e9e54aa25986fcd50202fbf10c",
-  "snapshot_context": "Current C working tree on committed A/B implementation; current hashes below. A, audit and B records are historical snapshots.",
+  "snapshot_context": "Historical work package C snapshot on committed A/B implementation. Its hashes are retained, not current-file promises. Later G1/G2/G3 evidence is in the separate ODE numerical, comparison and closeout records.",
   "work_package_c": {
     "source_parent_commit": "74e516a112cef6b95c07f44609f7cddbdbf119ba",
     "validation": {
