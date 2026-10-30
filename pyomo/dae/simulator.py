@@ -8,8 +8,12 @@
 # ____________________________________________________________________________________
 
 import logging
+from collections.abc import Mapping
+from copy import deepcopy
+from numbers import Integral, Real
 
 from pyomo.core.base import Constraint, Param, value, Suffix, Block
+from pyomo.core.base.param import ParamData
 from pyomo.dae import ContinuousSet, DerivativeVar
 from pyomo.dae.diffvar import DAE_Error
 import pyomo.core.expr as EXPR
@@ -21,6 +25,7 @@ from pyomo.common.dependencies import (
     scipy,
     scipy_available,
     attempt_import,
+    check_min_version,
 )
 
 logger = logging.getLogger('pyomo.core')
@@ -191,6 +196,8 @@ def _check_viewsumexpression(expr, i):
             ):
                 dv = lhs
                 dvcoef = rhs
+            else:
+                items.append(item)
         else:
             items.append(item)
 
@@ -282,7 +289,10 @@ class Substitute_Pyomo2Casadi_Visitor(EXPR.ExpressionReplacementVisitor):
     def exitNode(self, node, data):
         """Replace a node if it's a unary function."""
         ans = super().exitNode(node, data)
-        if type(ans) is EXPR.UnaryFunctionExpression:
+        if type(ans) in (
+            EXPR.UnaryFunctionExpression,
+            EXPR.NPV_UnaryFunctionExpression,
+        ):
             return EXPR.UnaryFunctionExpression(
                 ans.args, ans.getname(), casadi_intrinsic[ans.getname()]
             )
@@ -315,6 +325,11 @@ class Convert_Pyomo2Casadi_Visitor(EXPR.ExpressionValueVisitor):
     leaves in the tree are not standard Pyomo5 variable types.
     """
 
+    def __init__(self, time=None, substitutions=None):
+        """Optionally replace time and selected scalar leaves by CasADi symbols."""
+        self.time = time
+        self.substitutions = substitutions if substitutions is not None else {}
+
     def visit(self, node, values):
         """Visit nodes that have been expanded"""
         return node._apply_operation(values)
@@ -330,6 +345,12 @@ class Convert_Pyomo2Casadi_Visitor(EXPR.ExpressionValueVisitor):
 
         if node.__class__ is casadi.SX:
             return True, node
+
+        if id(node) in self.substitutions:
+            return True, self.substitutions[id(node)]
+
+        if type(node) is IndexTemplate and self.time is not None:
+            return True, self.time
 
         if node.is_variable_type():
             return True, value(node)
@@ -363,7 +384,7 @@ def substitute_pyomo2casadi(expr, templatemap):
     return visitor.walk_expression(expr)
 
 
-def convert_pyomo2casadi(expr):
+def convert_pyomo2casadi(expr, time=None, substitutions=None):
     """Convert a Pyomo expression tree to Casadi.
 
     This function replaces a Pyomo expression with a CasADi expression.
@@ -375,6 +396,9 @@ def convert_pyomo2casadi(expr):
     Args:
         expr: a Pyomo expression with CasADi variables and intrinsic
             functions
+        time: optional CasADi expression representing the independent variable
+        substitutions: optional dictionary mapping scalar leaf identities to
+            CasADi symbols
 
     Returns:
         a CasADi expression tree.
@@ -384,7 +408,7 @@ def convert_pyomo2casadi(expr):
             "CASADI is not installed.  Cannot convert a Pyomo "
             "expression to a Casadi expression."
         )
-    visitor = Convert_Pyomo2Casadi_Visitor()
+    visitor = Convert_Pyomo2Casadi_Visitor(time, substitutions)
     return visitor.dfs_postorder_stack(expr)
 
 
@@ -657,7 +681,7 @@ class Simulator:
                         templatemap[v].set_value(x[idx])
 
                 for d in derivlist:
-                    residual.append(rhsdict[d]())
+                    residual.append(value(rhsdict[d]))
 
                 return residual
 
@@ -725,6 +749,171 @@ class Simulator:
         else:
             return self._diffvars
 
+    def compile(
+        self, *, parameters, times, integrator='cvodes', integrator_options=None
+    ):
+        """Compile a differentiable ODE map without evaluating a trajectory.
+
+        Parameters
+        ----------
+        parameters : iterable of mutable Param data
+            Ordered scalar parameters to retain symbolically. Entries of indexed
+            Params may be selected individually. Other scalar data are captured
+            at compilation. An empty iterable permits initial-state derivatives.
+        times : sequence of float
+            Nonempty, finite, strictly increasing observation times within the
+            ContinuousSet bounds. The initial time may be included.
+        integrator : str
+            Only 'cvodes' is currently supported. Requires package='casadi'
+            and CasADi 3.8.1 or later.
+        integrator_options : dict, optional
+            CasADi integration options, copied before use. Only positive scalar
+            tolerances are supported; time-grid and derivative augmentation
+            overrides are rejected. Quadrature error control is required and
+            defaults to True to control adjoint parameter-gradient accuracy.
+            On CasADi 3.8.1, max_num_dir is restricted to 1: CasADi composes
+            single-direction calls to avoid its batched-adjoint defect.
+
+        Returns
+        -------
+        casadi.Function
+            A function with inputs 'x0' and 'p' and output 'xf'. State rows follow
+            get_variable_order(), parameter entries follow parameters, and output
+            columns follow times. CasADi forward/reverse factories provide direct
+            and adjoint derivative products. x0 and p are independent inputs;
+            compose an initial-state map explicitly for total derivatives.
+
+        Notes
+        -----
+        Algebraic equations and time-varying inputs are not yet supported. The
+        model, caller options, and previous simulation results are not modified.
+        This method does not call initialize_model().
+        """
+        if self._intpackage != 'casadi' or integrator != 'cvodes':
+            raise DAE_Error(
+                "Simulator.compile requires package='casadi' and integrator='cvodes'"
+            )
+        if not numpy_available:
+            raise ValueError(
+                "The numpy module is not available. Cannot compile the model."
+            )
+        if not check_min_version(casadi, '3.8.1'):
+            raise DAE_Error("Simulator.compile requires CasADi 3.8.1 or later")
+        if self._alglist or self._algvars:
+            raise DAE_Error(
+                "Simulator.compile does not yet support algebraic equations or time-varying inputs"
+            )
+        if not self._diffvars:
+            raise DAE_Error(
+                "Simulator.compile requires at least one differential equation"
+            )
+
+        times = np.asarray(times, dtype=float)
+        if (
+            times.ndim != 1
+            or times.size == 0
+            or not np.isfinite(times).all()
+            or (np.diff(times) <= 0).any()
+        ):
+            raise ValueError(
+                "times must be a nonempty, finite, strictly increasing sequence"
+            )
+        if times[0] < self._contset.first() or times[-1] > self._contset.last():
+            raise ValueError("times must lie within the ContinuousSet bounds")
+
+        if isinstance(parameters, (set, frozenset, Mapping)):
+            raise TypeError(
+                "parameters must be an ordered iterable of mutable Param data"
+            )
+        parameters = list(parameters)
+        symbols = casadi.SX.sym('p', len(parameters))
+        substitutions = {}
+        for index, parameter in enumerate(parameters):
+            if (
+                not isinstance(parameter, ParamData)
+                or not parameter.parent_component().mutable
+            ):
+                raise ValueError(
+                    "Each selected parameter must be mutable scalar Param data"
+                )
+            if parameter.model() is not self._model.model():
+                raise ValueError(
+                    "Selected parameter %s belongs to a different model"
+                    % parameter.name
+                )
+            if any(
+                s is self._contset
+                for s in parameter.parent_component().index_set().subsets()
+            ):
+                raise ValueError(
+                    "Time-indexed parameters are not supported by Simulator.compile"
+                )
+            if id(parameter) in substitutions:
+                raise ValueError("Duplicate selected parameter %s" % parameter.name)
+            substitutions[id(parameter)] = symbols[index]
+
+        if integrator_options is not None and not isinstance(
+            integrator_options, Mapping
+        ):
+            raise TypeError("integrator_options must be a mapping")
+        options = (
+            deepcopy(dict(integrator_options)) if integrator_options is not None else {}
+        )
+        unsupported = {
+            'abstolv',
+            'augmented_options',
+            'nfwd',
+            'nadj',
+            't0',
+            'tf',
+            'grid',
+            'output_t0',
+        }
+        if unsupported.intersection(options):
+            raise ValueError(
+                "Simulator.compile does not support these integrator options: %s"
+                % ', '.join(sorted(unsupported.intersection(options)))
+            )
+        for name in ('abstol', 'reltol'):
+            if name in options and (
+                not isinstance(options[name], Real)
+                or not np.isfinite(options[name])
+                or options[name] <= 0
+            ):
+                raise ValueError("%s must be a positive finite scalar" % name)
+        if options.get('quad_err_con', True) is not True:
+            raise ValueError(
+                "Simulator.compile requires quad_err_con=True for adjoint accuracy"
+            )
+        options['quad_err_con'] = True
+        if not check_min_version(casadi, '3.8.2'):
+            if options.get('max_num_dir', 1) != 1:
+                raise ValueError(
+                    "Simulator.compile requires max_num_dir=1 on CasADi 3.8.1"
+                )
+            options['max_num_dir'] = 1
+
+        time = casadi.SX.sym('t')
+        states, ode = self._get_casadi_ode(time, substitutions)
+        for index, parameter in enumerate(parameters):
+            if not casadi.depends_on(ode, symbols[index]):
+                raise ValueError(
+                    "Selected parameter %s is unused in the ODE" % parameter.name
+                )
+        integrate = casadi.integrator(
+            'F',
+            integrator,
+            {'x': states, 'p': symbols, 'ode': ode, 't': time},
+            self._contset.first(),
+            times.tolist(),
+            options,
+        )
+        x0 = casadi.MX.sym('x0', len(self._diffvars))
+        p = casadi.MX.sym('p', len(parameters))
+        return casadi.Function(
+            'simulator', [x0, p], [integrate(x0=x0, p=p)['xf']], ['x0', 'p'], ['xf']
+        )
+
     def simulate(
         self,
         numpoints=None,
@@ -742,13 +931,14 @@ class Simulator:
         ----------
         numpoints : int
             The number of points for the profiles returned by the simulator.
-            Default is 100
+            Must be at least 2. Default is 100.
 
         tstep : int or float
             The time step to use in the profiles returned by the simulator.
             This is not the time step used internally by the integrators.
             This is an optional parameter that may be specified in place of
-            'numpoints'.
+            'numpoints'. The final time is always included; the last interval
+            may be shorter than tstep.
 
         integrator : string
             The string name of the integrator to use for simulation. The
@@ -764,11 +954,13 @@ class Simulator:
             is an optional argument. If not specified then the simulator
             will use the current value of the differential variables at the
             lower bound of the ContinuousSet for the initial condition.
+            Algebraic variable values at that point are used as guesses for
+            CasADi's consistent initialization; unset guesses default to zero.
 
         integrator_options : dict
             Dictionary containing options that should be passed to the
             integrator. See the documentation for a specific integrator for a
-            list of valid options.
+            list of valid options. The caller's dictionary is not modified.
 
         Returns
         -------
@@ -785,6 +977,8 @@ class Simulator:
 
         if integrator_options is None:
             integrator_options = {}
+        else:
+            integrator_options = deepcopy(integrator_options)
 
         if self._intpackage == 'scipy':
             # Specify the scipy integrator to use for simulation
@@ -810,12 +1004,6 @@ class Simulator:
 
         # Set the time step or the number of points for the lists
         # returned by the integrator
-        if tstep is not None and tstep > (self._contset.last() - self._contset.first()):
-            raise ValueError(
-                "The step size %6.2f is larger than the span of the "
-                "ContinuousSet %s" % (tstep, self._contset.name())
-            )
-
         if tstep is not None and numpoints is not None:
             raise ValueError(
                 "Cannot specify both the step size and the number of "
@@ -826,6 +1014,14 @@ class Simulator:
             numpoints = 100
 
         if tstep is None:
+            if (
+                isinstance(numpoints, bool)
+                or not isinstance(numpoints, Integral)
+                or numpoints < 2
+            ):
+                raise ValueError(
+                    "numpoints must be an integer greater than or equal to 2"
+                )
             tsim = np.linspace(
                 self._contset.first(), self._contset.last(), num=numpoints
             )
@@ -837,11 +1033,21 @@ class Simulator:
             # self._contset.last()),num=1000, endpoint=True)
 
         else:
+            if (
+                isinstance(tstep, bool)
+                or not isinstance(tstep, Real)
+                or not np.isfinite(tstep)
+                or tstep <= 0
+            ):
+                raise ValueError("tstep must be a positive finite number")
+            if tstep > self._contset.last() - self._contset.first():
+                raise ValueError("tstep must not exceed the span of the ContinuousSet")
             tsim = np.arange(self._contset.first(), self._contset.last(), tstep)
+            tsim = np.append(tsim[tsim < self._contset.last()], self._contset.last())
 
         switchpts = []
-        self._siminputvars = {}
-        self._simalgvars = []
+        siminputvars = {}
+        simalgvars = []
         if varying_inputs is not None:
             if type(varying_inputs) is not Suffix:
                 raise TypeError(
@@ -851,14 +1057,32 @@ class Simulator:
 
             for alg in self._algvars:
                 if alg._base in varying_inputs:
+                    profile = varying_inputs[alg._base]
+                    if not isinstance(profile, Mapping):
+                        raise TypeError("Varying input profiles must be dictionaries")
+                    if self._contset.first() not in profile:
+                        raise ValueError(
+                            "Varying input profiles must include the initial time"
+                        )
+                    if any(
+                        not isinstance(t, Real) or not np.isfinite(t) for t in profile
+                    ):
+                        raise ValueError(
+                            "Varying input switching times must be finite numbers"
+                        )
+                    if any(
+                        not isinstance(v, Real) or not np.isfinite(v)
+                        for v in profile.values()
+                    ):
+                        raise ValueError("Varying input values must be finite numbers")
                     # Find all the switching points
-                    switchpts += varying_inputs[alg._base].keys()
+                    switchpts += profile.keys()
                     # Add to dictionary of siminputvars
-                    self._siminputvars[alg._base] = alg
+                    siminputvars[alg._base] = alg
                 else:
-                    self._simalgvars.append(alg)
+                    simalgvars.append(alg)
 
-            if self._intpackage == 'scipy' and len(self._simalgvars) != 0:
+            if self._intpackage == 'scipy' and len(simalgvars) != 0:
                 raise DAE_Error(
                     "When simulating with Scipy you must "
                     "provide values for all parameters "
@@ -875,7 +1099,7 @@ class Simulator:
 
             # Make sure all the switchpts are within the bounds of
             # the ContinuousSet
-            if (
+            if switchpts and (
                 switchpts[0] < self._contset.first()
                 or switchpts[-1] > self._contset.last()
             ):
@@ -887,9 +1111,13 @@ class Simulator:
 
             # Update tsim to include input switching points
             # This numpy function returns the unique, sorted points
+            # Keep exact switch times when the output grid differs only by roundoff.
+            for switch in switchpts:
+                tolerance = 4 * np.finfo(float).eps * max(1, abs(switch))
+                tsim[np.abs(tsim - switch) <= tolerance] = switch
             tsim = np.union1d(tsim, switchpts)
         else:
-            self._simalgvars = self._algvars
+            simalgvars = self._algvars
 
         # Check if initial conditions were provided, otherwise obtain
         # them from the current variable values
@@ -907,39 +1135,60 @@ class Simulator:
                     % len(self._diffvars)
                 )
         else:
-            initcon = []
-            for v in self._diffvars:
-                for idx, i in enumerate(v._args):
-                    if type(i) is IndexTemplate:
-                        break
-                initpoint = self._contset.first()
-                vidx = tuple(v._args[0:idx]) + (initpoint,) + tuple(v._args[idx + 1 :])
-                # This line will raise an error if no value was set
-                initcon.append(value(v._base[vidx]))
+            initcon = self._get_initial_conditions(self._diffvars)
+
+        initcon = np.asarray(initcon, dtype=float)
+        if initcon.ndim != 1 or not np.isfinite(initcon).all():
+            raise ValueError(
+                "Initial conditions must be a one-dimensional sequence of finite numbers"
+            )
 
         # Call the integrator
-        if self._intpackage == 'scipy':
-            if not scipy_available:
-                raise ValueError(
-                    "The scipy module is not available. Cannot simulate the model."
-                )
-            tsim, profile = self._simulate_with_scipy(
-                initcon, tsim, switchpts, varying_inputs, integrator, integrator_options
-            )
-        else:
-            if len(switchpts) != 0:
-                tsim, profile = self._simulate_with_casadi_with_inputs(
-                    initcon, tsim, varying_inputs, integrator, integrator_options
+        previous_inputs, previous_algebraics = self._siminputvars, self._simalgvars
+        self._siminputvars, self._simalgvars = siminputvars, simalgvars
+        try:
+            if self._intpackage == 'scipy':
+                if not scipy_available:
+                    raise ValueError(
+                        "The scipy module is not available. Cannot simulate the model."
+                    )
+                tsim, profile = self._simulate_with_scipy(
+                    initcon,
+                    tsim,
+                    switchpts,
+                    varying_inputs,
+                    integrator,
+                    integrator_options,
                 )
             else:
-                tsim, profile = self._simulate_with_casadi_no_inputs(
-                    initcon, tsim, integrator, integrator_options
-                )
+                if len(switchpts) != 0:
+                    tsim, profile = self._simulate_with_casadi_with_inputs(
+                        initcon, tsim, varying_inputs, integrator, integrator_options
+                    )
+                else:
+                    tsim, profile = self._simulate_with_casadi_no_inputs(
+                        initcon, tsim, integrator, integrator_options
+                    )
+        except BaseException:
+            self._siminputvars, self._simalgvars = previous_inputs, previous_algebraics
+            raise
 
         self._tsim = tsim
         self._simsolution = profile
 
         return [tsim, profile]
+
+    def _get_initial_conditions(self, variables, default=None):
+        """Read state values at the initial time, optionally defaulting unset guesses."""
+        initial = []
+        for variable in variables:
+            index = tuple(
+                self._contset.first() if type(i) is IndexTemplate else i
+                for i in variable._args
+            )
+            val = value(variable._base[index], exception=default is None)
+            initial.append(default if val is None else val)
+        return initial
 
     def _simulate_with_scipy(
         self, initcon, tsim, switchpts, varying_inputs, integrator, integrator_options
@@ -958,6 +1207,8 @@ class Simulator:
                     if tsim[i - 1] in varying_inputs[v]:
                         p = self._templatemap[self._siminputvars[v]]
                         p.set_value(varying_inputs[v][tsim[i - 1]])
+                # Discard multistep history and cached RHS values at a discontinuity.
+                scipyint.set_initial_value(scipyint.y, scipyint.t)
 
             profilestep = scipyint.integrate(tsim[i])
             profile = np.vstack([profile, profilestep])
@@ -970,23 +1221,31 @@ class Simulator:
             )
         return [tsim, profile]
 
+    def _get_casadi_ode(self, time, substitutions=None):
+        """Assemble the ordered differential states and converted ODE expressions."""
+        states = casadi.vertcat(*(self._templatemap[i] for i in self._diffvars))
+        ode = casadi.vertcat(
+            *(
+                convert_pyomo2casadi(self._rhsdict[i], time, substitutions)
+                for i in self._derivlist
+            )
+        )
+        return states, ode
+
     def _simulate_with_casadi_no_inputs(
         self, initcon, tsim, integrator, integrator_options
     ):
         # Old way (10 times faster, but can't incorporate time
         # varying parameters/controls)
-        xalltemp = [self._templatemap[i] for i in self._diffvars]
-        xall = casadi.vertcat(*xalltemp)
-
-        odealltemp = [convert_pyomo2casadi(self._rhsdict[i]) for i in self._derivlist]
-        odeall = casadi.vertcat(*odealltemp)
-        dae = {'x': xall, 'ode': odeall}
+        time = casadi.SX.sym('t')
+        xall, odeall = self._get_casadi_ode(time)
+        dae = {'x': xall, 'ode': odeall, 't': time}
 
         if len(self._algvars) != 0:
             zalltemp = [self._templatemap[i] for i in self._simalgvars]
             zall = casadi.vertcat(*zalltemp)
 
-            algalltemp = [convert_pyomo2casadi(i) for i in self._alglist]
+            algalltemp = [convert_pyomo2casadi(i, time) for i in self._alglist]
             algall = casadi.vertcat(*algalltemp)
             dae['z'] = zall
             dae['alg'] = algall
@@ -994,7 +1253,10 @@ class Simulator:
         integrator_options['grid'] = tsim
         integrator_options['output_t0'] = True
         F = casadi.integrator('F', integrator, dae, integrator_options)
-        sol = F(x0=initcon)
+        algcon = self._get_initial_conditions(self._simalgvars, default=0)
+        if not np.isfinite(algcon).all():
+            raise ValueError("Algebraic initial guesses must be finite numbers")
+        sol = F(x0=initcon, z0=algcon)
         profile = sol['xf'].full().T
 
         if len(self._algvars) != 0:
@@ -1006,27 +1268,24 @@ class Simulator:
     def _simulate_with_casadi_with_inputs(
         self, initcon, tsim, varying_inputs, integrator, integrator_options
     ):
-        xalltemp = [self._templatemap[i] for i in self._diffvars]
-        xall = casadi.vertcat(*xalltemp)
+        duration = casadi.SX.sym('duration')
+        start = casadi.SX.sym('start')
+        local_time = casadi.SX.sym('t')
+        time = start + duration * local_time
 
-        time = casadi.SX.sym('time')
-
-        odealltemp = [
-            time * convert_pyomo2casadi(self._rhsdict[i]) for i in self._derivlist
-        ]
-        odeall = casadi.vertcat(*odealltemp)
+        xall, odeall = self._get_casadi_ode(time)
+        odeall = duration * odeall
 
         # Time-varying inputs
         ptemp = [self._templatemap[i] for i in self._siminputvars.values()]
-        pall = casadi.vertcat(time, *ptemp)
+        pall = casadi.vertcat(duration, start, *ptemp)
 
-        dae = {'x': xall, 'p': pall, 'ode': odeall}
+        dae = {'x': xall, 'p': pall, 'ode': odeall, 't': local_time}
 
         if len(self._algvars) != 0:
             zalltemp = [self._templatemap[i] for i in self._simalgvars]
             zall = casadi.vertcat(*zalltemp)
-            # Need to do anything special with time scaling??
-            algalltemp = [convert_pyomo2casadi(i) for i in self._alglist]
+            algalltemp = [convert_pyomo2casadi(i, time) for i in self._alglist]
             algall = casadi.vertcat(*algalltemp)
             dae['z'] = zall
             dae['alg'] = algall
@@ -1039,9 +1298,10 @@ class Simulator:
         # create an array with the time step between consecutive
         # time points
         tsimtemp = np.hstack([0, tsim[1:] - tsim[0:-1]])
-        tsimtemp.shape = (1, len(tsimtemp))
+        tsimtemp = tsimtemp.reshape(1, -1)
 
-        palltemp = [casadi.DM(tsimtemp)]
+        starts = np.hstack([tsim[0], tsim[:-1]]).reshape(1, -1)
+        palltemp = [casadi.DM(tsimtemp), casadi.DM(starts)]
 
         # Need a similar np array for each time-varying input
         for p in self._siminputvars.keys():
@@ -1049,7 +1309,7 @@ class Simulator:
             tswitch = list(profile.keys())
             tswitch.sort()
             tidx = [tsim.searchsorted(i) for i in tswitch] + [len(tsim) - 1]
-            ptemp = [profile[0]] + [
+            ptemp = [profile[tsim[0]]] + [
                 casadi.repmat(profile[tswitch[i]], 1, tidx[i + 1] - tidx[i])
                 for i in range(len(tswitch))
             ]
@@ -1057,11 +1317,33 @@ class Simulator:
             palltemp.append(temp)
 
         I = F.mapaccum('simulator', N)
-        sol = I(x0=initcon, p=casadi.vertcat(*palltemp))
+        algcon = self._get_initial_conditions(self._simalgvars, default=0)
+        if not np.isfinite(algcon).all():
+            raise ValueError("Algebraic initial guesses must be finite numbers")
+        sol = I(x0=initcon, z0=algcon, p=casadi.vertcat(*palltemp))
         profile = sol['xf'].full().T
 
         if len(self._algvars) != 0:
             algprofile = sol['zf'].full().T
+            if self._simalgvars:
+                # At a switch, return algebraic states consistent with the new inputs.
+                switches = sorted(
+                    {t for p in self._siminputvars for t in varying_inputs[p]}
+                )
+                for switch in switches:
+                    if switch == tsim[0]:
+                        continue
+                    index = tsim.searchsorted(switch)
+                    inputs = [0, switch] + [
+                        varying_inputs[p][
+                            max(t for t in varying_inputs[p] if t <= switch)
+                        ]
+                        for p in self._siminputvars
+                    ]
+                    consistent = F(
+                        x0=sol['xf'][:, index], z0=sol['zf'][:, index], p=inputs
+                    )
+                    algprofile[index, :] = consistent['zf'].full().ravel()
             profile = np.concatenate((profile, algprofile), axis=1)
 
         return [tsim, profile]

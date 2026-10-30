@@ -1,0 +1,460 @@
+{
+  "casadi": "3.8.1",
+  "numpy": "2.5.4",
+  "python": "3.12.14 (main, Sep  3 2026, 03:46:19) [Clang 21.1.8 ]",
+  "platform": "macOS-27.0.1-arm64-arm-64bit",
+  "cases": {
+    "ode_observations": {
+      "completed": true,
+      "observations": {
+        "primal_error": 1.1257839105383027e-10,
+        "forward_error": 2.9319657812720834e-11,
+        "reverse_error": 7.682859903823669e-11,
+        "duality_error": 7.595882256516973e-12,
+        "explicit_objective_gradient_error": 2.859132930410624e-10,
+        "parameter_dependent_ic_error": 9.192108185729353e-11
+      },
+      "returncode": 0,
+      "stderr_tail": ""
+    },
+    "algebraic_terminal": {
+      "completed": true,
+      "observations": [
+        {
+          "reltol": 1e-06,
+          "abstol": 1e-08,
+          "reconstructed": false,
+          "analytic_z_gradient": [
+            -0.9433011393469167,
+            -0.07058716008718414
+          ],
+          "forward_z_gradient": [
+            -0.9433009410072575,
+            -0.0705870364889491
+          ],
+          "reverse_z_gradient": [
+            -0.9149377939167722,
+            -0.45746889696413723
+          ],
+          "primal_error": 1.8722040125984662e-06,
+          "forward_error": 1.9833965925197816e-07,
+          "reverse_error": 0.3868817368769531,
+          "duality_error": 0.2793262464597772,
+          "finite_differences": [
+            {
+              "step": 0.001,
+              "max_abs_error": 4.265845940598645e-06
+            },
+            {
+              "step": 0.0001,
+              "max_abs_error": 4.704422615575687e-06
+            },
+            {
+              "step": 1e-05,
+              "max_abs_error": 4.715980037373058e-06
+            },
+            {
+              "step": 1e-06,
+              "max_abs_error": 4.697611397319612e-06
+            }
+          ]
+        },
+        {
+          "reltol": 1e-06,
+          "abstol": 1e-08,
+          "reconstructed": true,
+          "analytic_z_gradient": [
+            -0.9433011393469167,
+            -0.07058716008718414
+          ],
+          "forward_z_gradient": [
+            -0.9433009410072574,
+            -0.07058839820593504
+          ],
+          "reverse_z_gradient": [
+            -0.943297900299583,
+            -0.0705868778580111
+          ],
+          "primal_error": 1.8722040128205109e-06,
+          "forward_error": 1.2381187508986313e-06,
+          "reverse_error": 3.2390473336807446e-06,
+          "duality_error": 1.5203124445473115e-07,
+          "finite_differences": [
+            {
+              "step": 0.001,
+              "max_abs_error": 4.265846218154401e-06
+            },
+            {
+              "step": 0.0001,
+              "max_abs_error": 4.704428721802323e-06
+            },
+            {
+              "step": 1e-05,
+              "max_abs_error": 4.71591342399158e-06
+            },
+            {
+              "step": 1e-06,
+              "max_abs_error": 4.697611397319612e-06
+            }
+          ]
+        },
+        {
+          "reltol": 1e-08,
+          "abstol": 1e-10,
+          "reconstructed": false,
+          "analytic_z_gradient": [
+            -0.9433011393469167,
+            -0.07058716008718414
+          ],
+          "forward_z_gradient": [
+            -0.9433011363769267,
+            -0.07058715849108513
+          ],
+          "reverse_z_gradient": [
+            -0.9369144821126787,
+            -0.46845724105633874
+          ],
+          "primal_error": 1.527638326948022e-08,
+          "forward_error": 2.9699900316870753e-09,
+          "reverse_error": 0.3978700809691546,
+          "duality_error": 0.2804250540749519,
+          "finite_differences": [
+            {
+              "step": 0.001,
+              "max_abs_error": 4.5748850519000683e-07
+            },
+            {
+              "step": 0.0001,
+              "max_abs_error": 1.9210535717739674e-08
+            },
+            {
+              "step": 1e-05,
+              "max_abs_error": 7.597430254357995e-09
+            },
+            {
+              "step": 1e-06,
+              "max_abs_error": 2.0902519361210015e-07
+            }
+          ]
+        },
+        {
+          "reltol": 1e-08,
+          "abstol": 1e-10,
+          "reconstructed": true,
+          "analytic_z_gradient": [
+            -0.9433011393469167,
+            -0.07058716008718414
+          ],
+          "forward_z_gradient": [
+            -0.9433011363769273,
+            -0.07058714769048713
+          ],
+          "reverse_z_gradient": [
+            -0.9433011356143698,
+            -0.07058714730920929
+          ],
+          "primal_error": 1.5276383158457918e-08,
+          "forward_error": 1.2396697016137104e-08,
+          "reverse_error": 1.2777974858768637e-08,
+          "duality_error": 3.812725135610151e-11,
+          "finite_differences": [
+            {
+              "step": 0.001,
+              "max_abs_error": 4.5748850519000683e-07
+            },
+            {
+              "step": 0.0001,
+              "max_abs_error": 1.920998060622736e-08
+            },
+            {
+              "step": 1e-05,
+              "max_abs_error": 7.597430254357995e-09
+            },
+            {
+              "step": 1e-06,
+              "max_abs_error": 2.090807047633314e-07
+            }
+          ]
+        },
+        {
+          "reltol": 1e-10,
+          "abstol": 1e-12,
+          "reconstructed": false,
+          "analytic_z_gradient": [
+            -0.9433011393469167,
+            -0.07058716008718414
+          ],
+          "forward_z_gradient": [
+            -0.9433011392441953,
+            -0.0705871600251974
+          ],
+          "reverse_z_gradient": [
+            -0.942667303009176,
+            -0.47133365150458933
+          ],
+          "primal_error": 1.0433666153275567e-09,
+          "forward_error": 1.0272138695199828e-10,
+          "reverse_error": 0.4007464914174052,
+          "duality_error": 0.2807126949060802,
+          "finite_differences": [
+            {
+              "step": 0.001,
+              "max_abs_error": 5.101996184420088e-07
+            },
+            {
+              "step": 0.0001,
+              "max_abs_error": 1.5061490186984994e-07
+            },
+            {
+              "step": 1e-05,
+              "max_abs_error": 4.65101047919525e-06
+            },
+            {
+              "step": 1e-06,
+              "max_abs_error": 9.590986543094038e-05
+            }
+          ]
+        },
+        {
+          "reltol": 1e-10,
+          "abstol": 1e-12,
+          "reconstructed": true,
+          "analytic_z_gradient": [
+            -0.9433011393469167,
+            -0.07058716008718414
+          ],
+          "forward_z_gradient": [
+            -0.9433011392441955,
+            -0.07058715929093151
+          ],
+          "reverse_z_gradient": [
+            -0.9433011398433271,
+            -0.07058715959049694
+          ],
+          "primal_error": 1.0428488073088715e-09,
+          "forward_error": 7.962526332727649e-10,
+          "reverse_error": 4.966872052536431e-10,
+          "duality_error": 2.9956287450616514e-11,
+          "finite_differences": [
+            {
+              "step": 0.001,
+              "max_abs_error": 5.102144399193875e-07
+            },
+            {
+              "step": 0.0001,
+              "max_abs_error": 1.5258221706948571e-07
+            },
+            {
+              "step": 1e-05,
+              "max_abs_error": 4.651004928080127e-06
+            },
+            {
+              "step": 1e-06,
+              "max_abs_error": 9.751019640978631e-05
+            }
+          ]
+        },
+        {
+          "reltol": 1e-12,
+          "abstol": 1e-14,
+          "reconstructed": false,
+          "analytic_z_gradient": [
+            -0.9433011393469167,
+            -0.07058716008718414
+          ],
+          "forward_z_gradient": [
+            -0.9433011393373378,
+            -0.07058716008140475
+          ],
+          "reverse_z_gradient": [
+            -0.9432025573131307,
+            -0.4716012786565654
+          ],
+          "primal_error": 2.084254990819545e-11,
+          "forward_error": 9.578893234163388e-12,
+          "reverse_error": 0.4010141185693813,
+          "duality_error": 0.2807394576098746,
+          "finite_differences": [
+            {
+              "step": 0.001,
+              "max_abs_error": 4.480628227332417e-07
+            },
+            {
+              "step": 0.0001,
+              "max_abs_error": 5.326867481836306e-08
+            },
+            {
+              "step": 1e-05,
+              "max_abs_error": 8.532598592264629e-07
+            },
+            {
+              "step": 1e-06,
+              "max_abs_error": 6.582710069258368e-07
+            }
+          ]
+        },
+        {
+          "reltol": 1e-12,
+          "abstol": 1e-14,
+          "reconstructed": true,
+          "analytic_z_gradient": [
+            -0.9433011393469167,
+            -0.07058716008718414
+          ],
+          "forward_z_gradient": [
+            -0.9433011393373378,
+            -0.07058716006750931
+          ],
+          "reverse_z_gradient": [
+            -0.943301139357942,
+            -0.07058716007781152
+          ],
+          "primal_error": 2.0839552306028963e-11,
+          "forward_error": 1.967483120868252e-11,
+          "reverse_error": 1.1025291790645042e-11,
+          "duality_error": 1.0303424780033765e-12,
+          "finite_differences": [
+            {
+              "step": 0.001,
+              "max_abs_error": 4.480913554649746e-07
+            },
+            {
+              "step": 0.0001,
+              "max_abs_error": 5.326922992987537e-08
+            },
+            {
+              "step": 1e-05,
+              "max_abs_error": 8.532487569962166e-07
+            },
+            {
+              "step": 1e-06,
+              "max_abs_error": 6.584375403795306e-07
+            }
+          ]
+        }
+      ],
+      "returncode": 0,
+      "stderr_tail": ""
+    },
+    "vector_unexpanded": {
+      "completed": false,
+      "error": "Error in Function::call for 'fwd1_outputs' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'fwd1_flow' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'fsens1_flow' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:608: IDACalcIC returned \"IDA_ILL_INPUT\". Consult IDAS documentation.",
+      "returncode": 0,
+      "stderr_tail": "Some initial ewt component = 0.0 illegal.\nFunction fsens1_flow (0x111039200)\nInput 0 (x0): [[1.3, 1]]\nInput 1 (z0): [[1, 0]]\nInput 2 (p): \n[[0.7, 0], \n [1.4, 0]]\nInput 3 (u): 0x2\nInput 4 (adj_xf): 0x0\nInput 5 (adj_zf): 0x0\nInput 6 (adj_qf): 0x0\nFunction fwd1_flow (0x1110ea800)\nInput 0 (x0): 1.3\nInput 1 (z0): 1\nInput 2 (p): [0.7, 1.4]\nInput 3 (u): 0x1\nInput 4 (adj_xf): 0x0\nInput 5 (adj_zf): 0x0\nInput 6 (adj_qf): 0x0\nInput 7 (out_xf): 00\nInput 8 (out_zf): 00\nInput 9 (out_qf): 0x1\nInput 10 (out_adj_x0): 0x0\nInput 11 (out_adj_z0): 0x0\nInput 12 (out_adj_p): 0x0\nInput 13 (out_adj_u): 0x0\nInput 14 (fwd_x0): 1\nInput 15 (fwd_z0): 0\nInput 16 (fwd_p): [0, 0]\nInput 17 (fwd_u): 0x1\nInput 18 (fwd_adj_xf): 0x0\nInput 19 (fwd_adj_zf): 0x0\nInput 20 (fwd_adj_qf): 0x0\n"
+    },
+    "vector_expanded_one": {
+      "completed": true,
+      "observations": {
+        "directions": 1,
+        "options": {
+          "reltol": 1e-10,
+          "abstolv": [
+            1e-12,
+            1e-11
+          ],
+          "calc_ic": true,
+          "augmented_options": {
+            "abstolv": [
+              1e-12,
+              1e-12,
+              1e-11,
+              1e-11
+            ]
+          }
+        },
+        "forward_error": 8.007808305343644e-10
+      },
+      "returncode": 0,
+      "stderr_tail": ""
+    },
+    "vector_expanded_two": {
+      "completed": true,
+      "observations": {
+        "directions": 2,
+        "options": {
+          "reltol": 1e-10,
+          "abstolv": [
+            1e-12,
+            1e-11
+          ],
+          "calc_ic": true,
+          "augmented_options": {
+            "abstolv": [
+              1e-12,
+              1e-12,
+              1e-12,
+              1e-11,
+              1e-11,
+              1e-11
+            ]
+          }
+        },
+        "forward_error": 6.867266755250512e-10
+      },
+      "returncode": 0,
+      "stderr_tail": ""
+    },
+    "controls_native": {
+      "completed": true,
+      "observations": [
+        {
+          "options": {
+            "reltol": 1e-07,
+            "abstol": 1e-08
+          },
+          "error": "Error in Function::call for 'terminal' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'grid' [CvodesInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/cvodes_interface.cpp:403: CVode returned \"CV_ERR_FAILURE\". Consult CVODES documentation."
+        },
+        {
+          "options": {
+            "reltol": 1e-09,
+            "abstol": 1e-10
+          },
+          "error": "Error in Function::call for 'terminal' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'grid' [CvodesInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/cvodes_interface.cpp:403: CVode returned \"CV_ERR_FAILURE\". Consult CVODES documentation."
+        },
+        {
+          "options": {
+            "reltol": 1e-11,
+            "abstol": 1e-12
+          },
+          "error": "Error in Function::call for 'terminal' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'grid' [CvodesInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/cvodes_interface.cpp:403: CVode returned \"CV_ERR_FAILURE\". Consult CVODES documentation."
+        }
+      ],
+      "returncode": 0,
+      "stderr_tail": "At t = 0.7 and h = 2.10751e-07, the error test failed repeatedly or with |h| = hmin.\nFunction grid (0x13828ea00)\nInput 0 (x0): 0.3\nInput 1 (z0): 0x1\nInput 2 (p): 0x1\nInput 3 (u): [[0.1, 0.4, -0.2]]\nInput 4 (adj_xf): 0x0\nInput 5 (adj_zf): 0x0\nInput 6 (adj_qf): 0x0\nAt t = 0.2 and h = 2.19316e-08, the error test failed repeatedly or with |h| = hmin.\nFunction grid (0x1382e2c00)\nInput 0 (x0): 0.3\nInput 1 (z0): 0x1\nInput 2 (p): 0x1\nInput 3 (u): [[0.1, 0.4, -0.2]]\nInput 4 (adj_xf): 0x0\nInput 5 (adj_zf): 0x0\nInput 6 (adj_qf): 0x0\nAt t = 0.2 and h = 1.67144e-08, the error test failed repeatedly or with |h| = hmin.\nFunction grid (0x13828ea00)\nInput 0 (x0): 0.3\nInput 1 (z0): 0x1\nInput 2 (p): 0x1\nInput 3 (u): [[0.1, 0.4, -0.2]]\nInput 4 (adj_xf): 0x0\nInput 5 (adj_zf): 0x0\nInput 6 (adj_qf): 0x0\n"
+    },
+    "controls_segmented": {
+      "completed": true,
+      "observations": [
+        {
+          "options": {
+            "reltol": 1e-07,
+            "abstol": 1e-08
+          },
+          "primal_error": 2.1546450970633124e-07,
+          "forward_error": 6.446298816964458e-08,
+          "reverse_error": 5.823365251678148e-07
+        },
+        {
+          "options": {
+            "reltol": 1e-09,
+            "abstol": 1e-10
+          },
+          "primal_error": 2.4924986241625646e-09,
+          "forward_error": 5.046032758304619e-09,
+          "reverse_error": 1.03971736220565e-08
+        },
+        {
+          "options": {
+            "reltol": 1e-11,
+            "abstol": 1e-12
+          },
+          "primal_error": 2.073308191796741e-11,
+          "forward_error": 1.1973921854036007e-11,
+          "reverse_error": 5.0246529159636566e-11
+        }
+      ],
+      "returncode": 0,
+      "stderr_tail": ""
+    }
+  }
+}

@@ -1,0 +1,137 @@
+{
+  "date": "2026-10-30",
+  "base_commit": "a6c7d20b27b379e9e54aa25986fcd50202fbf10c",
+  "branch": "pyomo-dae-sensitivity",
+  "work_package": "B: minimal ODE-first public compile interface",
+  "sensitivity_feature_implemented": true,
+  "api": {
+    "method": "Simulator.compile(*, parameters, times, integrator=\"cvodes\", integrator_options=None)",
+    "returns": "casadi.Function",
+    "inputs": [
+      "x0",
+      "p"
+    ],
+    "outputs": [
+      "xf"
+    ],
+    "modes": [
+      "forward/direct JVP",
+      "reverse/adjoint VJP"
+    ],
+    "explicit_pyomo_equation_transformation": false,
+    "minimum_casadi": "3.8.1",
+    "quadrature_error_control": "Required True, as selected by the user",
+    "casadi_3_8_1_direction_limit": 1
+  },
+  "tested_environment": {
+    "python": "3.12.14",
+    "numpy": "2.5.4",
+    "scipy": "1.18.1",
+    "platform": "macOS 27.0.1 ARM64"
+  },
+  "validation": {
+    "3.8.1": {
+      "full_dae_tests_passed": 250,
+      "subtests_passed": 196,
+      "failures": 0,
+      "new_compile_methods": 20,
+      "guide_python_blocks_executed": 2,
+      "sensitivity_example_passed": true,
+      "quad_error_control_gradient_error": 4.168443368257613e-11,
+      "native_unrestricted_batch_error": 0.19232965909447436,
+      "native_serial_batch_error": 7.1492811670736955e-12
+    },
+    "3.8.2": {
+      "full_dae_tests_passed": 250,
+      "subtests_passed": 196,
+      "failures": 0,
+      "new_compile_methods": 20,
+      "guide_python_blocks_executed": 2,
+      "sensitivity_example_passed": true,
+      "quad_error_control_gradient_error": 4.168443368257613e-11,
+      "native_unrestricted_batch_error": 8.944400775590111e-12,
+      "native_serial_batch_error": 7.1492811670736955e-12
+    }
+  },
+  "optional_dependencies_absent": {
+    "modules": [
+      "pyomo.dae.tests.test_simulator",
+      "pyomo.dae.tests.test_simulator_interface",
+      "pyomo.dae.tests.test_simulator_compile"
+    ],
+    "run": 112,
+    "passed": 7,
+    "skipped": 105,
+    "failures": 0
+  },
+  "coverage": {
+    "module": {
+      "covered_lines": 540,
+      "num_statements": 566,
+      "percent_covered": 95.40636042402826,
+      "percent_covered_display": "95",
+      "missing_lines": 26,
+      "excluded_lines": 0,
+      "percent_statements_covered": 95.40636042402826,
+      "percent_statements_covered_display": "95"
+    },
+    "compile_executable_lines": 56,
+    "compile_covered_lines": 54,
+    "compile_percent": 96.42857142857143,
+    "compile_missing_lines": [
+      797,
+      801
+    ],
+    "fresh_data_file": "/private/tmp/pyomo-dae-sensitivity-work-a/work-b-final.coverage"
+  },
+  "test_commands": [
+    "PYTHONPATH=<checkout> <casadi-env-python> -m pytest pyomo/dae/tests -q",
+    "COVERAGE_FILE=<new-unique-file> <env-python> -m coverage run --source=pyomo.dae.simulator -m pytest pyomo/dae/tests -q",
+    "PYTHONPATH=<checkout> <lean-env-python> -m unittest pyomo.dae.tests.test_simulator pyomo.dae.tests.test_simulator_interface pyomo.dae.tests.test_simulator_compile -q"
+  ],
+  "checks": {
+    "black": "passed",
+    "typos": "passed",
+    "git_diff_check": "passed",
+    "standalone_notes_docutils_0.22.4": "passed",
+    "guide_code_blocks": "executed successfully on both versions",
+    "executable_example": "analytic assertions passed on both versions"
+  },
+  "coverage_harness_note": "An instrumented run emitted a Python multiprocessing semaphore-cleanup diagnostic after its tests completed; fresh coverage and test exit codes were successful. The diagnostic is not a numerical integration failure.",
+  "known_limitations": [
+    "DAE and varying-input compilation are explicitly rejected",
+    "Scalar Var parameter selection and vector tolerances are not supported",
+    "Native CVODES BDF adjoints fail on the recorded 1000:1 decay case; explicit Adams passes; the compiler does not retry with a different method",
+    "Only first derivative products are qualified; no explicit Pyomo sensitivity-equation transformation"
+  ],
+  "repository_files": {
+    "pyomo/dae/simulator.py": {
+      "bytes": 53533,
+      "sha256": "1efe112a5268928043fbec8751f7f9c0fd6fa14e0b28dbe2cded74240d6475fd"
+    },
+    "pyomo/dae/tests/test_simulator_compile.py": {
+      "bytes": 29629,
+      "sha256": "d272485433bdb8bed5e7370b44f12d5d124ea0e20094c371c063d5d5c2ee04b1"
+    },
+    "pyomo/dae/tests/test_simulator_interface.py": {
+      "bytes": 30177,
+      "sha256": "8142d436c3fbc888a99239a307e0eea7ac12f3e5b1dd700255cb13bd0224e51f"
+    },
+    "pyomo/dae/tests/simulator_ode_multindex_example.scipy.json": {
+      "bytes": 9474,
+      "sha256": "5234f214ab4f037533637c0d6446b258c1e96731a0bb9f7188a92032c0a3bc16"
+    },
+    "examples/dae/simulator_sensitivity_example.py": {
+      "bytes": 3067,
+      "sha256": "545c716442c650f90fd4ca7a90c928117cce9a993557f3f7e4f38acf92e547c4"
+    },
+    "examples/dae/sensitivity/dependency_reproducers.py": {
+      "bytes": 16787,
+      "sha256": "8725e697d837541d2ca96fb0847e29c43c7e5c887eafc7c17ee92d144211115b"
+    },
+    "doc/OnlineDocs/explanation/modeling/dae.rst": {
+      "bytes": 41958,
+      "sha256": "13ce03c6c34fdc25c326d17614e7bab2a960c76190597a4f46575b1eb5cfa224"
+    }
+  }
+}

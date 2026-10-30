@@ -1,0 +1,1093 @@
+{
+  "date": "2026-10-30",
+  "checkout_commit": "a6c7d20b27b379e9e54aa25986fcd50202fbf10c",
+  "method": "Unmodified supplied scripts, fresh venvs, pinned wheels; checkout selected with PYTHONPATH. No installation or Simulator source changed.",
+  "runs": {
+    "release-3.8.1": {
+      "environment": {
+        "python": "3.12.14 (main, Sep  3 2026, 03:46:19) [Clang 21.1.8 ]",
+        "executable": "/private/tmp/pyomo-dae-sensitivity-work-a/casadi-3.8.1/bin/python",
+        "platform": "macOS-27.0.1-arm64-arm-64bit",
+        "machine": "arm64",
+        "packages": {
+          "click": "8.5.0",
+          "packaging": "26.3",
+          "Pygments": "2.21.0",
+          "pytokens": "0.4.1",
+          "casadi": "3.8.1",
+          "iniconfig": "2.3.1",
+          "numpy": "2.5.4",
+          "pluggy": "1.7.0",
+          "pyomo": "6.10.1",
+          "pip": "25.0.1",
+          "typos": "1.51.1",
+          "pytest": "9.2.0",
+          "black": "26.10.1",
+          "pathspec": "1.1.1",
+          "platformdirs": "4.14.0",
+          "mypy_extensions": "1.1.0",
+          "scipy": "1.18.1"
+        },
+        "pyomo_version": "6.10.1",
+        "pyomo_file": "/private/tmp/pyomo-dae-sensitivity-work-a/casadi-3.8.1/lib/python3.12/site-packages/pyomo/__init__.py",
+        "simulator_file": "/private/tmp/pyomo-dae-sensitivity-work-a/casadi-3.8.1/lib/python3.12/site-packages/pyomo/dae/simulator.py",
+        "simulator_sha256": "834896495d3d3d65a19be2c57bd16234c555335fe637d66cad8ea78646ecbede",
+        "asl_available": true,
+        "asl_library": "/Users/adowling/.idaes/bin/libpynumero_ASL.dylib",
+        "probe_sha256": {
+          "probe_sensitivities.py": "45cc1e5219dabb64affc3534730ceba0d0699661a20d680dc9ff9319b6cb895f",
+          "pynumero_collocation_probe.py": "1100aa0eb479fa06a516af8dd467d9353e5d1fb0fe75ed12339902c960107f53"
+        },
+        "asl_sha256": "d7d1877f8768b863185944b40a00de6e5bba19874c56541e0c81f32b47997bf8"
+      },
+      "native": {
+        "pyomo_version": "6.10.1",
+        "casadi_version": "3.8.1",
+        "scope": "Standalone tiny native CasADi probes; no Pyomo interface extension or PSA solve",
+        "native_failure_containment": "Each case runs in an isolated subprocess with 30-second timeout; core dumps disabled",
+        "cases": {
+          "analytic_ODE_forward_and_adjoint": {
+            "execution_passed": true,
+            "checks": {
+              "primal_x": {
+                "max_abs_error": 1.997124687846963e-11,
+                "max_scaled_error": 1.997124687846963e-11
+              },
+              "primal_q": {
+                "max_abs_error": 3.196376496816811e-11,
+                "max_scaled_error": 3.028607561701862e-11
+              },
+              "forward_x_parameter": {
+                "max_abs_error": 6.712863598323793e-11,
+                "max_scaled_error": 6.712863598323793e-11
+              },
+              "forward_q_parameter": {
+                "max_abs_error": 7.44835304544722e-11,
+                "max_scaled_error": 7.44835304544722e-11
+              },
+              "adjoint_parameter": {
+                "max_abs_error": 2.6874786840380693e-09,
+                "max_scaled_error": 9.007008380484722e-10
+              },
+              "adjoint_initial_state": {
+                "max_abs_error": 1.6324319673799437e-10,
+                "max_scaled_error": 4.948341946104611e-11
+              }
+            },
+            "returncode": 0,
+            "stderr_tail": "",
+            "elapsed_s": 0.4752900833263993
+          },
+          "analytic_index1_DAE_scalar_weights": {
+            "execution_passed": true,
+            "checks": {
+              "primal": {
+                "max_abs_error": 1.0433666153275567e-09,
+                "max_scaled_error": 1.0433666153275567e-09
+              },
+              "forward": {
+                "max_abs_error": 1.6089096721572105e-10,
+                "max_scaled_error": 1.6089096721572105e-10
+              }
+            },
+            "returncode": 0,
+            "stderr_tail": "",
+            "elapsed_s": 0.32378195878118277
+          },
+          "analytic_index1_DAE_vector_weights_no_expansion": {
+            "execution_passed": false,
+            "error": "Error in Function::call for 'fwd1_dae_map' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'fwd1_dae' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'fsens1_dae' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:608: IDACalcIC returned \"IDA_ILL_INPUT\". Consult IDAS documentation.",
+            "returncode": 0,
+            "stderr_tail": "Some initial ewt component = 0.0 illegal.\nFunction fsens1_dae (0x105813000)\nInput 0 (x0): [[1.3, 1]]\nInput 1 (z0): [[1, 0]]\nInput 2 (p): \n[[0.7, 0], \n [1.4, 0]]\nInput 3 (u): 0x2\nInput 4 (adj_xf): 0x0\nInput 5 (adj_zf): 0x0\nInput 6 (adj_qf): 0x0\nFunction fwd1_dae (0x105819200)\nInput 0 (x0): 1.3\nInput 1 (z0): 1\nInput 2 (p): [0.7, 1.4]\nInput 3 (u): 0x1\nInput 4 (adj_xf): 0x0\nInput 5 (adj_zf): 0x0\nInput 6 (adj_qf): 0x0\nInput 7 (out_xf): 00\nInput 8 (out_zf): 00\nInput 9 (out_qf): 00\nInput 10 (out_adj_x0): 0x0\nInput 11 (out_adj_z0): 0x0\nInput 12 (out_adj_p): 0x0\nInput 13 (out_adj_u): 0x0\nInput 14 (fwd_x0): 1\nInput 15 (fwd_z0): 0\nInput 16 (fwd_p): [0, 0]\nInput 17 (fwd_u): 0x1\nInput 18 (fwd_adj_xf): 0x0\nInput 19 (fwd_adj_zf): 0x0\nInput 20 (fwd_adj_qf): 0x0\n",
+            "elapsed_s": 0.220875458791852
+          },
+          "analytic_index1_DAE_vector_weights_expanded_one": {
+            "execution_passed": true,
+            "checks": {
+              "primal": {
+                "max_abs_error": 1.062904986248725e-09,
+                "max_scaled_error": 1.062904986248725e-09
+              },
+              "forward": {
+                "max_abs_error": 8.007808305343644e-10,
+                "max_scaled_error": 8.007808305343644e-10
+              }
+            },
+            "returncode": 0,
+            "stderr_tail": "",
+            "elapsed_s": 0.1840490410104394
+          },
+          "analytic_index1_DAE_vector_weights_expanded_two": {
+            "execution_passed": true,
+            "checks": {
+              "primal": {
+                "max_abs_error": 1.062904986248725e-09,
+                "max_scaled_error": 1.062904986248725e-09
+              },
+              "forward": {
+                "max_abs_error": 6.867266755250512e-10,
+                "max_scaled_error": 6.867266755250512e-10
+              }
+            },
+            "returncode": 0,
+            "stderr_tail": "",
+            "elapsed_s": 0.19803433306515217
+          },
+          "analytic_index1_DAE_adjoint_x_and_q": {
+            "execution_passed": true,
+            "checks": {
+              "primal": {
+                "max_abs_error": 1.0433666153275567e-09,
+                "max_scaled_error": 1.0433666153275567e-09
+              },
+              "forward": {
+                "max_abs_error": 1.6089096721572105e-10,
+                "max_scaled_error": 1.6089096721572105e-10
+              },
+              "reverse_all_outputs": {
+                "max_abs_error": 3.9427705544881064e-09,
+                "max_scaled_error": 1.0270207939334932e-09
+              }
+            },
+            "returncode": 0,
+            "stderr_tail": "",
+            "elapsed_s": 0.18200258305296302
+          },
+          "analytic_index1_DAE_adjoint_z_only": {
+            "execution_passed": false,
+            "error": "([[0.4316242232910574], [-0.942667303009176], [-0.47133365150458933]], [[0.43191444109291066], [-0.9433011393469167], [-0.07058716008718413]], 0.4007464914174052)",
+            "returncode": 0,
+            "stderr_tail": "",
+            "elapsed_s": 0.18923729192465544
+          },
+          "analytic_index1_DAE_adjoint_x_z_q": {
+            "execution_passed": false,
+            "error": "([[4.734300175530011], [-6.667038647993348], [-3.3335193240036256]], [[4.735170830691605], [-6.668940152036448], [-2.1312798472594014]], 0.5640927343681197)",
+            "returncode": 0,
+            "stderr_tail": "",
+            "elapsed_s": 0.2076018750667572
+          },
+          "analytic_index1_DAE_adjoint_recovered_z": {
+            "execution_passed": true,
+            "checks": {
+              "primal": {
+                "max_abs_error": 1.0428488073088715e-09,
+                "max_scaled_error": 1.0428488073088715e-09
+              },
+              "forward": {
+                "max_abs_error": 8.253375205491409e-10,
+                "max_scaled_error": 8.253375205491409e-10
+              },
+              "reverse_all_outputs": {
+                "max_abs_error": 4.966871913758553e-10,
+                "max_scaled_error": 4.966871913758553e-10
+              }
+            },
+            "returncode": 0,
+            "stderr_tail": "",
+            "elapsed_s": 0.19549445901066065
+          },
+          "piecewise_control_amplitudes": {
+            "execution_passed": false,
+            "error": "Error in Function::call for 'controlled_map' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'controls' [CvodesInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/cvodes_interface.cpp:403: CVode returned \"CV_ERR_FAILURE\". Consult CVODES documentation.",
+            "returncode": 0,
+            "stderr_tail": "At t = 0.2 and h = 1.67144e-08, the error test failed repeatedly or with |h| = hmin.\nFunction controls (0x119020a00)\nInput 0 (x0): 0.3\nInput 1 (z0): 0x1\nInput 2 (p): 0x1\nInput 3 (u): [[0.1, 0.4, -0.2]]\nInput 4 (adj_xf): 0x0\nInput 5 (adj_zf): 0x0\nInput 6 (adj_qf): 0x0\n",
+            "elapsed_s": 0.17573599983006716
+          },
+          "segmented_control_amplitudes": {
+            "execution_passed": true,
+            "checks": {
+              "primal": {
+                "max_abs_error": 2.073302640681618e-11,
+                "max_scaled_error": 2.073302640681618e-11
+              },
+              "forward": {
+                "max_abs_error": 1.1973921854036007e-11,
+                "max_scaled_error": 1.1973921854036007e-11
+              },
+              "adjoint": {
+                "max_abs_error": 5.0246473648485335e-11,
+                "max_scaled_error": 5.0246473648485335e-11
+              }
+            },
+            "returncode": 0,
+            "stderr_tail": "",
+            "elapsed_s": 0.21246312465518713
+          },
+          "parameter_dependent_consistent_IC": {
+            "execution_passed": true,
+            "checks": {
+              "primal": {
+                "max_abs_error": 3.5845104662257654e-11,
+                "max_scaled_error": 1.0821490358126331e-11
+              },
+              "total_derivative_including_IC": {
+                "max_abs_error": 5.405720315820872e-11,
+                "max_scaled_error": 1.060777142037063e-11
+              }
+            },
+            "returncode": 0,
+            "stderr_tail": "",
+            "elapsed_s": 0.19369058264419436
+          }
+        },
+        "elapsed_s": 2.758381833322346
+      },
+      "collocation": {
+        "purpose": "Implicit differentiation of collocation equations, not the adaptive IDAS flow map",
+        "model": "x'=-k*x; x(0)=1.2; k=.7; T=2; Radau3",
+        "pyomo_version": "6.10.1",
+        "passed": true,
+        "results": [
+          {
+            "elements": 4,
+            "free_variables_including_parameter": 25,
+            "equalities": 24,
+            "endpoint": 0.2959166429385377,
+            "endpoint_parameter_sensitivity": -0.5918308525849525,
+            "analytic_continuous_sensitivity": -0.5918327134598556,
+            "absolute_discretization_difference": 1.8608749030590843e-06,
+            "central_difference_discrete_sensitivity": -0.5918308526142724,
+            "AD_implicit_vs_FD_difference": 2.931987985732576e-11,
+            "discrete_residual_inf": 2.6645352591003757e-15
+          },
+          {
+            "elements": 8,
+            "free_variables_including_parameter": 49,
+            "equalities": 48,
+            "endpoint": 0.29591636590757925,
+            "endpoint_parameter_sensitivity": -0.5918326535061761,
+            "analytic_continuous_sensitivity": -0.5918327134598556,
+            "absolute_discretization_difference": 5.995367946542984e-08,
+            "central_difference_discrete_sensitivity": -0.5918326535320206,
+            "AD_implicit_vs_FD_difference": 2.584454872334163e-11,
+            "discrete_residual_inf": 4.3298697960381105e-15
+          },
+          {
+            "elements": 16,
+            "free_variables_including_parameter": 97,
+            "equalities": 96,
+            "endpoint": 0.2959163570207487,
+            "endpoint_parameter_sensitivity": -0.5918327115545992,
+            "analytic_continuous_sensitivity": -0.5918327134598556,
+            "absolute_discretization_difference": 1.9052563970944902e-09,
+            "central_difference_discrete_sensitivity": -0.5918327115883582,
+            "AD_implicit_vs_FD_difference": 3.3758995598986985e-11,
+            "discrete_residual_inf": 6.2727600891321345e-15
+          }
+        ]
+      }
+    },
+    "checkout-3.8.1": {
+      "environment": {
+        "python": "3.12.14 (main, Sep  3 2026, 03:46:19) [Clang 21.1.8 ]",
+        "executable": "/private/tmp/pyomo-dae-sensitivity-work-a/casadi-3.8.1/bin/python",
+        "platform": "macOS-27.0.1-arm64-arm-64bit",
+        "machine": "arm64",
+        "packages": {
+          "pyomo": "6.10.1",
+          "click": "8.5.0",
+          "packaging": "26.3",
+          "Pygments": "2.21.0",
+          "pytokens": "0.4.1",
+          "casadi": "3.8.1",
+          "iniconfig": "2.3.1",
+          "numpy": "2.5.4",
+          "pluggy": "1.7.0",
+          "pip": "25.0.1",
+          "typos": "1.51.1",
+          "pytest": "9.2.0",
+          "black": "26.10.1",
+          "pathspec": "1.1.1",
+          "platformdirs": "4.14.0",
+          "mypy_extensions": "1.1.0",
+          "scipy": "1.18.1"
+        },
+        "pyomo_version": "6.10.2.dev0",
+        "pyomo_file": "/Users/adowling/DowlingLab/dev/pyomo/pyomo/__init__.py",
+        "simulator_file": "/Users/adowling/DowlingLab/dev/pyomo/pyomo/dae/simulator.py",
+        "simulator_sha256": "834896495d3d3d65a19be2c57bd16234c555335fe637d66cad8ea78646ecbede",
+        "asl_available": true,
+        "asl_library": "/Users/adowling/.idaes/bin/libpynumero_ASL.dylib",
+        "probe_sha256": {
+          "probe_sensitivities.py": "45cc1e5219dabb64affc3534730ceba0d0699661a20d680dc9ff9319b6cb895f",
+          "pynumero_collocation_probe.py": "1100aa0eb479fa06a516af8dd467d9353e5d1fb0fe75ed12339902c960107f53"
+        },
+        "asl_sha256": "d7d1877f8768b863185944b40a00de6e5bba19874c56541e0c81f32b47997bf8"
+      },
+      "native": {
+        "pyomo_version": "6.10.2.dev0",
+        "casadi_version": "3.8.1",
+        "scope": "Standalone tiny native CasADi probes; no Pyomo interface extension or PSA solve",
+        "native_failure_containment": "Each case runs in an isolated subprocess with 30-second timeout; core dumps disabled",
+        "cases": {
+          "analytic_ODE_forward_and_adjoint": {
+            "execution_passed": true,
+            "checks": {
+              "primal_x": {
+                "max_abs_error": 1.997124687846963e-11,
+                "max_scaled_error": 1.997124687846963e-11
+              },
+              "primal_q": {
+                "max_abs_error": 3.196376496816811e-11,
+                "max_scaled_error": 3.028607561701862e-11
+              },
+              "forward_x_parameter": {
+                "max_abs_error": 6.712863598323793e-11,
+                "max_scaled_error": 6.712863598323793e-11
+              },
+              "forward_q_parameter": {
+                "max_abs_error": 7.44835304544722e-11,
+                "max_scaled_error": 7.44835304544722e-11
+              },
+              "adjoint_parameter": {
+                "max_abs_error": 2.6874786840380693e-09,
+                "max_scaled_error": 9.007008380484722e-10
+              },
+              "adjoint_initial_state": {
+                "max_abs_error": 1.6324319673799437e-10,
+                "max_scaled_error": 4.948341946104611e-11
+              }
+            },
+            "returncode": 0,
+            "stderr_tail": "",
+            "elapsed_s": 0.47468850016593933
+          },
+          "analytic_index1_DAE_scalar_weights": {
+            "execution_passed": true,
+            "checks": {
+              "primal": {
+                "max_abs_error": 1.0433666153275567e-09,
+                "max_scaled_error": 1.0433666153275567e-09
+              },
+              "forward": {
+                "max_abs_error": 1.6089096721572105e-10,
+                "max_scaled_error": 1.6089096721572105e-10
+              }
+            },
+            "returncode": 0,
+            "stderr_tail": "",
+            "elapsed_s": 0.32512512477114797
+          },
+          "analytic_index1_DAE_vector_weights_no_expansion": {
+            "execution_passed": false,
+            "error": "Error in Function::call for 'fwd1_dae_map' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'fwd1_dae' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'fsens1_dae' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:608: IDACalcIC returned \"IDA_ILL_INPUT\". Consult IDAS documentation.",
+            "returncode": 0,
+            "stderr_tail": "Some initial ewt component = 0.0 illegal.\nFunction fsens1_dae (0x138885800)\nInput 0 (x0): [[1.3, 1]]\nInput 1 (z0): [[1, 0]]\nInput 2 (p): \n[[0.7, 0], \n [1.4, 0]]\nInput 3 (u): 0x2\nInput 4 (adj_xf): 0x0\nInput 5 (adj_zf): 0x0\nInput 6 (adj_qf): 0x0\nFunction fwd1_dae (0x138890400)\nInput 0 (x0): 1.3\nInput 1 (z0): 1\nInput 2 (p): [0.7, 1.4]\nInput 3 (u): 0x1\nInput 4 (adj_xf): 0x0\nInput 5 (adj_zf): 0x0\nInput 6 (adj_qf): 0x0\nInput 7 (out_xf): 00\nInput 8 (out_zf): 00\nInput 9 (out_qf): 00\nInput 10 (out_adj_x0): 0x0\nInput 11 (out_adj_z0): 0x0\nInput 12 (out_adj_p): 0x0\nInput 13 (out_adj_u): 0x0\nInput 14 (fwd_x0): 1\nInput 15 (fwd_z0): 0\nInput 16 (fwd_p): [0, 0]\nInput 17 (fwd_u): 0x1\nInput 18 (fwd_adj_xf): 0x0\nInput 19 (fwd_adj_zf): 0x0\nInput 20 (fwd_adj_qf): 0x0\n",
+            "elapsed_s": 0.22631570789963007
+          },
+          "analytic_index1_DAE_vector_weights_expanded_one": {
+            "execution_passed": true,
+            "checks": {
+              "primal": {
+                "max_abs_error": 1.062904986248725e-09,
+                "max_scaled_error": 1.062904986248725e-09
+              },
+              "forward": {
+                "max_abs_error": 8.007808305343644e-10,
+                "max_scaled_error": 8.007808305343644e-10
+              }
+            },
+            "returncode": 0,
+            "stderr_tail": "",
+            "elapsed_s": 0.19327270798385143
+          },
+          "analytic_index1_DAE_vector_weights_expanded_two": {
+            "execution_passed": true,
+            "checks": {
+              "primal": {
+                "max_abs_error": 1.062904986248725e-09,
+                "max_scaled_error": 1.062904986248725e-09
+              },
+              "forward": {
+                "max_abs_error": 6.867266755250512e-10,
+                "max_scaled_error": 6.867266755250512e-10
+              }
+            },
+            "returncode": 0,
+            "stderr_tail": "",
+            "elapsed_s": 0.19649150036275387
+          },
+          "analytic_index1_DAE_adjoint_x_and_q": {
+            "execution_passed": true,
+            "checks": {
+              "primal": {
+                "max_abs_error": 1.0433666153275567e-09,
+                "max_scaled_error": 1.0433666153275567e-09
+              },
+              "forward": {
+                "max_abs_error": 1.6089096721572105e-10,
+                "max_scaled_error": 1.6089096721572105e-10
+              },
+              "reverse_all_outputs": {
+                "max_abs_error": 3.9427705544881064e-09,
+                "max_scaled_error": 1.0270207939334932e-09
+              }
+            },
+            "returncode": 0,
+            "stderr_tail": "",
+            "elapsed_s": 0.179321332834661
+          },
+          "analytic_index1_DAE_adjoint_z_only": {
+            "execution_passed": false,
+            "error": "([[0.4316242232910574], [-0.942667303009176], [-0.47133365150458933]], [[0.43191444109291066], [-0.9433011393469167], [-0.07058716008718413]], 0.4007464914174052)",
+            "returncode": 0,
+            "stderr_tail": "",
+            "elapsed_s": 0.19891783269122243
+          },
+          "analytic_index1_DAE_adjoint_x_z_q": {
+            "execution_passed": false,
+            "error": "([[4.734300175530011], [-6.667038647993348], [-3.3335193240036256]], [[4.735170830691605], [-6.668940152036448], [-2.1312798472594014]], 0.5640927343681197)",
+            "returncode": 0,
+            "stderr_tail": "",
+            "elapsed_s": 0.21327041694894433
+          },
+          "analytic_index1_DAE_adjoint_recovered_z": {
+            "execution_passed": true,
+            "checks": {
+              "primal": {
+                "max_abs_error": 1.0428488073088715e-09,
+                "max_scaled_error": 1.0428488073088715e-09
+              },
+              "forward": {
+                "max_abs_error": 8.253375205491409e-10,
+                "max_scaled_error": 8.253375205491409e-10
+              },
+              "reverse_all_outputs": {
+                "max_abs_error": 4.966871913758553e-10,
+                "max_scaled_error": 4.966871913758553e-10
+              }
+            },
+            "returncode": 0,
+            "stderr_tail": "",
+            "elapsed_s": 0.2039578747935593
+          },
+          "piecewise_control_amplitudes": {
+            "execution_passed": false,
+            "error": "Error in Function::call for 'controlled_map' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'controls' [CvodesInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/cvodes_interface.cpp:403: CVode returned \"CV_ERR_FAILURE\". Consult CVODES documentation.",
+            "returncode": 0,
+            "stderr_tail": "At t = 0.2 and h = 1.67144e-08, the error test failed repeatedly or with |h| = hmin.\nFunction controls (0x106900e00)\nInput 0 (x0): 0.3\nInput 1 (z0): 0x1\nInput 2 (p): 0x1\nInput 3 (u): [[0.1, 0.4, -0.2]]\nInput 4 (adj_xf): 0x0\nInput 5 (adj_zf): 0x0\nInput 6 (adj_qf): 0x0\n",
+            "elapsed_s": 0.17395229218527675
+          },
+          "segmented_control_amplitudes": {
+            "execution_passed": true,
+            "checks": {
+              "primal": {
+                "max_abs_error": 2.073302640681618e-11,
+                "max_scaled_error": 2.073302640681618e-11
+              },
+              "forward": {
+                "max_abs_error": 1.1973921854036007e-11,
+                "max_scaled_error": 1.1973921854036007e-11
+              },
+              "adjoint": {
+                "max_abs_error": 5.0246473648485335e-11,
+                "max_scaled_error": 5.0246473648485335e-11
+              }
+            },
+            "returncode": 0,
+            "stderr_tail": "",
+            "elapsed_s": 0.22634966671466827
+          },
+          "parameter_dependent_consistent_IC": {
+            "execution_passed": true,
+            "checks": {
+              "primal": {
+                "max_abs_error": 3.5845104662257654e-11,
+                "max_scaled_error": 1.0821490358126331e-11
+              },
+              "total_derivative_including_IC": {
+                "max_abs_error": 5.405720315820872e-11,
+                "max_scaled_error": 1.060777142037063e-11
+              }
+            },
+            "returncode": 0,
+            "stderr_tail": "",
+            "elapsed_s": 0.19189566699787974
+          }
+        },
+        "elapsed_s": 2.8036763328127563
+      },
+      "collocation": {
+        "purpose": "Implicit differentiation of collocation equations, not the adaptive IDAS flow map",
+        "model": "x'=-k*x; x(0)=1.2; k=.7; T=2; Radau3",
+        "pyomo_version": "6.10.2.dev0",
+        "passed": true,
+        "results": [
+          {
+            "elements": 4,
+            "free_variables_including_parameter": 25,
+            "equalities": 24,
+            "endpoint": 0.2959166429385377,
+            "endpoint_parameter_sensitivity": -0.5918308525849525,
+            "analytic_continuous_sensitivity": -0.5918327134598556,
+            "absolute_discretization_difference": 1.8608749030590843e-06,
+            "central_difference_discrete_sensitivity": -0.5918308526142724,
+            "AD_implicit_vs_FD_difference": 2.931987985732576e-11,
+            "discrete_residual_inf": 2.6645352591003757e-15
+          },
+          {
+            "elements": 8,
+            "free_variables_including_parameter": 49,
+            "equalities": 48,
+            "endpoint": 0.29591636590757925,
+            "endpoint_parameter_sensitivity": -0.5918326535061761,
+            "analytic_continuous_sensitivity": -0.5918327134598556,
+            "absolute_discretization_difference": 5.995367946542984e-08,
+            "central_difference_discrete_sensitivity": -0.5918326535320206,
+            "AD_implicit_vs_FD_difference": 2.584454872334163e-11,
+            "discrete_residual_inf": 4.3298697960381105e-15
+          },
+          {
+            "elements": 16,
+            "free_variables_including_parameter": 97,
+            "equalities": 96,
+            "endpoint": 0.2959163570207487,
+            "endpoint_parameter_sensitivity": -0.5918327115545992,
+            "analytic_continuous_sensitivity": -0.5918327134598556,
+            "absolute_discretization_difference": 1.9052563970944902e-09,
+            "central_difference_discrete_sensitivity": -0.5918327115883582,
+            "AD_implicit_vs_FD_difference": 3.3758995598986985e-11,
+            "discrete_residual_inf": 6.2727600891321345e-15
+          }
+        ]
+      }
+    },
+    "release-3.8.2": {
+      "environment": {
+        "python": "3.12.14 (main, Sep  3 2026, 03:46:19) [Clang 21.1.8 ]",
+        "executable": "/private/tmp/pyomo-dae-sensitivity-work-a/casadi-3.8.2/bin/python",
+        "platform": "macOS-27.0.1-arm64-arm-64bit",
+        "machine": "arm64",
+        "packages": {
+          "packaging": "26.3",
+          "Pygments": "2.21.0",
+          "iniconfig": "2.3.1",
+          "numpy": "2.5.4",
+          "pluggy": "1.7.0",
+          "pyomo": "6.10.1",
+          "pip": "25.0.1",
+          "casadi": "3.8.2",
+          "pytest": "9.2.0",
+          "scipy": "1.18.1"
+        },
+        "pyomo_version": "6.10.1",
+        "pyomo_file": "/private/tmp/pyomo-dae-sensitivity-work-a/casadi-3.8.2/lib/python3.12/site-packages/pyomo/__init__.py",
+        "simulator_file": "/private/tmp/pyomo-dae-sensitivity-work-a/casadi-3.8.2/lib/python3.12/site-packages/pyomo/dae/simulator.py",
+        "simulator_sha256": "834896495d3d3d65a19be2c57bd16234c555335fe637d66cad8ea78646ecbede",
+        "asl_available": true,
+        "asl_library": "/Users/adowling/.idaes/bin/libpynumero_ASL.dylib",
+        "probe_sha256": {
+          "probe_sensitivities.py": "45cc1e5219dabb64affc3534730ceba0d0699661a20d680dc9ff9319b6cb895f",
+          "pynumero_collocation_probe.py": "1100aa0eb479fa06a516af8dd467d9353e5d1fb0fe75ed12339902c960107f53"
+        },
+        "asl_sha256": "d7d1877f8768b863185944b40a00de6e5bba19874c56541e0c81f32b47997bf8"
+      },
+      "native": {
+        "pyomo_version": "6.10.1",
+        "casadi_version": "3.8.2",
+        "scope": "Standalone tiny native CasADi probes; no Pyomo interface extension or PSA solve",
+        "native_failure_containment": "Each case runs in an isolated subprocess with 30-second timeout; core dumps disabled",
+        "cases": {
+          "analytic_ODE_forward_and_adjoint": {
+            "execution_passed": true,
+            "checks": {
+              "primal_x": {
+                "max_abs_error": 1.997124687846963e-11,
+                "max_scaled_error": 1.997124687846963e-11
+              },
+              "primal_q": {
+                "max_abs_error": 3.196376496816811e-11,
+                "max_scaled_error": 3.028607561701862e-11
+              },
+              "forward_x_parameter": {
+                "max_abs_error": 6.712863598323793e-11,
+                "max_scaled_error": 6.712863598323793e-11
+              },
+              "forward_q_parameter": {
+                "max_abs_error": 7.44835304544722e-11,
+                "max_scaled_error": 7.44835304544722e-11
+              },
+              "adjoint_parameter": {
+                "max_abs_error": 2.6874786840380693e-09,
+                "max_scaled_error": 9.007008380484722e-10
+              },
+              "adjoint_initial_state": {
+                "max_abs_error": 1.6324319673799437e-10,
+                "max_scaled_error": 4.948341946104611e-11
+              }
+            },
+            "returncode": 0,
+            "stderr_tail": "",
+            "elapsed_s": 0.43070412473753095
+          },
+          "analytic_index1_DAE_scalar_weights": {
+            "execution_passed": true,
+            "checks": {
+              "primal": {
+                "max_abs_error": 1.0433666153275567e-09,
+                "max_scaled_error": 1.0433666153275567e-09
+              },
+              "forward": {
+                "max_abs_error": 1.6089096721572105e-10,
+                "max_scaled_error": 1.6089096721572105e-10
+              }
+            },
+            "returncode": 0,
+            "stderr_tail": "",
+            "elapsed_s": 0.3194372090511024
+          },
+          "analytic_index1_DAE_vector_weights_no_expansion": {
+            "execution_passed": false,
+            "error": "Error in Function::call for 'fwd1_dae_map' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'fwd1_dae' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'fsens1_dae' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:620: IDACalcIC returned \"IDA_ILL_INPUT\". Consult IDAS documentation.",
+            "returncode": 0,
+            "stderr_tail": "Some initial ewt component = 0.0 illegal.\nFunction fsens1_dae (0x14a912000)\nInput 0 (x0): [[1.3, 1]]\nInput 1 (z0): [[1, 0]]\nInput 2 (p): \n[[0.7, 0], \n [1.4, 0]]\nInput 3 (u): 0x2\nInput 4 (adj_xf): 0x0\nInput 5 (adj_zf): 0x0\nInput 6 (adj_qf): 0x0\nFunction fwd1_dae (0x14a916400)\nInput 0 (x0): 1.3\nInput 1 (z0): 1\nInput 2 (p): [0.7, 1.4]\nInput 3 (u): 0x1\nInput 4 (adj_xf): 0x0\nInput 5 (adj_zf): 0x0\nInput 6 (adj_qf): 0x0\nInput 7 (out_xf): 00\nInput 8 (out_zf): 00\nInput 9 (out_qf): 00\nInput 10 (out_adj_x0): 0x0\nInput 11 (out_adj_z0): 0x0\nInput 12 (out_adj_p): 0x0\nInput 13 (out_adj_u): 0x0\nInput 14 (fwd_x0): 1\nInput 15 (fwd_z0): 0\nInput 16 (fwd_p): [0, 0]\nInput 17 (fwd_u): 0x1\nInput 18 (fwd_adj_xf): 0x0\nInput 19 (fwd_adj_zf): 0x0\nInput 20 (fwd_adj_qf): 0x0\n",
+            "elapsed_s": 0.22793187526986003
+          },
+          "analytic_index1_DAE_vector_weights_expanded_one": {
+            "execution_passed": true,
+            "checks": {
+              "primal": {
+                "max_abs_error": 1.062904986248725e-09,
+                "max_scaled_error": 1.062904986248725e-09
+              },
+              "forward": {
+                "max_abs_error": 8.007808305343644e-10,
+                "max_scaled_error": 8.007808305343644e-10
+              }
+            },
+            "returncode": 0,
+            "stderr_tail": "",
+            "elapsed_s": 0.19117075018584728
+          },
+          "analytic_index1_DAE_vector_weights_expanded_two": {
+            "execution_passed": true,
+            "checks": {
+              "primal": {
+                "max_abs_error": 1.062904986248725e-09,
+                "max_scaled_error": 1.062904986248725e-09
+              },
+              "forward": {
+                "max_abs_error": 6.867266755250512e-10,
+                "max_scaled_error": 6.867266755250512e-10
+              }
+            },
+            "returncode": 0,
+            "stderr_tail": "",
+            "elapsed_s": 0.20055108284577727
+          },
+          "analytic_index1_DAE_adjoint_x_and_q": {
+            "execution_passed": true,
+            "checks": {
+              "primal": {
+                "max_abs_error": 1.0433666153275567e-09,
+                "max_scaled_error": 1.0433666153275567e-09
+              },
+              "forward": {
+                "max_abs_error": 1.6089096721572105e-10,
+                "max_scaled_error": 1.6089096721572105e-10
+              },
+              "reverse_all_outputs": {
+                "max_abs_error": 3.9427705544881064e-09,
+                "max_scaled_error": 1.0270207939334932e-09
+              }
+            },
+            "returncode": 0,
+            "stderr_tail": "",
+            "elapsed_s": 0.19017491582781076
+          },
+          "analytic_index1_DAE_adjoint_z_only": {
+            "execution_passed": false,
+            "error": "([[0.4316242232910574], [-0.942667303009176], [-0.0705397301790833]], [[0.43191444109291066], [-0.9433011393469167], [-0.07058716008718413]], 0.000633836337740723)",
+            "returncode": 0,
+            "stderr_tail": "",
+            "elapsed_s": 0.20889733405783772
+          },
+          "analytic_index1_DAE_adjoint_x_z_q": {
+            "execution_passed": false,
+            "error": "([[4.734300175530011], [-6.667038647993348], [-2.1311375600271063]], [[4.735170830691605], [-6.668940152036448], [-2.1312798472594014]], 0.00028512837118805067)",
+            "returncode": 0,
+            "stderr_tail": "",
+            "elapsed_s": 0.20239554112777114
+          },
+          "analytic_index1_DAE_adjoint_recovered_z": {
+            "execution_passed": true,
+            "checks": {
+              "primal": {
+                "max_abs_error": 1.0428488073088715e-09,
+                "max_scaled_error": 1.0428488073088715e-09
+              },
+              "forward": {
+                "max_abs_error": 8.253375205491409e-10,
+                "max_scaled_error": 8.253375205491409e-10
+              },
+              "reverse_all_outputs": {
+                "max_abs_error": 4.966871913758553e-10,
+                "max_scaled_error": 4.966871913758553e-10
+              }
+            },
+            "returncode": 0,
+            "stderr_tail": "",
+            "elapsed_s": 0.19969766726717353
+          },
+          "piecewise_control_amplitudes": {
+            "execution_passed": false,
+            "error": "Error in Function::call for 'controlled_map' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'controls' [CvodesInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/cvodes_interface.cpp:403: CVode returned \"CV_ERR_FAILURE\". Consult CVODES documentation.",
+            "returncode": 0,
+            "stderr_tail": "At t = 0.2 and h = 1.67144e-08, the error test failed repeatedly or with |h| = hmin.\nFunction controls (0x151822e00)\nInput 0 (x0): 0.3\nInput 1 (z0): 0x1\nInput 2 (p): 0x1\nInput 3 (u): [[0.1, 0.4, -0.2]]\nInput 4 (adj_xf): 0x0\nInput 5 (adj_zf): 0x0\nInput 6 (adj_qf): 0x0\n",
+            "elapsed_s": 0.17330591613426805
+          },
+          "segmented_control_amplitudes": {
+            "execution_passed": true,
+            "checks": {
+              "primal": {
+                "max_abs_error": 2.073302640681618e-11,
+                "max_scaled_error": 2.073302640681618e-11
+              },
+              "forward": {
+                "max_abs_error": 1.1973921854036007e-11,
+                "max_scaled_error": 1.1973921854036007e-11
+              },
+              "adjoint": {
+                "max_abs_error": 5.0246473648485335e-11,
+                "max_scaled_error": 5.0246473648485335e-11
+              }
+            },
+            "returncode": 0,
+            "stderr_tail": "",
+            "elapsed_s": 0.2233716668561101
+          },
+          "parameter_dependent_consistent_IC": {
+            "execution_passed": true,
+            "checks": {
+              "primal": {
+                "max_abs_error": 3.5845104662257654e-11,
+                "max_scaled_error": 1.0821490358126331e-11
+              },
+              "total_derivative_including_IC": {
+                "max_abs_error": 5.405720315820872e-11,
+                "max_scaled_error": 1.060777142037063e-11
+              }
+            },
+            "returncode": 0,
+            "stderr_tail": "",
+            "elapsed_s": 0.18953395821154118
+          }
+        },
+        "elapsed_s": 2.7573156249709427
+      },
+      "collocation": {
+        "purpose": "Implicit differentiation of collocation equations, not the adaptive IDAS flow map",
+        "model": "x'=-k*x; x(0)=1.2; k=.7; T=2; Radau3",
+        "pyomo_version": "6.10.1",
+        "passed": true,
+        "results": [
+          {
+            "elements": 4,
+            "free_variables_including_parameter": 25,
+            "equalities": 24,
+            "endpoint": 0.2959166429385377,
+            "endpoint_parameter_sensitivity": -0.5918308525849525,
+            "analytic_continuous_sensitivity": -0.5918327134598556,
+            "absolute_discretization_difference": 1.8608749030590843e-06,
+            "central_difference_discrete_sensitivity": -0.5918308526142724,
+            "AD_implicit_vs_FD_difference": 2.931987985732576e-11,
+            "discrete_residual_inf": 2.6645352591003757e-15
+          },
+          {
+            "elements": 8,
+            "free_variables_including_parameter": 49,
+            "equalities": 48,
+            "endpoint": 0.29591636590757925,
+            "endpoint_parameter_sensitivity": -0.5918326535061761,
+            "analytic_continuous_sensitivity": -0.5918327134598556,
+            "absolute_discretization_difference": 5.995367946542984e-08,
+            "central_difference_discrete_sensitivity": -0.5918326535320206,
+            "AD_implicit_vs_FD_difference": 2.584454872334163e-11,
+            "discrete_residual_inf": 4.3298697960381105e-15
+          },
+          {
+            "elements": 16,
+            "free_variables_including_parameter": 97,
+            "equalities": 96,
+            "endpoint": 0.2959163570207487,
+            "endpoint_parameter_sensitivity": -0.5918327115545992,
+            "analytic_continuous_sensitivity": -0.5918327134598556,
+            "absolute_discretization_difference": 1.9052563970944902e-09,
+            "central_difference_discrete_sensitivity": -0.5918327115883582,
+            "AD_implicit_vs_FD_difference": 3.3758995598986985e-11,
+            "discrete_residual_inf": 6.2727600891321345e-15
+          }
+        ]
+      }
+    },
+    "checkout-3.8.2": {
+      "environment": {
+        "python": "3.12.14 (main, Sep  3 2026, 03:46:19) [Clang 21.1.8 ]",
+        "executable": "/private/tmp/pyomo-dae-sensitivity-work-a/casadi-3.8.2/bin/python",
+        "platform": "macOS-27.0.1-arm64-arm-64bit",
+        "machine": "arm64",
+        "packages": {
+          "pyomo": "6.10.1",
+          "packaging": "26.3",
+          "Pygments": "2.21.0",
+          "iniconfig": "2.3.1",
+          "numpy": "2.5.4",
+          "pluggy": "1.7.0",
+          "pip": "25.0.1",
+          "casadi": "3.8.2",
+          "pytest": "9.2.0",
+          "scipy": "1.18.1"
+        },
+        "pyomo_version": "6.10.2.dev0",
+        "pyomo_file": "/Users/adowling/DowlingLab/dev/pyomo/pyomo/__init__.py",
+        "simulator_file": "/Users/adowling/DowlingLab/dev/pyomo/pyomo/dae/simulator.py",
+        "simulator_sha256": "834896495d3d3d65a19be2c57bd16234c555335fe637d66cad8ea78646ecbede",
+        "asl_available": true,
+        "asl_library": "/Users/adowling/.idaes/bin/libpynumero_ASL.dylib",
+        "probe_sha256": {
+          "probe_sensitivities.py": "45cc1e5219dabb64affc3534730ceba0d0699661a20d680dc9ff9319b6cb895f",
+          "pynumero_collocation_probe.py": "1100aa0eb479fa06a516af8dd467d9353e5d1fb0fe75ed12339902c960107f53"
+        },
+        "asl_sha256": "d7d1877f8768b863185944b40a00de6e5bba19874c56541e0c81f32b47997bf8"
+      },
+      "native": {
+        "pyomo_version": "6.10.2.dev0",
+        "casadi_version": "3.8.2",
+        "scope": "Standalone tiny native CasADi probes; no Pyomo interface extension or PSA solve",
+        "native_failure_containment": "Each case runs in an isolated subprocess with 30-second timeout; core dumps disabled",
+        "cases": {
+          "analytic_ODE_forward_and_adjoint": {
+            "execution_passed": true,
+            "checks": {
+              "primal_x": {
+                "max_abs_error": 1.997124687846963e-11,
+                "max_scaled_error": 1.997124687846963e-11
+              },
+              "primal_q": {
+                "max_abs_error": 3.196376496816811e-11,
+                "max_scaled_error": 3.028607561701862e-11
+              },
+              "forward_x_parameter": {
+                "max_abs_error": 6.712863598323793e-11,
+                "max_scaled_error": 6.712863598323793e-11
+              },
+              "forward_q_parameter": {
+                "max_abs_error": 7.44835304544722e-11,
+                "max_scaled_error": 7.44835304544722e-11
+              },
+              "adjoint_parameter": {
+                "max_abs_error": 2.6874786840380693e-09,
+                "max_scaled_error": 9.007008380484722e-10
+              },
+              "adjoint_initial_state": {
+                "max_abs_error": 1.6324319673799437e-10,
+                "max_scaled_error": 4.948341946104611e-11
+              }
+            },
+            "returncode": 0,
+            "stderr_tail": "",
+            "elapsed_s": 0.43385429214686155
+          },
+          "analytic_index1_DAE_scalar_weights": {
+            "execution_passed": true,
+            "checks": {
+              "primal": {
+                "max_abs_error": 1.0433666153275567e-09,
+                "max_scaled_error": 1.0433666153275567e-09
+              },
+              "forward": {
+                "max_abs_error": 1.6089096721572105e-10,
+                "max_scaled_error": 1.6089096721572105e-10
+              }
+            },
+            "returncode": 0,
+            "stderr_tail": "",
+            "elapsed_s": 0.31554808327928185
+          },
+          "analytic_index1_DAE_vector_weights_no_expansion": {
+            "execution_passed": false,
+            "error": "Error in Function::call for 'fwd1_dae_map' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'fwd1_dae' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'fsens1_dae' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:620: IDACalcIC returned \"IDA_ILL_INPUT\". Consult IDAS documentation.",
+            "returncode": 0,
+            "stderr_tail": "Some initial ewt component = 0.0 illegal.\nFunction fsens1_dae (0x14b0b0400)\nInput 0 (x0): [[1.3, 1]]\nInput 1 (z0): [[1, 0]]\nInput 2 (p): \n[[0.7, 0], \n [1.4, 0]]\nInput 3 (u): 0x2\nInput 4 (adj_xf): 0x0\nInput 5 (adj_zf): 0x0\nInput 6 (adj_qf): 0x0\nFunction fwd1_dae (0x14b0be200)\nInput 0 (x0): 1.3\nInput 1 (z0): 1\nInput 2 (p): [0.7, 1.4]\nInput 3 (u): 0x1\nInput 4 (adj_xf): 0x0\nInput 5 (adj_zf): 0x0\nInput 6 (adj_qf): 0x0\nInput 7 (out_xf): 00\nInput 8 (out_zf): 00\nInput 9 (out_qf): 00\nInput 10 (out_adj_x0): 0x0\nInput 11 (out_adj_z0): 0x0\nInput 12 (out_adj_p): 0x0\nInput 13 (out_adj_u): 0x0\nInput 14 (fwd_x0): 1\nInput 15 (fwd_z0): 0\nInput 16 (fwd_p): [0, 0]\nInput 17 (fwd_u): 0x1\nInput 18 (fwd_adj_xf): 0x0\nInput 19 (fwd_adj_zf): 0x0\nInput 20 (fwd_adj_qf): 0x0\n",
+            "elapsed_s": 0.22216075006872416
+          },
+          "analytic_index1_DAE_vector_weights_expanded_one": {
+            "execution_passed": true,
+            "checks": {
+              "primal": {
+                "max_abs_error": 1.062904986248725e-09,
+                "max_scaled_error": 1.062904986248725e-09
+              },
+              "forward": {
+                "max_abs_error": 8.007808305343644e-10,
+                "max_scaled_error": 8.007808305343644e-10
+              }
+            },
+            "returncode": 0,
+            "stderr_tail": "",
+            "elapsed_s": 0.19244279200211167
+          },
+          "analytic_index1_DAE_vector_weights_expanded_two": {
+            "execution_passed": true,
+            "checks": {
+              "primal": {
+                "max_abs_error": 1.062904986248725e-09,
+                "max_scaled_error": 1.062904986248725e-09
+              },
+              "forward": {
+                "max_abs_error": 6.867266755250512e-10,
+                "max_scaled_error": 6.867266755250512e-10
+              }
+            },
+            "returncode": 0,
+            "stderr_tail": "",
+            "elapsed_s": 0.2000808333978057
+          },
+          "analytic_index1_DAE_adjoint_x_and_q": {
+            "execution_passed": true,
+            "checks": {
+              "primal": {
+                "max_abs_error": 1.0433666153275567e-09,
+                "max_scaled_error": 1.0433666153275567e-09
+              },
+              "forward": {
+                "max_abs_error": 1.6089096721572105e-10,
+                "max_scaled_error": 1.6089096721572105e-10
+              },
+              "reverse_all_outputs": {
+                "max_abs_error": 3.9427705544881064e-09,
+                "max_scaled_error": 1.0270207939334932e-09
+              }
+            },
+            "returncode": 0,
+            "stderr_tail": "",
+            "elapsed_s": 0.18469562521204352
+          },
+          "analytic_index1_DAE_adjoint_z_only": {
+            "execution_passed": false,
+            "error": "([[0.4316242232910574], [-0.942667303009176], [-0.0705397301790833]], [[0.43191444109291066], [-0.9433011393469167], [-0.07058716008718413]], 0.000633836337740723)",
+            "returncode": 0,
+            "stderr_tail": "",
+            "elapsed_s": 0.19735687505453825
+          },
+          "analytic_index1_DAE_adjoint_x_z_q": {
+            "execution_passed": false,
+            "error": "([[4.734300175530011], [-6.667038647993348], [-2.1311375600271063]], [[4.735170830691605], [-6.668940152036448], [-2.1312798472594014]], 0.00028512837118805067)",
+            "returncode": 0,
+            "stderr_tail": "",
+            "elapsed_s": 0.21066008415073156
+          },
+          "analytic_index1_DAE_adjoint_recovered_z": {
+            "execution_passed": true,
+            "checks": {
+              "primal": {
+                "max_abs_error": 1.0428488073088715e-09,
+                "max_scaled_error": 1.0428488073088715e-09
+              },
+              "forward": {
+                "max_abs_error": 8.253375205491409e-10,
+                "max_scaled_error": 8.253375205491409e-10
+              },
+              "reverse_all_outputs": {
+                "max_abs_error": 4.966871913758553e-10,
+                "max_scaled_error": 4.966871913758553e-10
+              }
+            },
+            "returncode": 0,
+            "stderr_tail": "",
+            "elapsed_s": 0.2038472918793559
+          },
+          "piecewise_control_amplitudes": {
+            "execution_passed": false,
+            "error": "Error in Function::call for 'controlled_map' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'controls' [CvodesInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/cvodes_interface.cpp:403: CVode returned \"CV_ERR_FAILURE\". Consult CVODES documentation.",
+            "returncode": 0,
+            "stderr_tail": "At t = 0.2 and h = 1.67144e-08, the error test failed repeatedly or with |h| = hmin.\nFunction controls (0x105826200)\nInput 0 (x0): 0.3\nInput 1 (z0): 0x1\nInput 2 (p): 0x1\nInput 3 (u): [[0.1, 0.4, -0.2]]\nInput 4 (adj_xf): 0x0\nInput 5 (adj_zf): 0x0\nInput 6 (adj_qf): 0x0\n",
+            "elapsed_s": 0.18010612484067678
+          },
+          "segmented_control_amplitudes": {
+            "execution_passed": true,
+            "checks": {
+              "primal": {
+                "max_abs_error": 2.073302640681618e-11,
+                "max_scaled_error": 2.073302640681618e-11
+              },
+              "forward": {
+                "max_abs_error": 1.1973921854036007e-11,
+                "max_scaled_error": 1.1973921854036007e-11
+              },
+              "adjoint": {
+                "max_abs_error": 5.0246473648485335e-11,
+                "max_scaled_error": 5.0246473648485335e-11
+              }
+            },
+            "returncode": 0,
+            "stderr_tail": "",
+            "elapsed_s": 0.2075328747741878
+          },
+          "parameter_dependent_consistent_IC": {
+            "execution_passed": true,
+            "checks": {
+              "primal": {
+                "max_abs_error": 3.5845104662257654e-11,
+                "max_scaled_error": 1.0821490358126331e-11
+              },
+              "total_derivative_including_IC": {
+                "max_abs_error": 5.405720315820872e-11,
+                "max_scaled_error": 1.060777142037063e-11
+              }
+            },
+            "returncode": 0,
+            "stderr_tail": "",
+            "elapsed_s": 0.18234604224562645
+          }
+        },
+        "elapsed_s": 2.730737333185971
+      },
+      "collocation": {
+        "purpose": "Implicit differentiation of collocation equations, not the adaptive IDAS flow map",
+        "model": "x'=-k*x; x(0)=1.2; k=.7; T=2; Radau3",
+        "pyomo_version": "6.10.2.dev0",
+        "passed": true,
+        "results": [
+          {
+            "elements": 4,
+            "free_variables_including_parameter": 25,
+            "equalities": 24,
+            "endpoint": 0.2959166429385377,
+            "endpoint_parameter_sensitivity": -0.5918308525849525,
+            "analytic_continuous_sensitivity": -0.5918327134598556,
+            "absolute_discretization_difference": 1.8608749030590843e-06,
+            "central_difference_discrete_sensitivity": -0.5918308526142724,
+            "AD_implicit_vs_FD_difference": 2.931987985732576e-11,
+            "discrete_residual_inf": 2.6645352591003757e-15
+          },
+          {
+            "elements": 8,
+            "free_variables_including_parameter": 49,
+            "equalities": 48,
+            "endpoint": 0.29591636590757925,
+            "endpoint_parameter_sensitivity": -0.5918326535061761,
+            "analytic_continuous_sensitivity": -0.5918327134598556,
+            "absolute_discretization_difference": 5.995367946542984e-08,
+            "central_difference_discrete_sensitivity": -0.5918326535320206,
+            "AD_implicit_vs_FD_difference": 2.584454872334163e-11,
+            "discrete_residual_inf": 4.3298697960381105e-15
+          },
+          {
+            "elements": 16,
+            "free_variables_including_parameter": 97,
+            "equalities": 96,
+            "endpoint": 0.2959163570207487,
+            "endpoint_parameter_sensitivity": -0.5918327115545992,
+            "analytic_continuous_sensitivity": -0.5918327134598556,
+            "absolute_discretization_difference": 1.9052563970944902e-09,
+            "central_difference_discrete_sensitivity": -0.5918327115883582,
+            "AD_implicit_vs_FD_difference": 3.3758995598986985e-11,
+            "discrete_residual_inf": 6.2727600891321345e-15
+          }
+        ]
+      }
+    }
+  }
+}

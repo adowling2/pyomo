@@ -842,12 +842,128 @@ valid keyword arguments for this function.
 The ``simulate`` function returns numpy arrays containing time points and
 the corresponding values for the dynamic variable profiles.
 
+The output grid spans the bounds of the ``ContinuousSet``. Specify at least
+two points with ``numpoints``, or a positive finite output interval with
+``tstep``. The final time is included even when the last output interval
+is shorter than ``tstep``. This output interval does not determine the
+integrator's internal step sizes. Integrator option dictionaries are copied;
+calls do not modify the supplied dictionaries.
+
+For CasADi DAEs, values assigned to algebraic variables at the initial time
+are used as guesses for consistent initialization; unset guesses default to
+zero. A guess can select a branch of a nonlinear algebraic equation. It is
+not an independent differential initial condition. With consistent
+initialization enabled, the integrator can adjust algebraic guesses while
+holding the differential initial conditions fixed.
+
 `Simulator Limitations`:
     - Differential equations must be first-order and separable
     - Model can only contain a single ContinuousSet
     - Can't simulate constraints with if-statements in the construction rules
     - Need to provide initial conditions for dynamic states by setting the
       value or using fix()
+
+Differentiable ODE Simulation
+*****************************
+
+For ODEs, :meth:`Simulator.compile <pyomo.dae.Simulator.compile>` returns a
+reusable CasADi ``Function`` with independent inputs ``x0`` and ``p`` and
+output ``xf``. Selected mutable parameters remain symbolic instead of being
+converted to numerical constants. CasADi can construct forward (direct)
+and reverse (adjoint) derivative functions from this map.
+
+.. code-block:: python
+
+   import casadi as ca
+   import pyomo.environ as pyo
+   from pyomo.dae import ContinuousSet, DerivativeVar, Simulator
+
+   m = pyo.ConcreteModel()
+   m.t = ContinuousSet(bounds=(0, 1.2))
+   m.k = pyo.Param(mutable=True, initialize=-0.7)
+   m.x = pyo.Var(m.t)
+   m.dx = DerivativeVar(m.x)
+   m.ode = pyo.Constraint(m.t, rule=lambda m, t: m.dx[t] == m.k * m.x[t])
+
+   sim = Simulator(m, package='casadi')
+   flow = sim.compile(
+       parameters=[m.k], times=[0, 0.2, 0.7, 1.2],
+       integrator_options={'reltol': 1e-11, 'abstol': 1e-13},
+   )
+   states = flow(x0=[1.3], p=[-0.7])['xf']
+
+   direct = flow.factory(
+       'direct', ['x0', 'p', 'fwd:x0', 'fwd:p'], ['fwd:xf']
+   )
+   tangent = direct(x0=[1.3], p=[-0.7], fwd_x0=[0], fwd_p=[1])['fwd_xf']
+
+   adjoint = flow.factory(
+       'adjoint', ['x0', 'p', 'adj:xf'], ['adj:x0', 'adj:p']
+   )
+   gradient = adjoint(
+       x0=[1.3], p=[-0.7], adj_xf=ca.DM([[0, 0, 0, 1]])
+   )
+
+Here the tangent is dx(t)/dk and the adjoint supplies the gradient of the
+final state with respect to the independent initial state and parameter.
+More general output weights can select a scalar cost involving several
+states and observations. CasADi's ``forward(n)`` and ``reverse(n)`` methods
+also support multiple directions. They concatenate each direction's output
+matrix horizontally; consult the CasADi Function documentation for seed
+layouts.
+
+State rows follow ``sim.get_variable_order()`` and output columns follow
+``times``. This differs from ``simulate()``, whose profile rows are time
+points. Parameter entries follow the supplied ordered iterable. Individual
+entries of indexed mutable Params can be selected; an empty iterable retains
+only initial-state derivatives. Immutable, unused, foreign-model, duplicate,
+and time-indexed selections are rejected, as are scalar Var selections.
+
+Compilation does not run a numerical trajectory or read independent initial
+conditions from model values. It leaves model values, fixity and prior
+simulation results unchanged. Supply selected parameter values on each map
+evaluation. Unselected scalar data are captured at compilation; recompile to
+capture changed values. Changes to the equations require a new Simulator.
+
+Derivatives treat ``x0`` and ``p`` as independent. To include a
+parameter-dependent initial condition such as x0=k**2, compose it into the
+symbolic map before differentiating:
+
+.. code-block:: python
+
+   k = ca.MX.sym('k')
+   terminal = flow(x0=k**2, p=k)['xf'][0, -1]
+   total = ca.Function('total', [k], [terminal])
+   value = total(-0.7)
+   derivative = total.forward(1)(-0.7, value, 1)
+
+A cost with explicit parameter dependence should likewise be composed
+symbolically, so its direct parameter term is retained. An integral cost can
+be represented by an additional differential state. An executable example
+combining an integral state, terminal cost, and both derivative modes is
+available at :download:`simulator_sensitivity_example.py
+<../../../../examples/dae/simulator_sensitivity_example.py>`.
+
+The initial compile interface supports CVODES and CasADi 3.8.1 or later,
+with scalar positive tolerances. It requires ``quad_err_con=True`` because
+adjoint parameter gradients use internal quadratures; this option is enabled
+by default and cannot be disabled in ``compile()``. Vector absolute weights,
+time-grid options, and ``nfwd``/``nadj``/``augmented_options`` overrides are
+rejected. On CasADi 3.8.1, the native ``max_num_dir`` limit is set to one to
+avoid a batched-adjoint defect; multiple requested directions are still
+supported through native composition. CasADi 3.8.2 permits native batching.
+These restrictions do not alter ``simulate()``'s dependency support or options.
+
+Algebraic equations and time-varying inputs are not yet supported by
+``compile()``. Convergence still depends on the model and integrator options.
+For example, native BDF adjoints failed on a tested 1000:1 fast/slow linear
+system with CasADi 3.8.1/3.8.2, while an explicit Adams configuration passed;
+that is a case-specific result, not a general stiff-solver recommendation.
+
+The returned map delegates sensitivity integration to CasADi, as described
+in its `sensitivity guide
+<https://web.casadi.org/docs/#initial-value-problems-and-sensitivity-analysis>`_.
+It does not construct separate Pyomo components for sensitivity equations.
 
 Specifying Time-Varying Inputs
 ******************************
@@ -865,6 +981,12 @@ and the values correspond to the value of the input at a time point. A
 ``Var`` or ``Param`` and pass the information to the
 :py:class:`Simulator<pyomo.dae.Simulator>`. The code snippet below shows an
 example.
+
+Each input profile must include the initial time and contain finite scalar
+values at finite switching times within the simulation interval. A value
+applies from its switching time to the next switch. Differential states
+remain continuous; reported algebraic states at a switch use the new input
+values, including at a switch at the final time.
 
 .. doctest::
 

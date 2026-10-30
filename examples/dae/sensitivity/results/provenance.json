@@ -1,0 +1,269 @@
+{
+  "date": "2026-10-30",
+  "checkout_commit": "a6c7d20b27b379e9e54aa25986fcd50202fbf10c",
+  "production_changes": true,
+  "simulator_sha256": "1efe112a5268928043fbec8751f7f9c0fd6fa14e0b28dbe2cded74240d6475fd",
+  "optional_dependencies_absent": {
+    "modules": [
+      "pyomo.dae.tests.test_simulator",
+      "pyomo.dae.tests.test_simulator_interface",
+      "pyomo.dae.tests.test_simulator_compile"
+    ],
+    "run": 112,
+    "passed": 7,
+    "skipped": 105,
+    "failures": 0
+  },
+  "ported_probe_numerical_function_ASTs_match_supplied": true,
+  "style": {
+    "black": {
+      "returncode": 0,
+      "command": [
+        "/private/tmp/pyomo-dae-sensitivity-work-a/casadi-3.8.1/bin/python",
+        "-m",
+        "black",
+        "--check",
+        "examples/dae/sensitivity"
+      ]
+    },
+    "typos": {
+      "returncode": 0,
+      "command": [
+        "/private/tmp/pyomo-dae-sensitivity-work-a/casadi-3.8.1/bin/typos",
+        "--config",
+        ".github/workflows/typos.toml",
+        "examples/dae/sensitivity"
+      ]
+    },
+    "rst": {
+      "docutils": "0.22.4",
+      "warnings": 0
+    }
+  },
+  "files": {
+    "API_DECISION.rst": {
+      "bytes": 13531,
+      "sha256": "1f8711c23c81da504ca323225ddda305c1710df33254f16f0bc07af64260855b"
+    },
+    "INTERFACE_AUDIT.rst": {
+      "bytes": 8282,
+      "sha256": "b3b2a73a6d59f7befbd090051d0afd35b0c27e697ec14e8a24773bfd5b12c12c"
+    },
+    "README.rst": {
+      "bytes": 9777,
+      "sha256": "550c9b1fe3498c5271f58d1b2452dae2f66ee5f62af8915788684c44115835e0"
+    },
+    "dependency_reproducers.py": {
+      "bytes": 16787,
+      "sha256": "8725e697d837541d2ca96fb0847e29c43c7e5c887eafc7c17ee92d144211115b"
+    },
+    "probe_sensitivities.py": {
+      "bytes": 12210,
+      "sha256": "5dcc82f700f8147501296143042b39e0b0b837a6bacca2b2da4f58aba5b68179"
+    },
+    "pynumero_collocation_probe.py": {
+      "bytes": 5717,
+      "sha256": "c98d2df7d320930828f59c025831435b5cc4ead936b2462679a40e8aa75387f5"
+    },
+    "results/compile-dependencies-3.8.1.json": {
+      "bytes": 6057,
+      "sha256": "404f0c5d7053c1f9218f4df2a4554048968a8144274a75fc22ff3e066b88c18f"
+    },
+    "results/compile-dependencies-3.8.2.json": {
+      "bytes": 6063,
+      "sha256": "41299347388c4093ec0d7c4632069c2f051d185b1c131a89846fa127b2daae92"
+    },
+    "results/compile_validation.json": {
+      "bytes": 5146,
+      "sha256": "b7414ece7068106e9de215fc8f56948408f3f1244df665dab6346095e6a465c5"
+    },
+    "results/interface_audit.json": {
+      "bytes": 18667,
+      "sha256": "1892cb2ac614ff6a7a4ca53d97737cda40eb051e3f29f72714803c3eb63cb3d1"
+    },
+    "results/supplied_probes.json": {
+      "bytes": 51313,
+      "sha256": "98f33f9289635d825cdada9a4f058cfda7ee40a9ca52204c9f4f85b038cda367"
+    },
+    "results/triage-3.8.1.json": {
+      "bytes": 15537,
+      "sha256": "72e9fc090aa6ebf16823e6aa512261a917066ad3a7f7c253c3ad0f34a2c18b7d"
+    },
+    "results/triage-3.8.2.json": {
+      "bytes": 15559,
+      "sha256": "dd1687d95f4ea1a93d5b4756404cf1a640acd0cb255d339f019024b47f2d7122"
+    }
+  },
+  "baseline_simulator_sha256": "834896495d3d3d65a19be2c57bd16234c555335fe637d66cad8ea78646ecbede",
+  "work_package_a_validation": {
+    "3.8.1": {
+      "portable_native_classifications_and_passing_checks_match_supplied": true,
+      "portable_native_passed": 8,
+      "portable_native_failed": 4,
+      "portable_collocation_matches_supplied": true,
+      "reduced_case_observations_checked": true,
+      "existing_simulator_pytest": {
+        "passed": 39,
+        "failed": 0,
+        "numpy_shape_deprecation_warnings": 4
+      }
+    },
+    "3.8.2": {
+      "portable_native_classifications_and_passing_checks_match_supplied": true,
+      "portable_native_passed": 8,
+      "portable_native_failed": 4,
+      "portable_collocation_matches_supplied": true,
+      "reduced_case_observations_checked": true,
+      "existing_simulator_pytest": {
+        "passed": 39,
+        "failed": 0,
+        "numpy_shape_deprecation_warnings": 4
+      }
+    }
+  },
+  "work_package_a_source_inspection": {
+    "scalar_mutable_param_indexed_mutable_param_scalar_var_retained_until_conversion": true,
+    "legacy_simulate_mutates_caller_options_with": [
+      "grid",
+      "output_t0"
+    ]
+  },
+  "interface_audit": {
+    "record": "results/interface_audit.json",
+    "full_dae_suite": {
+      "3.8.1": {
+        "command": "PYTHONPATH=<checkout> <env-python> -m pytest pyomo/dae/tests -q",
+        "passed": 230,
+        "subtests_passed": 142,
+        "failed": 0,
+        "warnings_in_regular_run": false,
+        "source": "working tree based on a6c7d20b27b379e9e54aa25986fcd50202fbf10c"
+      },
+      "3.8.2": {
+        "command": "PYTHONPATH=<checkout> <env-python> -m pytest pyomo/dae/tests -q",
+        "passed": 230,
+        "subtests_passed": 142,
+        "failed": 0,
+        "warnings_in_regular_run": false,
+        "source": "working tree based on a6c7d20b27b379e9e54aa25986fcd50202fbf10c"
+      }
+    },
+    "coverage": {
+      "module": {
+        "covered_lines": 487,
+        "num_statements": 507,
+        "percent_covered": 96.05522682445759,
+        "percent_covered_display": "96",
+        "missing_lines": 20,
+        "excluded_lines": 0,
+        "percent_statements_covered": 96.05522682445759,
+        "percent_statements_covered_display": "96"
+      },
+      "modified_executable_lines": 96,
+      "covered_modified_executable_lines": 96,
+      "modified_line_coverage_percent": 100.0,
+      "missing_modified_lines": []
+    },
+    "repository_files": {
+      "pyomo/dae/simulator.py": {
+        "bytes": 45954,
+        "sha256": "9509a690b599b872656734772a8e5bdbf13653b00167d3609cb35dfe958a5ccc"
+      },
+      "pyomo/dae/tests/test_simulator_interface.py": {
+        "bytes": 30177,
+        "sha256": "8142d436c3fbc888a99239a307e0eea7ac12f3e5b1dd700255cb13bd0224e51f"
+      },
+      "pyomo/dae/tests/simulator_ode_multindex_example.scipy.json": {
+        "bytes": 9474,
+        "sha256": "5234f214ab4f037533637c0d6446b258c1e96731a0bb9f7188a92032c0a3bc16"
+      },
+      "doc/OnlineDocs/explanation/modeling/dae.rst": {
+        "bytes": 37186,
+        "sha256": "325ce666eecea1a07573c92fcd73ff4c0608daa852804e7107639e0e36871c83"
+      }
+    },
+    "snapshot_context": "Historical validation after primal interface bug fixes, before compile implementation; associated source hashes are not current-file hashes."
+  },
+  "work_package_b": {
+    "record": "results/compile_validation.json",
+    "validation": {
+      "3.8.1": {
+        "full_dae_tests_passed": 250,
+        "subtests_passed": 196,
+        "failures": 0,
+        "new_compile_methods": 20,
+        "guide_python_blocks_executed": 2,
+        "sensitivity_example_passed": true,
+        "quad_error_control_gradient_error": 4.168443368257613e-11,
+        "native_unrestricted_batch_error": 0.19232965909447436,
+        "native_serial_batch_error": 7.1492811670736955e-12
+      },
+      "3.8.2": {
+        "full_dae_tests_passed": 250,
+        "subtests_passed": 196,
+        "failures": 0,
+        "new_compile_methods": 20,
+        "guide_python_blocks_executed": 2,
+        "sensitivity_example_passed": true,
+        "quad_error_control_gradient_error": 4.168443368257613e-11,
+        "native_unrestricted_batch_error": 8.944400775590111e-12,
+        "native_serial_batch_error": 7.1492811670736955e-12
+      }
+    },
+    "coverage": {
+      "module": {
+        "covered_lines": 540,
+        "num_statements": 566,
+        "percent_covered": 95.40636042402826,
+        "percent_covered_display": "95",
+        "missing_lines": 26,
+        "excluded_lines": 0,
+        "percent_statements_covered": 95.40636042402826,
+        "percent_statements_covered_display": "95"
+      },
+      "compile_executable_lines": 56,
+      "compile_covered_lines": 54,
+      "compile_percent": 96.42857142857143,
+      "compile_missing_lines": [
+        797,
+        801
+      ],
+      "fresh_data_file": "/private/tmp/pyomo-dae-sensitivity-work-a/work-b-final.coverage"
+    },
+    "repository_files": {
+      "pyomo/dae/simulator.py": {
+        "bytes": 53533,
+        "sha256": "1efe112a5268928043fbec8751f7f9c0fd6fa14e0b28dbe2cded74240d6475fd"
+      },
+      "pyomo/dae/tests/test_simulator_compile.py": {
+        "bytes": 29629,
+        "sha256": "d272485433bdb8bed5e7370b44f12d5d124ea0e20094c371c063d5d5c2ee04b1"
+      },
+      "pyomo/dae/tests/test_simulator_interface.py": {
+        "bytes": 30177,
+        "sha256": "8142d436c3fbc888a99239a307e0eea7ac12f3e5b1dd700255cb13bd0224e51f"
+      },
+      "pyomo/dae/tests/simulator_ode_multindex_example.scipy.json": {
+        "bytes": 9474,
+        "sha256": "5234f214ab4f037533637c0d6446b258c1e96731a0bb9f7188a92032c0a3bc16"
+      },
+      "examples/dae/simulator_sensitivity_example.py": {
+        "bytes": 3067,
+        "sha256": "545c716442c650f90fd4ca7a90c928117cce9a993557f3f7e4f38acf92e547c4"
+      },
+      "examples/dae/sensitivity/dependency_reproducers.py": {
+        "bytes": 16787,
+        "sha256": "8725e697d837541d2ca96fb0847e29c43c7e5c887eafc7c17ee92d144211115b"
+      },
+      "doc/OnlineDocs/explanation/modeling/dae.rst": {
+        "bytes": 41958,
+        "sha256": "13ce03c6c34fdc25c326d17614e7bab2a960c76190597a4f46575b1eb5cfa224"
+      }
+    }
+  },
+  "work_package_a_native_equivalent_example": {
+    "casadi": "3.8.2",
+    "analytic_JVP_VJP_passed": true,
+    "implements_proposed_pyomo_method": false
+  }
+}

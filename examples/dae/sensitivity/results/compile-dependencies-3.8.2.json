@@ -1,0 +1,224 @@
+{
+  "casadi": "3.8.2",
+  "cases": {
+    "ode_adjoint_quadrature_control": {
+      "completed": true,
+      "observations": [
+        {
+          "options": {
+            "reltol": 1e-11,
+            "abstol": 1e-13,
+            "quad_err_con": false
+          },
+          "actual": 2.691305810559301,
+          "analytic": 2.9200000000000004,
+          "absolute_error": 0.22869418944069952
+        },
+        {
+          "options": {
+            "reltol": 1e-11,
+            "abstol": 1e-13,
+            "quad_err_con": true
+          },
+          "actual": 2.919999999958316,
+          "analytic": 2.9200000000000004,
+          "absolute_error": 4.168443368257613e-11
+        }
+      ],
+      "returncode": 0,
+      "stderr_first_line": ""
+    },
+    "stiff_adjoint_methods": {
+      "completed": true,
+      "observations": [
+        {
+          "rate": 100,
+          "options": {
+            "reltol": 1e-11,
+            "abstol": 1e-13,
+            "quad_err_con": true,
+            "linear_multistep_method": "bdf"
+          },
+          "times": [
+            0,
+            0.0001,
+            0.01,
+            0.1,
+            1
+          ],
+          "actual": -0.00378233938816273,
+          "analytic": -0.003782339388065589,
+          "absolute_error": 9.714104520774924e-14
+        },
+        {
+          "rate": 100,
+          "options": {
+            "reltol": 1e-11,
+            "abstol": 1e-13,
+            "quad_err_con": true,
+            "linear_multistep_method": "adams"
+          },
+          "times": [
+            0,
+            0.0001,
+            0.01,
+            0.1,
+            1
+          ],
+          "actual": -0.003782339285374226,
+          "analytic": -0.003782339388065589,
+          "absolute_error": 1.0269136279175695e-10
+        },
+        {
+          "rate": 1000,
+          "options": {
+            "reltol": 1e-11,
+            "abstol": 1e-13,
+            "quad_err_con": true,
+            "linear_multistep_method": "bdf"
+          },
+          "times": [
+            0,
+            0.0001,
+            0.01,
+            0.1,
+            1
+          ],
+          "error": "Error in Function::call for 'gradient' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'gradient' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj1_flow' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens1_flow' [CvodesInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/cvodes_interface.cpp:403: CVodeB returned \"CV_TOO_MUCH_WORK\". Consult CVODES documentation."
+        },
+        {
+          "rate": 1000,
+          "options": {
+            "reltol": 1e-11,
+            "abstol": 1e-13,
+            "quad_err_con": true,
+            "linear_multistep_method": "adams"
+          },
+          "times": [
+            0,
+            0.0001,
+            0.01,
+            0.1,
+            1
+          ],
+          "actual": -9.093774101764281e-05,
+          "analytic": -9.093774110122081e-05,
+          "absolute_error": 8.357800129060733e-14
+        }
+      ],
+      "returncode": 0,
+      "stderr_first_line": "At t = 0.990927, mxstep steps taken before reaching tout."
+    },
+    "ode_adjoint_batching": {
+      "completed": true,
+      "observations": [
+        {
+          "options": {
+            "reltol": 1e-11,
+            "abstol": 1e-13,
+            "quad_err_con": true
+          },
+          "batch": [
+            [
+              0.3615171852494632,
+              -0.029338234966645838
+            ],
+            [
+              -0.03844575760390012,
+              -0.023492291509246956
+            ],
+            [
+              0.38425934885701507,
+              -0.051040007650434996
+            ]
+          ],
+          "single": [
+            [
+              0.3615171852522336,
+              -0.029338234965542023
+            ],
+            [
+              -0.03844575761884966,
+              -0.023492291515238354
+            ],
+            [
+              0.3842593488409214,
+              -0.05104000764254266
+            ]
+          ],
+          "analytic": [
+            [
+              0.3615171852521633,
+              -0.02933823496653619
+            ],
+            [
+              -0.038445757612511205,
+              -0.023492291515059632
+            ],
+            [
+              0.38425934884807067,
+              -0.05104000764609632
+            ]
+          ],
+          "batch_error": 8.944400775590111e-12,
+          "single_error": 7.1492811670736955e-12
+        },
+        {
+          "options": {
+            "reltol": 1e-11,
+            "abstol": 1e-13,
+            "quad_err_con": true,
+            "max_num_dir": 1
+          },
+          "batch": [
+            [
+              0.3615171852522336,
+              -0.029338234965542023
+            ],
+            [
+              -0.03844575761884966,
+              -0.023492291515238354
+            ],
+            [
+              0.3842593488409214,
+              -0.05104000764254266
+            ]
+          ],
+          "single": [
+            [
+              0.3615171852522336,
+              -0.029338234965542023
+            ],
+            [
+              -0.03844575761884966,
+              -0.023492291515238354
+            ],
+            [
+              0.3842593488409214,
+              -0.05104000764254266
+            ]
+          ],
+          "analytic": [
+            [
+              0.3615171852521633,
+              -0.02933823496653619
+            ],
+            [
+              -0.038445757612511205,
+              -0.023492291515059632
+            ],
+            [
+              0.38425934884807067,
+              -0.05104000764609632
+            ]
+          ],
+          "batch_error": 7.1492811670736955e-12,
+          "single_error": 7.1492811670736955e-12
+        }
+      ],
+      "returncode": 0,
+      "stderr_first_line": ""
+    }
+  },
+  "diagnostics": "Observations retain full Python/backend exceptions and the first native stderr line; verbose native input dumps are omitted."
+}

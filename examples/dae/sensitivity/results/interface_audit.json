@@ -1,0 +1,393 @@
+{
+  "date": "2026-10-30",
+  "base_commit": "a6c7d20b27b379e9e54aa25986fcd50202fbf10c",
+  "environment": {
+    "python": "3.12.14",
+    "numpy": "2.5.4",
+    "scipy": "1.18.1",
+    "platform": "macOS 27.0.1 ARM64"
+  },
+  "new_test_methods": 53,
+  "before": {
+    "command": "python -m pytest pyomo/dae/tests/test_simulator_interface.py -q -k 'not invalid_grid and not invalid_initial_conditions and not invalid_input_profiles'",
+    "failed_checks_including_subtests": 40,
+    "failures": [
+      {
+        "class": "pyomo.dae.tests.test_simulator_interface.TestScipyInterface",
+        "test": "test_asynchronous_inputs",
+        "message": "AssertionError: \nNot equal to tolerance rtol=2e-07, atol=2e-07\n\nMismatched elements: 8 / 13 (61.5%)\nFirst 5 mismatches are at indices:\n [5, 0]: 2.9999999999999996 (ACTUAL), 3.2 (DESIRED)\n [6, 0]: 3.4999999999999996 (ACTUAL), 3.3000000000000003 (DESIRED)\n [7, 0]: 3.9999999999999996 (ACTUAL), 3.4000000000000004 (DESIRED)"
+      },
+      {
+        "class": "pyomo.dae.tests.test_simulator_interface.TestScipyInterface",
+        "test": "test_constant_rhs",
+        "message": "TypeError: 'int' object is not callable"
+      },
+      {
+        "class": "pyomo.dae.tests.test_simulator_interface.TestScipyInterface",
+        "test": "test_constant_rhs",
+        "message": "TypeError: 'int' object is not callable"
+      },
+      {
+        "class": "pyomo.dae.tests.test_simulator_interface.TestScipyInterface",
+        "test": "test_constant_rhs",
+        "message": "TypeError: 'float' object is not callable"
+      },
+      {
+        "class": "pyomo.dae.tests.test_simulator_interface.TestScipyInterface",
+        "test": "test_empty_input_suffix",
+        "message": "IndexError: list index out of range"
+      },
+      {
+        "class": "pyomo.dae.tests.test_simulator_interface.TestScipyInterface",
+        "test": "test_equivalent_equation_forms",
+        "message": "TypeError: 'float' object is not callable"
+      },
+      {
+        "class": "pyomo.dae.tests.test_simulator_interface.TestScipyInterface",
+        "test": "test_equivalent_equation_forms",
+        "message": "TypeError: 'float' object is not callable"
+      },
+      {
+        "class": "pyomo.dae.tests.test_simulator_interface.TestScipyInterface",
+        "test": "test_equivalent_equation_forms",
+        "message": "AssertionError: \nNot equal to tolerance rtol=2e-07, atol=2e-07\n\nMismatched elements: 10 / 11 (90.9%)\nFirst 5 mismatches are at indices:\n [1, 0]: 0.9672161003870556 (ACTUAL), 0.9048374180359595 (DESIRED)\n [2, 0]: 0.935506984940061 (ACTUAL), 0.8187307530779818 (DESIRED)\n [3, 0]: 0.9048374179556389 (ACTUAL), 0.7408182206817179 (DESIRED)"
+      },
+      {
+        "class": "pyomo.dae.tests.test_simulator_interface.TestScipyInterface",
+        "test": "test_equivalent_equation_forms",
+        "message": "TypeError: 'float' object is not callable"
+      },
+      {
+        "class": "pyomo.dae.tests.test_simulator_interface.TestScipyInterface",
+        "test": "test_failure_preserves_last_simulation",
+        "message": "AssertionError: Lists differ: [] != [4677271824]\n\nSecond list contains 1 additional elements.\nFirst extra element 0:\n4677271824\n\n- []\n+ [4677271824]"
+      },
+      {
+        "class": "pyomo.dae.tests.test_simulator_interface.TestScipyInterface",
+        "test": "test_failure_preserves_last_simulation",
+        "message": "AssertionError: Lists differ: [] != [4677660800]\n\nSecond list contains 1 additional elements.\nFirst extra element 0:\n4677660800\n\n- []\n+ [4677660800]"
+      },
+      {
+        "class": "pyomo.dae.tests.test_simulator_interface.TestScipyInterface",
+        "test": "test_initialize_discretized_model",
+        "message": "TypeError: 'int' object is not callable"
+      },
+      {
+        "class": "pyomo.dae.tests.test_simulator_interface.TestScipyInterface",
+        "test": "test_output_grid",
+        "message": "AssertionError: np.float64(2.75) != 3"
+      },
+      {
+        "class": "pyomo.dae.tests.test_simulator_interface.TestScipyInterface",
+        "test": "test_output_grid",
+        "message": "AssertionError: np.float64(2.8999999999999995) != 3"
+      },
+      {
+        "class": "pyomo.dae.tests.test_simulator_interface.TestScipyInterface",
+        "test": "test_output_grid",
+        "message": "AssertionError: np.int64(2) != 3"
+      },
+      {
+        "class": "pyomo.dae.tests.test_simulator_interface.TestScipyInterface",
+        "test": "test_output_grid",
+        "message": "AssertionError: np.float64(2.8) != 3"
+      },
+      {
+        "class": "pyomo.dae.tests.test_simulator_interface.TestScipyInterface",
+        "test": "test_piecewise_inputs",
+        "message": "AssertionError: \nNot equal to tolerance rtol=2e-07, atol=2e-07\n\nMismatched elements: 8 / 13 (61.5%)\nFirst 5 mismatches are at indices:\n [5, 0]: 1.543207404807263 (ACTUAL), 1.6 (DESIRED)\n [6, 0]: 1.8432074048072629 (ACTUAL), 1.9000000000000001 (DESIRED)\n [7, 0]: 2.1432074048072627 (ACTUAL), 2.2 (DESIRED)"
+      },
+      {
+        "class": "pyomo.dae.tests.test_simulator_interface.TestScipyInterface",
+        "test": "test_piecewise_inputs",
+        "message": "AssertionError: \nNot equal to tolerance rtol=2e-07, atol=2e-07\n\nMismatched elements: 8 / 12 (66.7%)\nFirst 5 mismatches are at indices:\n [4, 0]: 1.4 (ACTUAL), 1.6 (DESIRED)\n [5, 0]: 1.5 (ACTUAL), 1.9000000000000004 (DESIRED)\n [6, 0]: 1.6 (ACTUAL), 2.2000000000000006 (DESIRED)"
+      },
+      {
+        "class": "pyomo.dae.tests.test_simulator_interface.TestScipyInterface",
+        "test": "test_piecewise_inputs",
+        "message": "AssertionError: \nNot equal to tolerance rtol=2e-07, atol=2e-07\n\nMismatched elements: 8 / 13 (61.5%)\nFirst 5 mismatches are at indices:\n [5, 0]: 1.2841505787027774 (ACTUAL), 1.2978246253591226 (DESIRED)\n [6, 0]: 1.4870748351500693 (ACTUAL), 1.499824431838249 (DESIRED)\n [7, 0]: 1.6762801579535165 (ACTUAL), 1.6881678030215843 (DESIRED)"
+      },
+      {
+        "class": "pyomo.dae.tests.test_simulator_interface.TestScipyInterface",
+        "test": "test_piecewise_inputs",
+        "message": "AssertionError: \nNot equal to tolerance rtol=2e-07, atol=2e-07\n\nMismatched elements: 8 / 12 (66.7%)\nFirst 5 mismatches are at indices:\n [4, 0]: 1.2842657833423206 (ACTUAL), 1.2978246253591228 (DESIRED)\n [5, 0]: 1.4871822512440709 (ACTUAL), 1.4998244318382494 (DESIRED)\n [6, 0]: 1.6763803120558436 (ACTUAL), 1.6881678030215845 (DESIRED)"
+      },
+      {
+        "class": "pyomo.dae.tests.test_simulator_interface.TestScipyInterface",
+        "test": "test_time_with_inputs",
+        "message": "AssertionError: \nNot equal to tolerance rtol=2e-07, atol=2e-07\n\nMismatched elements: 6 / 11 (54.5%)\nFirst 5 mismatches are at indices:\n [5, 0]: 2.6250000000110516 (ACTUAL), 2.825 (DESIRED)\n [6, 0]: 3.099565334481844 (ACTUAL), 3.380000000000001 (DESIRED)\n [7, 0]: 3.664565334481841 (ACTUAL), 3.945000000000001 (DESIRED)"
+      },
+      {
+        "class": "pyomo.dae.tests.test_simulator_interface.TestCasadiInterface",
+        "test": "test_empty_input_suffix",
+        "message": "IndexError: list index out of range"
+      },
+      {
+        "class": "pyomo.dae.tests.test_simulator_interface.TestCasadiInterface",
+        "test": "test_equivalent_equation_forms",
+        "message": "AssertionError: \nNot equal to tolerance rtol=2e-07, atol=2e-07\n\nMismatched elements: 10 / 11 (90.9%)\nFirst 5 mismatches are at indices:\n [1, 0]: 1.0 (ACTUAL), 0.8187307530779818 (DESIRED)\n [2, 0]: 1.0 (ACTUAL), 0.6703200460356393 (DESIRED)\n [3, 0]: 1.0 (ACTUAL), 0.5488116360940264 (DESIRED)"
+      },
+      {
+        "class": "pyomo.dae.tests.test_simulator_interface.TestCasadiInterface",
+        "test": "test_equivalent_equation_forms",
+        "message": "AssertionError: \nNot equal to tolerance rtol=2e-07, atol=2e-07\n\nMismatched elements: 10 / 11 (90.9%)\nFirst 5 mismatches are at indices:\n [1, 0]: 1.0 (ACTUAL), 0.9090909090909091 (DESIRED)\n [2, 0]: 1.0 (ACTUAL), 0.8333333333333334 (DESIRED)\n [3, 0]: 1.0 (ACTUAL), 0.7692307692307692 (DESIRED)"
+      },
+      {
+        "class": "pyomo.dae.tests.test_simulator_interface.TestCasadiInterface",
+        "test": "test_equivalent_equation_forms",
+        "message": "AssertionError: \nNot equal to tolerance rtol=2e-07, atol=2e-07\n\nMismatched elements: 10 / 11 (90.9%)\nFirst 5 mismatches are at indices:\n [1, 0]: 0.9672161005319899 (ACTUAL), 0.9048374180359595 (DESIRED)\n [2, 0]: 0.9355069850675635 (ACTUAL), 0.8187307530779818 (DESIRED)\n [3, 0]: 0.9048374179735458 (ACTUAL), 0.7408182206817179 (DESIRED)"
+      },
+      {
+        "class": "pyomo.dae.tests.test_simulator_interface.TestCasadiInterface",
+        "test": "test_equivalent_equation_forms",
+        "message": "AssertionError: \nNot equal to tolerance rtol=2e-07, atol=2e-07\n\nMismatched elements: 10 / 11 (90.9%)\nFirst 5 mismatches are at indices:\n [1, 0]: 1.0 (ACTUAL), 0.8187307530779818 (DESIRED)\n [2, 0]: 1.0 (ACTUAL), 0.6703200460356393 (DESIRED)\n [3, 0]: 1.0 (ACTUAL), 0.5488116360940264 (DESIRED)"
+      },
+      {
+        "class": "pyomo.dae.tests.test_simulator_interface.TestCasadiInterface",
+        "test": "test_explicit_time",
+        "message": "pyomo.common.errors.TemplateExpressionError: Evaluating uninitialized IndexTemplate ({t})"
+      },
+      {
+        "class": "pyomo.dae.tests.test_simulator_interface.TestCasadiInterface",
+        "test": "test_explicit_time",
+        "message": "pyomo.common.errors.TemplateExpressionError: Evaluating uninitialized IndexTemplate ({t})"
+      },
+      {
+        "class": "pyomo.dae.tests.test_simulator_interface.TestCasadiInterface",
+        "test": "test_failure_preserves_last_simulation",
+        "message": "AssertionError: Lists differ: [] != [4677084912]\n\nSecond list contains 1 additional elements.\nFirst extra element 0:\n4677084912\n\n- []\n+ [4677084912]"
+      },
+      {
+        "class": "pyomo.dae.tests.test_simulator_interface.TestCasadiInterface",
+        "test": "test_failure_preserves_last_simulation",
+        "message": "AssertionError: Lists differ: [] != [4677280368]\n\nSecond list contains 1 additional elements.\nFirst extra element 0:\n4677280368\n\n- []\n+ [4677280368]"
+      },
+      {
+        "class": "pyomo.dae.tests.test_simulator_interface.TestCasadiInterface",
+        "test": "test_options_preserved",
+        "message": "AssertionError: {'rel[23 chars]1e-12, 'grid': array([0.  , 0.25, 0.5 , 0.75, [21 chars]True} != {'rel[23 chars]1e-12}\n+ {'abstol': 1e-12, 'reltol': 1e-10}\n- {'abstol': 1e-12,\n-  'grid': array([0.  , 0.25, 0.5 , 0.75, 1.  ]),\n-  'output_t0': True,\n-  'reltol': 1e-10}"
+      },
+      {
+        "class": "pyomo.dae.tests.test_simulator_interface.TestCasadiInterface",
+        "test": "test_output_grid",
+        "message": "AssertionError: np.float64(2.75) != 3"
+      },
+      {
+        "class": "pyomo.dae.tests.test_simulator_interface.TestCasadiInterface",
+        "test": "test_output_grid",
+        "message": "AssertionError: np.float64(2.8999999999999995) != 3"
+      },
+      {
+        "class": "pyomo.dae.tests.test_simulator_interface.TestCasadiInterface",
+        "test": "test_output_grid",
+        "message": "RuntimeError: Error in Function::call for 'F' [IdasInterface] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'F' [IdasInterface] at .../casadi/core/function.cpp:514:\n.../casadi/interfaces/sundials/idas_interface.cpp:620: IDACalcIC returned \"IDA_ILL_INPUT\". Consult IDAS documentation."
+      },
+      {
+        "class": "pyomo.dae.tests.test_simulator_interface.TestCasadiInterface",
+        "test": "test_output_grid",
+        "message": "AssertionError: np.float64(2.8) != 3"
+      },
+      {
+        "class": "pyomo.dae.tests.test_simulator_interface.TestCasadiInterface",
+        "test": "test_piecewise_inputs",
+        "message": "KeyError: 0"
+      },
+      {
+        "class": "pyomo.dae.tests.test_simulator_interface.TestCasadiInterface",
+        "test": "test_piecewise_inputs",
+        "message": "KeyError: 0"
+      },
+      {
+        "class": "pyomo.dae.tests.test_simulator_interface.TestCasadiInterface",
+        "test": "test_time_dependent_dae",
+        "message": "pyomo.common.errors.TemplateExpressionError: Evaluating uninitialized IndexTemplate ({t})"
+      },
+      {
+        "class": "pyomo.dae.tests.test_simulator_interface.TestCasadiInterface",
+        "test": "test_time_dependent_dae",
+        "message": "pyomo.common.errors.TemplateExpressionError: Evaluating uninitialized IndexTemplate ({t})"
+      },
+      {
+        "class": "pyomo.dae.tests.test_simulator_interface.TestCasadiInterface",
+        "test": "test_time_with_inputs",
+        "message": "pyomo.common.errors.TemplateExpressionError: Evaluating uninitialized IndexTemplate ({t})"
+      }
+    ]
+  },
+  "algebraic_probes_before_fix": [
+    {
+      "case": "nonlinear_initial_guess",
+      "times": [
+        0.0,
+        0.5,
+        1.0
+      ],
+      "profiles": [
+        [
+          1.0,
+          -1.0000000000000013
+        ],
+        [
+          0.5625000000566732,
+          -0.750000000037799
+        ],
+        [
+          0.2500000000371046,
+          -0.5000000000371605
+        ]
+      ],
+      "returncode": 0,
+      "stderr": "CasADi - 2026-10-30 11:27:47 WARNING(\"The options 't0', 'tf', 'grid' and 'output_t0' have been deprecated.\nThe same functionality is provided by providing additional input arguments to the 'integrator' function, in particular:\n * Call integrator(..., t0, tf, options) for a single output time, or\n * Call integrator(..., t0, grid, options) for multiple grid points.\nThe legacy 'output_t0' option can be emulated by including or excluding 't0' in 'grid'.\nBackwards compatibility is provided in this release only.\") [.../casadi/core/integrator.cpp:701]\n"
+    },
+    {
+      "case": "algebraic_at_switch",
+      "times": [
+        0.0,
+        0.5,
+        1.0
+      ],
+      "profiles": [
+        [
+          1.0,
+          2.0
+        ],
+        [
+          1.4999999999999996,
+          2.4999999999999996
+        ],
+        [
+          2.9999999999999987,
+          5.999999999999998
+        ]
+      ],
+      "returncode": 0,
+      "stderr": "CasADi - 2026-10-30 11:27:47 WARNING(\"The options 't0', 'tf', 'grid' and 'output_t0' have been deprecated.\nThe same functionality is provided by providing additional input arguments to the 'integrator' function, in particular:\n * Call integrator(..., t0, tf, options) for a single output time, or\n * Call integrator(..., t0, grid, options) for multiple grid points.\nThe legacy 'output_t0' option can be emulated by including or excluding 't0' in 'grid'.\nBackwards compatibility is provided in this release only.\") [.../casadi/core/integrator.cpp:701]\n"
+    }
+  ],
+  "algebraic_probes_after_fix": [
+    {
+      "case": "nonlinear_initial_guess",
+      "times": [
+        0.0,
+        0.5,
+        1.0
+      ],
+      "profiles": [
+        [
+          1.0,
+          0.9999999999999061
+        ],
+        [
+          1.5625000000956824,
+          1.2500000000382618
+        ],
+        [
+          2.2500000001140434,
+          1.5000000000380422
+        ]
+      ]
+    },
+    {
+      "case": "algebraic_at_switch",
+      "times": [
+        0.0,
+        0.5,
+        1.0
+      ],
+      "profiles": [
+        [
+          1.0,
+          2.0
+        ],
+        [
+          1.4999999999999996,
+          4.5
+        ],
+        [
+          2.9999999999999987,
+          5.999999999999998
+        ]
+      ]
+    }
+  ],
+  "after": {
+    "3.8.1": {
+      "command": "PYTHONPATH=<checkout> <env-python> -m pytest pyomo/dae/tests -q",
+      "passed": 230,
+      "subtests_passed": 142,
+      "failed": 0,
+      "warnings_in_regular_run": false,
+      "source": "working tree based on a6c7d20b27b379e9e54aa25986fcd50202fbf10c"
+    },
+    "3.8.2": {
+      "command": "PYTHONPATH=<checkout> <env-python> -m pytest pyomo/dae/tests -q",
+      "passed": 230,
+      "subtests_passed": 142,
+      "failed": 0,
+      "warnings_in_regular_run": false,
+      "source": "working tree based on a6c7d20b27b379e9e54aa25986fcd50202fbf10c"
+    }
+  },
+  "optional_dependencies_absent": {
+    "tested_modules": [
+      "pyomo.dae.tests.test_simulator",
+      "pyomo.dae.tests.test_simulator_interface"
+    ],
+    "run": 92,
+    "passed": 7,
+    "skipped": 85,
+    "failed": 0
+  },
+  "coverage": {
+    "module": {
+      "covered_lines": 487,
+      "num_statements": 507,
+      "percent_covered": 96.05522682445759,
+      "percent_covered_display": "96",
+      "missing_lines": 20,
+      "excluded_lines": 0,
+      "percent_statements_covered": 96.05522682445759,
+      "percent_statements_covered_display": "96"
+    },
+    "modified_executable_lines": 96,
+    "covered_modified_executable_lines": 96,
+    "modified_line_coverage_percent": 100.0,
+    "missing_modified_lines": []
+  },
+  "coverage_command": "COVERAGE_FILE=<temporary-path> <env-python> -m coverage run --source=pyomo.dae.simulator -m pytest pyomo/dae/tests -q",
+  "coverage_tool": "7.17.0",
+  "coverage_run_shutdown_diagnostic": "A Python multiprocessing resource_tracker semaphore cleanup warning and finalizer FileNotFoundError occurred after 230 tests and 142 subtests passed; command exit code 0. Regular runs of both dependency versions completed without this diagnostic.",
+  "pendulum_fixture_validation": {
+    "oracle": "independent segmented scipy.integrate.solve_ivp, DOP853, rtol=1e-11, atol=1e-13",
+    "grid_points": 102,
+    "old_baseline_max_abs_error": 0.01950360249560079,
+    "corrected_default_lsoda_max_abs_error": 6.505281835456067e-05,
+    "old_fixture_sha256": "e0489d4ab30bc8e7b9a40b582d04826c0cdc7c24ee1d811dba84712b30dda7cf",
+    "new_fixture_sha256": "5234f214ab4f037533637c0d6446b258c1e96731a0bb9f7188a92032c0a3bc16"
+  },
+  "checks": {
+    "black": "passed",
+    "typos": "passed",
+    "git_diff_check": "passed",
+    "rst_docutils_0.22.4": "passed"
+  },
+  "repository_files": {
+    "pyomo/dae/simulator.py": {
+      "bytes": 45954,
+      "sha256": "9509a690b599b872656734772a8e5bdbf13653b00167d3609cb35dfe958a5ccc"
+    },
+    "pyomo/dae/tests/test_simulator_interface.py": {
+      "bytes": 30177,
+      "sha256": "8142d436c3fbc888a99239a307e0eea7ac12f3e5b1dd700255cb13bd0224e51f"
+    },
+    "pyomo/dae/tests/simulator_ode_multindex_example.scipy.json": {
+      "bytes": 9474,
+      "sha256": "5234f214ab4f037533637c0d6446b258c1e96731a0bb9f7188a92032c0a3bc16"
+    },
+    "doc/OnlineDocs/explanation/modeling/dae.rst": {
+      "bytes": 37186,
+      "sha256": "325ce666eecea1a07573c92fcd73ff4c0608daa852804e7107639e0e36871c83"
+    }
+  },
+  "sensitivity_feature_implemented": false
+}
