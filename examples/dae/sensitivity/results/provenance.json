@@ -1,17 +1,18 @@
 {
   "date": "2026-10-30",
-  "checkout_commit": "a6c7d20b27b379e9e54aa25986fcd50202fbf10c",
+  "checkout_commit": "74e516a112cef6b95c07f44609f7cddbdbf119ba",
   "production_changes": true,
-  "simulator_sha256": "1efe112a5268928043fbec8751f7f9c0fd6fa14e0b28dbe2cded74240d6475fd",
+  "simulator_sha256": "be9d88a68a042fc321cd7e3779bddc6f59858fae2bc81af3cdd7506800344d45",
   "optional_dependencies_absent": {
     "modules": [
       "pyomo.dae.tests.test_simulator",
       "pyomo.dae.tests.test_simulator_interface",
-      "pyomo.dae.tests.test_simulator_compile"
+      "pyomo.dae.tests.test_simulator_compile",
+      "pyomo.dae.tests.test_simulator_controls"
     ],
-    "run": 112,
+    "run": 127,
     "passed": 7,
-    "skipped": 105,
+    "skipped": 120,
     "failures": 0
   },
   "ported_probe_numerical_function_ASTs_match_supplied": true,
@@ -24,7 +25,8 @@
         "black",
         "--check",
         "examples/dae/sensitivity"
-      ]
+      ],
+      "scope": "Simulator, compile/control tests and new control example checked for C; previously checked probe scripts unchanged"
     },
     "typos": {
       "returncode": 0,
@@ -33,7 +35,8 @@
         "--config",
         ".github/workflows/typos.toml",
         "examples/dae/sensitivity"
-      ]
+      ],
+      "scope": "All C source/tests/example, DAE guide and entire sensitivity evidence folder"
     },
     "rst": {
       "docutils": "0.22.4",
@@ -42,16 +45,16 @@
   },
   "files": {
     "API_DECISION.rst": {
-      "bytes": 13531,
-      "sha256": "1f8711c23c81da504ca323225ddda305c1710df33254f16f0bc07af64260855b"
+      "bytes": 17613,
+      "sha256": "211fa2813e911bdee446be4da8423071d0efe70c7d8bd3e8699006a364266842"
     },
     "INTERFACE_AUDIT.rst": {
       "bytes": 8282,
       "sha256": "b3b2a73a6d59f7befbd090051d0afd35b0c27e697ec14e8a24773bfd5b12c12c"
     },
     "README.rst": {
-      "bytes": 9777,
-      "sha256": "550c9b1fe3498c5271f58d1b2452dae2f66ee5f62af8915788684c44115835e0"
+      "bytes": 10079,
+      "sha256": "70f50022cb08cf47450bbe3ea18e5c026a5daa228d1da1f1add0b9f52816b0d7"
     },
     "dependency_reproducers.py": {
       "bytes": 16787,
@@ -76,6 +79,10 @@
     "results/compile_validation.json": {
       "bytes": 5146,
       "sha256": "b7414ece7068106e9de215fc8f56948408f3f1244df665dab6346095e6a465c5"
+    },
+    "results/controls_validation.json": {
+      "bytes": 7996,
+      "sha256": "d8cd0c4587b2746a42871402f162382283b5a92f6b87a1868fcef8bce2cb60f1"
     },
     "results/interface_audit.json": {
       "bytes": 18667,
@@ -259,11 +266,96 @@
         "bytes": 41958,
         "sha256": "13ce03c6c34fdc25c326d17614e7bab2a960c76190597a4f46575b1eb5cfa224"
       }
-    }
+    },
+    "snapshot_context": "Historical B validation committed in 74e516a11, before fixed-grid control support; source hashes identify that snapshot."
   },
   "work_package_a_native_equivalent_example": {
     "casadi": "3.8.2",
     "analytic_JVP_VJP_passed": true,
     "implements_proposed_pyomo_method": false
+  },
+  "baseline_checkout_commit": "a6c7d20b27b379e9e54aa25986fcd50202fbf10c",
+  "snapshot_context": "Current C working tree on committed A/B implementation; current hashes below. A, audit and B records are historical snapshots.",
+  "work_package_c": {
+    "source_parent_commit": "74e516a112cef6b95c07f44609f7cddbdbf119ba",
+    "validation": {
+      "3.8.1": {
+        "full_dae_tests_passed": 265,
+        "subtests_passed": 232,
+        "failures": 0,
+        "new_controls_methods": 15,
+        "guide_python_blocks_executed": 4,
+        "sensitivity_example_passed": true,
+        "control_sensitivity_example_passed": true,
+        "test_process_exit_code": 0
+      },
+      "3.8.2": {
+        "full_dae_tests_passed": 265,
+        "subtests_passed": 232,
+        "failures": 0,
+        "new_controls_methods": 15,
+        "guide_python_blocks_executed": 4,
+        "sensitivity_example_passed": true,
+        "control_sensitivity_example_passed": true,
+        "test_process_exit_code": 0
+      }
+    },
+    "coverage": {
+      "module": {
+        "covered_lines": 587,
+        "num_statements": 614,
+        "percent_covered": 95.60260586319218,
+        "percent_covered_display": "96",
+        "missing_lines": 27,
+        "excluded_lines": 0,
+        "percent_statements_covered": 95.60260586319218,
+        "percent_statements_covered_display": "96"
+      },
+      "compile_executable_lines": 104,
+      "compile_covered_lines": 101,
+      "compile_percent": 97.11538461538461,
+      "compile_missing_lines": [
+        814,
+        818,
+        866
+      ],
+      "fresh_data_file": "/private/tmp/pyomo-dae-sensitivity-work-a/work-c-final.coverage",
+      "uncovered_compile_refusals": [
+        "missing NumPy",
+        "CasADi older than 3.8.1",
+        "control not indexed by current time"
+      ]
+    },
+    "repository_files": {
+      "pyomo/dae/simulator.py": {
+        "bytes": 58540,
+        "sha256": "be9d88a68a042fc321cd7e3779bddc6f59858fae2bc81af3cdd7506800344d45"
+      },
+      "pyomo/dae/tests/test_simulator_compile.py": {
+        "bytes": 29626,
+        "sha256": "16c39c3a793da8372ecaa46bb9ba43e7597c3664d0f25f26ae9b443f2debb9e2"
+      },
+      "pyomo/dae/tests/test_simulator_controls.py": {
+        "bytes": 29969,
+        "sha256": "3c256b471e749a6fb894a5fe82423b153006e3bc469b973fc4de9246750cbf7d"
+      },
+      "examples/dae/simulator_control_sensitivity_example.py": {
+        "bytes": 3865,
+        "sha256": "a2a9f2d1f43b168b6f2c05b46ba0f120f295102bd9f017cb915fdee034c41061"
+      },
+      "doc/OnlineDocs/explanation/modeling/dae.rst": {
+        "bytes": 46048,
+        "sha256": "1bcc30c2e0a3df46ba35dc11a1355e8cb68f6d841b19286877d04222466d0e50"
+      },
+      "examples/dae/sensitivity/API_DECISION.rst": {
+        "bytes": 17613,
+        "sha256": "211fa2813e911bdee446be4da8423071d0efe70c7d8bd3e8699006a364266842"
+      },
+      "examples/dae/sensitivity/README.rst": {
+        "bytes": 10079,
+        "sha256": "70f50022cb08cf47450bbe3ea18e5c026a5daa228d1da1f1add0b9f52816b0d7"
+      }
+    },
+    "record": "results/controls_validation.json"
   }
 }

@@ -12,7 +12,7 @@ from collections.abc import Mapping
 from copy import deepcopy
 from numbers import Integral, Real
 
-from pyomo.core.base import Constraint, Param, value, Suffix, Block
+from pyomo.core.base import Constraint, Param, Var, value, Suffix, Block
 from pyomo.core.base.param import ParamData
 from pyomo.dae import ContinuousSet, DerivativeVar
 from pyomo.dae.diffvar import DAE_Error
@@ -750,7 +750,14 @@ class Simulator:
             return self._diffvars
 
     def compile(
-        self, *, parameters, times, integrator='cvodes', integrator_options=None
+        self,
+        *,
+        parameters,
+        times,
+        controls=(),
+        control_times=None,
+        integrator='cvodes',
+        integrator_options=None,
     ):
         """Compile a differentiable ODE map without evaluating a trajectory.
 
@@ -763,6 +770,15 @@ class Simulator:
         times : sequence of float
             Nonempty, finite, strictly increasing observation times within the
             ContinuousSet bounds. The initial time may be included.
+        controls : iterable of time-indexed Var or Param components, optional
+            Ordered scalar controls, each indexed solely by the ContinuousSet.
+            All time-varying inputs appearing in the ODE must be selected.
+        control_times : sequence of float, optional
+            Fixed, strictly increasing interval boundaries, including both
+            ContinuousSet bounds. Required when controls are selected. Input
+            'u' has one row per control and one column per interval. Amplitudes
+            apply on [control_times[j], control_times[j+1]); the terminal state
+            is reached with the last interval's amplitude.
         integrator : str
             Only 'cvodes' is currently supported. Requires package='casadi'
             and CasADi 3.8.1 or later.
@@ -777,15 +793,16 @@ class Simulator:
         Returns
         -------
         casadi.Function
-            A function with inputs 'x0' and 'p' and output 'xf'. State rows follow
+            A function with inputs 'x0' and 'p', plus 'u' when controls are
+            selected, and output 'xf'. State rows follow
             get_variable_order(), parameter entries follow parameters, and output
             columns follow times. CasADi forward/reverse factories provide direct
-            and adjoint derivative products. x0 and p are independent inputs;
-            compose an initial-state map explicitly for total derivatives.
+            and adjoint derivative products. x0, p, and u are independent inputs;
+            compose their dependencies explicitly for total derivatives.
 
         Notes
         -----
-        Algebraic equations and time-varying inputs are not yet supported. The
+        Algebraic equations and derivatives of switch times are not supported. The
         model, caller options, and previous simulation results are not modified.
         This method does not call initialize_model().
         """
@@ -799,9 +816,9 @@ class Simulator:
             )
         if not check_min_version(casadi, '3.8.1'):
             raise DAE_Error("Simulator.compile requires CasADi 3.8.1 or later")
-        if self._alglist or self._algvars:
+        if self._alglist:
             raise DAE_Error(
-                "Simulator.compile does not yet support algebraic equations or time-varying inputs"
+                "Simulator.compile does not yet support algebraic equations"
             )
         if not self._diffvars:
             raise DAE_Error(
@@ -820,6 +837,56 @@ class Simulator:
             )
         if times[0] < self._contset.first() or times[-1] > self._contset.last():
             raise ValueError("times must lie within the ContinuousSet bounds")
+
+        if isinstance(controls, (set, frozenset, Mapping)):
+            raise TypeError("controls must be an ordered iterable")
+        controls = list(controls)
+        control_variables = []
+        for control in controls:
+            if not isinstance(control, (Var, Param)) or not control.is_indexed():
+                raise ValueError(
+                    "Each control must be a time-indexed Var or Param component"
+                )
+            if control.model() is not self._model.model():
+                raise ValueError(
+                    "Selected control %s belongs to a different model" % control.name
+                )
+            if control.index_set() is not self._contset:
+                raise ValueError("Controls must be indexed solely by the ContinuousSet")
+            matches = [v for v in self._algvars if v.base is control]
+            if not matches:
+                raise ValueError(
+                    "Selected control %s is unused in the ODE" % control.name
+                )
+            if (
+                len(matches) != 1
+                or len(matches[0]._args) != 1
+                or matches[0]._args[0] is not self._cstemplate
+            ):
+                raise ValueError("Controls must be indexed by the current time only")
+            if matches[0] in control_variables:
+                raise ValueError("Duplicate selected control %s" % control.name)
+            control_variables.append(matches[0])
+        if len(control_variables) != len(self._algvars):
+            raise DAE_Error("Select all time-varying inputs through controls")
+        if controls:
+            control_times = np.asarray(control_times, dtype=float)
+            if (
+                control_times.ndim != 1
+                or control_times.size < 2
+                or not np.isfinite(control_times).all()
+                or (np.diff(control_times) <= 0).any()
+            ):
+                raise ValueError(
+                    "control_times must be a finite, strictly increasing sequence of interval boundaries"
+                )
+            if (
+                control_times[0] != self._contset.first()
+                or control_times[-1] != self._contset.last()
+            ):
+                raise ValueError("control_times must include both ContinuousSet bounds")
+        elif control_times is not None:
+            raise ValueError("control_times requires selected controls")
 
         if isinstance(parameters, (set, frozenset, Mapping)):
             raise TypeError(
@@ -846,7 +913,7 @@ class Simulator:
                 for s in parameter.parent_component().index_set().subsets()
             ):
                 raise ValueError(
-                    "Time-indexed parameters are not supported by Simulator.compile"
+                    "Select time-indexed parameters through controls, not parameters"
                 )
             if id(parameter) in substitutions:
                 raise ValueError("Duplicate selected parameter %s" % parameter.name)
@@ -900,16 +967,51 @@ class Simulator:
                 raise ValueError(
                     "Selected parameter %s is unused in the ODE" % parameter.name
                 )
-        integrate = casadi.integrator(
-            'F',
-            integrator,
-            {'x': states, 'p': symbols, 'ode': ode, 't': time},
-            self._contset.first(),
-            times.tolist(),
-            options,
-        )
         x0 = casadi.MX.sym('x0', len(self._diffvars))
         p = casadi.MX.sym('p', len(parameters))
+        dae = {'x': states, 'p': symbols, 'ode': ode, 't': time}
+        if controls:
+            control_symbols = casadi.vertcat(
+                *(self._templatemap[v] for v in control_variables)
+            )
+            for index, control in enumerate(controls):
+                if not casadi.depends_on(ode, control_symbols[index]):
+                    raise ValueError(
+                        "Selected control %s is unused in the ODE" % control.name
+                    )
+            u = casadi.MX.sym('u', len(controls), len(control_times) - 1)
+            grid = np.union1d(times, control_times[control_times <= times[-1]])
+            profile = x0
+            intervals = len(grid) - 1
+            if intervals:
+                # Normalize every observation/switch interval, retaining physical time.
+                start, duration = casadi.SX.sym('start'), casadi.SX.sym('duration')
+                dae['p'] = casadi.vertcat(symbols, control_symbols, start, duration)
+                dae['ode'] = duration * casadi.substitute(
+                    ode, time, start + duration * time
+                )
+                integrate = casadi.integrator('F', integrator, dae, 0.0, 1.0, options)
+                phases = np.searchsorted(control_times, grid[:-1], side='right') - 1
+                inputs = casadi.vertcat(
+                    casadi.repmat(p, 1, intervals),
+                    u[:, phases.tolist()],
+                    casadi.DM(grid[:-1]).T,
+                    casadi.DM(np.diff(grid)).T,
+                )
+                profile = casadi.horzcat(
+                    x0,
+                    integrate.mapaccum('intervals', intervals)(x0=x0, p=inputs)['xf'],
+                )
+            return casadi.Function(
+                'simulator',
+                [x0, p, u],
+                [profile[:, np.searchsorted(grid, times).tolist()]],
+                ['x0', 'p', 'u'],
+                ['xf'],
+            )
+        integrate = casadi.integrator(
+            'F', integrator, dae, self._contset.first(), times.tolist(), options
+        )
         return casadi.Function(
             'simulator', [x0, p], [integrate(x0=x0, p=p)['xf']], ['x0', 'p'], ['xf']
         )

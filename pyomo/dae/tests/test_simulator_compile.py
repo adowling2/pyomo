@@ -578,7 +578,7 @@ class TestSimulatorCompile(unittest.TestCase):
                     )
                 sim = Simulator(model, package='casadi')
                 with self.assertRaisesRegex(
-                    DAE_Error, 'algebraic equations or time-varying inputs'
+                    DAE_Error, 'algebraic equations|time-varying inputs'
                 ):
                     sim.compile(parameters=[model.k], times=[1])
         model = exponential_model()

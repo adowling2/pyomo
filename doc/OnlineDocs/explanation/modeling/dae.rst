@@ -954,8 +954,9 @@ avoid a batched-adjoint defect; multiple requested directions are still
 supported through native composition. CasADi 3.8.2 permits native batching.
 These restrictions do not alter ``simulate()``'s dependency support or options.
 
-Algebraic equations and time-varying inputs are not yet supported by
-``compile()``. Convergence still depends on the model and integrator options.
+Algebraic equations are not yet supported by ``compile()``. Fixed-grid
+piecewise controls are supported as described below. Convergence still
+depends on the model and integrator options.
 For example, native BDF adjoints failed on a tested 1000:1 fast/slow linear
 system with CasADi 3.8.1/3.8.2, while an explicit Adams configuration passed;
 that is a case-specific result, not a general stiff-solver recommendation.
@@ -964,6 +965,96 @@ The returned map delegates sensitivity integration to CasADi, as described
 in its `sensitivity guide
 <https://web.casadi.org/docs/#initial-value-problems-and-sensitivity-analysis>`_.
 It does not construct separate Pyomo components for sensitivity equations.
+
+Fixed-Grid Controls and Total Derivatives
+*****************************************
+
+Select time-varying inputs with ``controls`` and supply their fixed interval
+boundaries through ``control_times``. Each selected control must be a whole
+Var or Param component indexed solely by the model's ContinuousSet. Mutable
+and immutable time-indexed Params are supported. Select every time-varying
+input appearing in the ODE; unused or duplicate selections are rejected.
+
+For example, add a control to the exponential model above:
+
+.. code-block:: python
+
+   m.u = pyo.Var(m.t)
+   m.del_component(m.ode)
+   m.ode = pyo.Constraint(
+       m.t, rule=lambda m, t: m.dx[t] == m.k * m.x[t] + m.u[t]
+   )
+   controlled = Simulator(m, package='casadi').compile(
+       parameters=[m.k], controls=[m.u],
+       times=[0, 0.2, 0.5, 0.7, 1.2],
+       control_times=[0, 0.2, 0.7, 1.2],
+       integrator_options={'reltol': 1e-11, 'abstol': 1e-13},
+   )
+   amplitudes = ca.DM([[0.1, 0.4, -0.2]])
+   states = controlled(x0=1.3, p=-0.7, u=amplitudes)['xf']
+   direct = controlled.factory(
+       'control_direction', ['x0', 'p', 'u', 'fwd:u'], ['fwd:xf']
+   )
+   tangent = direct(
+       x0=1.3, p=-0.7, u=amplitudes, fwd_u=ca.DM([[1, 0, 0]])
+   )['fwd_xf']
+   adjoint = controlled.factory(
+       'control_gradient', ['x0', 'p', 'u', 'adj:xf'],
+       ['adj:x0', 'adj:p', 'adj:u'],
+   )
+   gradient = adjoint(
+       x0=1.3, p=-0.7, u=amplitudes, adj_xf=ca.DM([[0, 0, 0, 0, 1]])
+   )
+
+The additional input ``u`` is a matrix: rows follow ``controls``, and columns
+follow the intervals between consecutive ``control_times``. Boundaries must
+be finite, strictly increasing, and include both ContinuousSet bounds. An
+amplitude applies on the interval starting at its boundary and ending just
+before the next boundary. The state at a switch is continuous; the final
+state is reached using the last interval's amplitude. Observations can lie
+inside intervals, at switches, or at the initial time. Output columns still
+follow exactly ``times``; compilation does not insert extra output columns.
+Amplitudes after the last observation have zero partial derivatives when
+``x0`` is independent.
+
+Compilation composes native CVODES maps over the union of observations and
+switches, using ``mapaccum``. Each interval is normalized to [0, 1] internally
+while retaining physical time in nonautonomous equations. This also keeps
+distinct observations immediately beside switches and very short control
+intervals. The implementation does not differentiate numeric switching
+times or introduce events or resets.
+
+As with ``p``, the map treats ``u`` and ``x0`` as independent inputs. Compose
+their dependencies before differentiating to obtain total derivatives:
+
+.. code-block:: python
+
+   theta = ca.MX.sym('theta')
+   u = ca.MX.sym('u', 1, 3)
+   terminal = controlled(x0=theta**2, p=theta, u=u)['xf'][0, -1]
+   objective = ca.Function(
+       'objective', [theta, u], [terminal + theta**2],
+       ['theta', 'u'], ['J'],
+   )
+   total_direct = objective.factory(
+       'total_direct', ['theta', 'u', 'fwd:theta'], ['fwd:J']
+   )(theta=-0.7, u=amplitudes, fwd_theta=1)
+   total_adjoint = objective.factory(
+       'total_adjoint', ['theta', 'u', 'adj:J'], ['adj:theta', 'adj:u']
+   )(theta=-0.7, u=amplitudes, adj_J=1)
+
+Both modes include the initial-condition chain rule and the explicit cost
+term. No separate initial-condition API is needed. Control amplitudes may
+also be symbolic functions of shared parameters; CasADi propagates those
+dependencies in the same way. Integral states accumulate across intervals.
+A duration parameter can be selected in a model written on a fixed
+normalized time domain, for example dx/dtau = T*f(T*tau, x, p, u); the numerical
+observation and control grids remain fixed.
+
+A runnable example with an integral state, piecewise controls, a nonlinear
+initial condition, and analytic checks for both derivative modes is available
+at :download:`simulator_control_sensitivity_example.py
+<../../../../examples/dae/simulator_control_sensitivity_example.py>`.
 
 Specifying Time-Varying Inputs
 ******************************

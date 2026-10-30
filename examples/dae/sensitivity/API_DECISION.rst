@@ -1,15 +1,18 @@
 Simulator sensitivity API decision
 ==================================
 
-30 October 2026. Work package B is implemented locally; upstream maintainer
-review is pending. Validation is recorded in ``results/compile_validation.json``.
+30 October 2026. Work packages B and C are implemented locally; upstream
+maintainer review is pending. Current validation is recorded in
+``results/controls_validation.json``. The work package B snapshot is
+``results/compile_validation.json``, committed in ``74e516a11``.
 
 Implemented interface
 ---------------------
 
 The CasADi-only ``Simulator.compile(...)`` method returns an ordinary
 ``casadi.Function``. Start with ODEs, explicitly selected mutable parameters,
-fixed observation times, and scalar tolerances. Keep ``Simulator.__init__``,
+fixed observation times, fixed-grid piecewise controls, and scalar tolerances.
+Keep ``Simulator.__init__``,
 ``simulate()`` and ``initialize_model()`` signatures, return conventions,
 and initialization workflow. Correct demonstrated bugs in those methods.
 
@@ -67,7 +70,8 @@ Usage:
    )
    gradient = adjoint(x0=[1.3], p=[-0.7], adj_xf=ca.DM([[0, 0, 1]]))
 
-The input names are ``x0`` and ``p``; the output is ``xf``. Returning a
+The input names are ``x0`` and ``p``, plus ``u`` when controls are selected;
+the output is ``xf``. Returning a
 small ordinary Function around the native integrator can remove unused
 native inputs/outputs without a Python wrapper class. Rows follow
 ``sim.get_variable_order()``; columns follow the supplied times. Parameters
@@ -104,6 +108,53 @@ The implemented contract is:
 * Leave model values, fixity, activation, scaling, Simulator simulation
   results, and caller dictionaries unchanged on both success and failure.
   Compiling must not initialize the model or run a numerical trajectory.
+
+Fixed-grid controls and initial conditions
+------------------------------------------
+
+Work package C adds optional ``controls=()`` and ``control_times=None``
+arguments. Controls are ordered whole Var or Param components indexed solely
+by the ContinuousSet, not individual time-indexed data entries. Mutable and
+immutable time-indexed Params retain symbolic amplitudes. All time-varying
+inputs must be selected; reject unused, duplicate, foreign or multi-index
+selections. Constant parameters still use the existing ``parameters`` list.
+
+The additional native input ``u`` has one row per selected control and one
+column per interval. A common, finite, strictly increasing ``control_times``
+grid includes both model bounds. Column j applies on [s_j, s_(j+1)); the
+terminal state is reached with the last interval's amplitude. States are
+continuous across switches. Observation times are independent of the control
+grid, and only requested observation columns are returned. Amplitudes after
+the last observation have zero partial derivatives for independent x0.
+Supplying control_times without controls is rejected. No Suffix, model value
+or fixity determines the numerical control values of this map.
+
+Use the existing normalized-interval/mapaccum approach from Simulator's
+varying-input path. Pack each interval's constant amplitudes into the native
+integrator's parameter vector. The new implementation reuses the same small
+ODE assembly helper; legacy simulate behavior is unchanged. Compose over
+the union of observations and switches, normalizing each nonzero interval
+to [0, 1] and retaining physical time as start+duration*tau. A per-phase
+observation grid exposed CV_TOO_CLOSE in native adjoints for observations
+immediately beside switches. Per-interval normalization passes both sides
+without snapping observations or deleting narrow intervals. A finite-area
+pulse between adjacent floating-point boundaries is explicitly tested.
+The native integrator is constructed once and reused through mapaccum;
+no numerical integrator or derivative algorithm is implemented in Pyomo.
+
+Keep x0, p and u independent at the map boundary. For a composed objective
+J(theta)=Phi(flow(h(theta), p(theta), u(theta)), theta), both native derivative
+modes include the initial-state, parameter, control and explicit objective
+terms. In reverse mode this includes h_theta.T*adj_x0. Repeated or shared
+control amplitudes use ordinary CasADi expressions. No IC mapping class,
+callback or inference from numeric Pyomo initial values is introduced.
+
+Integral objectives remain ordinary differential states, carried across
+intervals. A horizon parameter works in an explicitly time-normalized model
+with fixed grids; it is tested in both derivative modes without adding a
+new time API. Numeric switch-time derivatives, events and resets remain
+outside the contract. Scalar tolerance and version policies below apply
+equally to controlled and uncontrolled maps.
 
 Direct and adjoint equations
 ----------------------------
@@ -156,8 +207,9 @@ counterpart; the permanent public-interface tests use the verified settings.
 First patch boundary
 --------------------
 
-ODE primal maps and first derivative products are the bounded first patch.
-Reject algebraic equations and varying inputs in ``compile`` initially.
+ODE primal maps and first derivative products, including fixed-grid control
+amplitudes, are the bounded first patch. Reject algebraic equations in
+``compile``.
 The two tested CasADi versions are validation targets, not justification for
 restricting the existing Simulator's dependency support.
 
@@ -165,7 +217,8 @@ An integral cost can be an additional differential state q with q_dot=L.
 A terminal objective with explicit parameter dependence can be composed
 symbolically outside the map. This retains the direct parameter term and
 avoids new output-expression and quadrature APIs. Native quadrature
-extraction, custom outputs and parameterized horizons can follow separately.
+extraction and custom outputs can follow separately. Duration parameters in
+explicitly normalized models already use ordinary parameter selection.
 
 Forward DAE results and differential/quadrature-only DAE adjoints are
 promising, but a raw Function exposing zf cannot enforce a prohibition on
@@ -176,10 +229,8 @@ model-provided algebraic guesses and holds independent differential ICs
 fixed. Do not implement a general algebraic elimination or insert a
 model-specific correction for the terminal z discrepancy.
 
-For later controls, use fixed segment boundaries and amplitude inputs.
-Simulator already composes normalized interval maps using ``mapaccum``;
-reuse that approach only after endpoint conventions and derivative tests
-are explicit. Event times, resets, second derivatives, and a new adaptive
+Control boundaries are fixed and only amplitudes are Function inputs.
+Event times, resets, second derivatives, and a new adaptive
 sensitivity integrator remain outside this contribution.
 
 Why this can stay small
@@ -232,11 +283,27 @@ New unit tests use ``pyomo.common.unittest`` and guarded optional imports,
 without mocks. The executable example is
 ``examples/dae/simulator_sensitivity_example.py``.
 
-Twenty new compile test methods supplement the existing checks. The full
-DAE suite passes 250 tests and 196 subtests with each tested CasADi version.
-Fresh line coverage is 95% for Simulator and 96% for compile itself; the two
-uncovered compile lines handle missing NumPy and older CasADi versions.
-Both guide snippets and the executable example pass on both versions.
+Work package B added twenty compile test methods; its historical full-suite
+result is 250 tests and 196 subtests per version. Work package C adds fifteen
+methods for control ordering/types, dense and sparse observations, switch
+endpoints, narrow pulses, empty parameters, nonlinear amplitudes, physical
+time, normalized duration parameters, option/state preservation and invalid
+selections. Exact affine phase formulas check states, integral states and
+derivatives with respect to x0, p and every amplitude. Two-direction JVPs
+and VJPs pass analytic checks and forward-adjoint identities. A composed cost
+with nonlinear ICs, shared controls, an integral state and explicit parameter
+terms passes analytic checks and a four-step finite-difference sweep.
+
+The full DAE suite now passes 265 tests and 232 subtests on both CasADi 3.8.1
+and 3.8.2. Without NumPy, SciPy or CasADi, the four Simulator test modules run
+127 tests: seven pass and 120 skip. Current coverage and executable guide and
+example checks are recorded in ``results/controls_validation.json``. The new
+example is ``examples/dae/simulator_control_sensitivity_example.py`` and
+requires no optimizer or ASL extension.
+
+Fresh line coverage is 95.6% for Simulator and 97.1% for compile. The three
+uncovered compile lines are defensive refusals for missing NumPy, older
+CasADi versions and control expressions not indexed by the current time.
 
 The `Pyomo contribution guide
 <https://pyomo.readthedocs.io/en/stable/contribution_guide.html>`_ and

@@ -1,0 +1,169 @@
+{
+  "date": "2026-10-30",
+  "source_parent_commit": "74e516a112cef6b95c07f44609f7cddbdbf119ba",
+  "branch": "pyomo-dae-sensitivity",
+  "work_package": "C: fixed-grid piecewise controls and total derivatives through initial conditions",
+  "snapshot_context": "Working tree on top of the committed A/B implementation; source hashes identify the validated C files. Prior result files retain historical source hashes and results.",
+  "api": {
+    "method": "Simulator.compile(*, parameters, times, controls=(), control_times=None, integrator=\"cvodes\", integrator_options=None)",
+    "returns": "casadi.Function",
+    "inputs": [
+      "x0",
+      "p",
+      "u (only when controls selected)"
+    ],
+    "outputs": [
+      "xf"
+    ],
+    "control_layout": "Rows in control selection order, columns in fixed interval order",
+    "control_types": "Whole time-only Var or mutable/immutable Param components",
+    "control_boundaries": "Finite, strictly increasing, include both ContinuousSet bounds",
+    "control_semantics": "Right-held on [s_j, s_(j+1)); continuous state at switches; final state uses last amplitude",
+    "implementation": "One normalized unit-interval CVODES map composed with mapaccum over observation/switch union; amplitudes packed into constant interval parameters; physical time retained",
+    "initial_conditions": "Independent x0 input, symbolic CasADi composition for total derivatives; no new IC API",
+    "minimum_casadi": "3.8.1",
+    "quadrature_error_control": "Required True, as selected by user",
+    "casadi_3_8_1_direction_limit": 1,
+    "tolerances": "Positive scalar reltol and abstol only; vector weights and derivative augmentation overrides refused"
+  },
+  "tested_environment": {
+    "python": "3.12.14",
+    "numpy": "2.5.4",
+    "scipy": "1.18.1",
+    "platform": "macOS 27.0.1 ARM64"
+  },
+  "validation": {
+    "3.8.1": {
+      "full_dae_tests_passed": 265,
+      "subtests_passed": 232,
+      "failures": 0,
+      "new_controls_methods": 15,
+      "guide_python_blocks_executed": 4,
+      "sensitivity_example_passed": true,
+      "control_sensitivity_example_passed": true,
+      "test_process_exit_code": 0
+    },
+    "3.8.2": {
+      "full_dae_tests_passed": 265,
+      "subtests_passed": 232,
+      "failures": 0,
+      "new_controls_methods": 15,
+      "guide_python_blocks_executed": 4,
+      "sensitivity_example_passed": true,
+      "control_sensitivity_example_passed": true,
+      "test_process_exit_code": 0
+    }
+  },
+  "optional_dependencies_absent": {
+    "modules": [
+      "pyomo.dae.tests.test_simulator",
+      "pyomo.dae.tests.test_simulator_interface",
+      "pyomo.dae.tests.test_simulator_compile",
+      "pyomo.dae.tests.test_simulator_controls"
+    ],
+    "run": 127,
+    "passed": 7,
+    "skipped": 120,
+    "failures": 0
+  },
+  "analytic_and_derivative_checks": {
+    "general_comparison_tolerances": {
+      "rtol": 3e-07,
+      "atol": 3e-07
+    },
+    "affine_phase_reference": "Exact exponential/integral formulas and x0, parameter, amplitude derivatives; zero and nonzero rates",
+    "multiple_controls": "Two controls in reversed declaration order; two JVPs and two VJPs; all four forward-adjoint products within 3e-7",
+    "total_objective": "Nonlinear shared ICs, repeated control amplitudes, integral state, explicit terminal parameter cost and control penalty; analytic direct and adjoint checks",
+    "finite_difference_steps": [
+      0.01,
+      0.001,
+      0.0001,
+      1e-05
+    ],
+    "finite_difference_checks": "All three total parameter components; minimum maximum error below 1e-6; improvement over largest step by factor greater than ten",
+    "timing": "Sparse, initial-only and 51 dense observations; exact switches and immediately adjacent observations; unused future amplitudes; shifted nonautonomous time",
+    "narrow_pulse": "Adjacent floating-point boundaries with amplitude 1e16 retain finite pulse area; scaled direct and adjoint checks",
+    "normalized_duration_parameter": "Analytic primal, direct duration derivative and adjoint rate/duration derivatives",
+    "nonlinear_control": "Squared amplitudes including a stationary control value, with empty p",
+    "state_preservation": "Model values/fixity, caller options/arrays, existing simulation result and input ordering preserved after successful compilation, derivative evaluation and constructor failures",
+    "external_solver_or_ASL_required": false
+  },
+  "coverage": {
+    "module": {
+      "covered_lines": 587,
+      "num_statements": 614,
+      "percent_covered": 95.60260586319218,
+      "percent_covered_display": "96",
+      "missing_lines": 27,
+      "excluded_lines": 0,
+      "percent_statements_covered": 95.60260586319218,
+      "percent_statements_covered_display": "96"
+    },
+    "compile_executable_lines": 104,
+    "compile_covered_lines": 101,
+    "compile_percent": 97.11538461538461,
+    "compile_missing_lines": [
+      814,
+      818,
+      866
+    ],
+    "fresh_data_file": "/private/tmp/pyomo-dae-sensitivity-work-a/work-c-final.coverage",
+    "uncovered_compile_refusals": [
+      "missing NumPy",
+      "CasADi older than 3.8.1",
+      "control not indexed by current time"
+    ]
+  },
+  "test_commands": [
+    "PYTHONPATH=<checkout> <casadi-env-python> -m pytest pyomo/dae/tests -q",
+    "PYTHONPATH=<checkout> COVERAGE_FILE=<new-unique-file> <env-python> -m coverage run --source=pyomo.dae.simulator -m pytest pyomo/dae/tests -q",
+    "PYTHONPATH=<checkout> <lean-env-python> -m unittest pyomo.dae.tests.test_simulator pyomo.dae.tests.test_simulator_interface pyomo.dae.tests.test_simulator_compile pyomo.dae.tests.test_simulator_controls -q"
+  ],
+  "checks": {
+    "black": "passed",
+    "typos": "passed",
+    "git_diff_check": "passed",
+    "standalone_notes_docutils_0.22.4": "passed",
+    "guide_code_blocks": "Four executed on both versions",
+    "executable_examples": "Both examples and analytic assertions pass on both versions"
+  },
+  "coverage_harness_note": "The instrumented 3.8.1 run emitted Python multiprocessing semaphore cleanup diagnostics, including FileNotFoundError after passing tests. Test and coverage process exit codes were zero. The regular 3.8.2 run was clean. These are harness diagnostics, not numerical integration failures.",
+  "known_limits": [
+    "ODEs only; no algebraic equations or algebraic initialization derivatives",
+    "Fixed common control boundary grid; no switch-time derivatives, events or resets",
+    "Scalar Var parameter selection and vector tolerances remain unsupported",
+    "Only first derivative products are qualified; no explicit Pyomo sensitivity-equation transformation",
+    "Previously recorded native BDF stiff-adjoint limitations remain; no algorithm fallback",
+    "Dense observations restart CVODES each interval on controlled maps; no large-grid performance qualification"
+  ],
+  "repository_files": {
+    "pyomo/dae/simulator.py": {
+      "bytes": 58540,
+      "sha256": "be9d88a68a042fc321cd7e3779bddc6f59858fae2bc81af3cdd7506800344d45"
+    },
+    "pyomo/dae/tests/test_simulator_compile.py": {
+      "bytes": 29626,
+      "sha256": "16c39c3a793da8372ecaa46bb9ba43e7597c3664d0f25f26ae9b443f2debb9e2"
+    },
+    "pyomo/dae/tests/test_simulator_controls.py": {
+      "bytes": 29969,
+      "sha256": "3c256b471e749a6fb894a5fe82423b153006e3bc469b973fc4de9246750cbf7d"
+    },
+    "examples/dae/simulator_control_sensitivity_example.py": {
+      "bytes": 3865,
+      "sha256": "a2a9f2d1f43b168b6f2c05b46ba0f120f295102bd9f017cb915fdee034c41061"
+    },
+    "doc/OnlineDocs/explanation/modeling/dae.rst": {
+      "bytes": 46048,
+      "sha256": "1bcc30c2e0a3df46ba35dc11a1355e8cb68f6d841b19286877d04222466d0e50"
+    },
+    "examples/dae/sensitivity/API_DECISION.rst": {
+      "bytes": 17613,
+      "sha256": "211fa2813e911bdee446be4da8423071d0efe70c7d8bd3e8699006a364266842"
+    },
+    "examples/dae/sensitivity/README.rst": {
+      "bytes": 10079,
+      "sha256": "70f50022cb08cf47450bbe3ea18e5c026a5daa228d1da1f1add0b9f52816b0d7"
+    }
+  }
+}

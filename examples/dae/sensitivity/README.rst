@@ -4,10 +4,13 @@ Differentiable simulation: dependency baseline
 30 October 2026. Work package A on branch ``pyomo-dae-sensitivity``.
 This folder contains investigation scripts and evidence. The dependency
 baseline below predates the existing interface bug fixes recorded in
-``INTERFACE_AUDIT.rst``. Work package B now implements the ODE-first compile
-API described in ``API_DECISION.rst``. Its executable user example is
-``examples/dae/simulator_sensitivity_example.py`` and current validation is
-recorded in ``results/compile_validation.json``.
+``INTERFACE_AUDIT.rst``. Work packages B and C implement the ODE-first compile
+API described in ``API_DECISION.rst``, including fixed-grid controls and total
+derivatives through initial conditions. Executable examples are
+``examples/dae/simulator_sensitivity_example.py`` and
+``examples/dae/simulator_control_sensitivity_example.py``. Current validation
+is recorded in ``results/controls_validation.json``; the prior B snapshot is
+``results/compile_validation.json`` (commit ``74e516a11``).
 
 The supplied probes reproduce: eight of twelve native cases meet their
 analytic checks with both CasADi versions. Four cases remain outside the
@@ -205,8 +208,9 @@ deprecation warnings per run. The portable probes and formatting checks
 are recorded in ``results/provenance.json``. These are the original work
 package A checks. The later audit extends production test coverage and fixes
 existing defects; see ``INTERFACE_AUDIT.rst``. These earlier test counts and
-hashes are historical snapshots; the compile validation record describes
-the current working tree.
+hashes are historical snapshots; the controls validation record describes
+the current working tree. The work package B compile record retains its
+original results and source hashes.
 
 This matrix covers one Python version, operating system, architecture, and
 ASL binary. Older CasADi releases, Windows/Linux, stiff-system sensitivities, singular or
