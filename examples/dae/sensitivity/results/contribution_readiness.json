@@ -1,0 +1,483 @@
+{
+  "checkpoint": "G7 final local packaging",
+  "date": "2026-10-30",
+  "source_parent_commit": "311630d2f826e45677f50f8078831202fecbd3d8",
+  "baseline_commit": "a6c7d20b27b379e9e54aa25986fcd50202fbf10c",
+  "all_local_gates_passed": true,
+  "goal_scope": "Bounded local ODE-first and regular index-one DAE implementation, validation and contribution packaging. No external publication or universal native accuracy claim.",
+  "checkpoints": {
+    "A-B": "74e516a11",
+    "C": "f9a93159b",
+    "G0": "70fa93fb3",
+    "G1": "3f66b87d2",
+    "G2": "5adc03eac",
+    "G3": "f2fcaa0cc",
+    "G4": "2ad776409",
+    "G5": "78818eef2",
+    "G6-native": "ddcc1d8d8",
+    "G6-public": "17a021b54",
+    "G7-comparison": "311630d2f",
+    "G7-packaging": "This snapshot is included in the final packaging commit."
+  },
+  "validation_reuse": {
+    "runtime_gate_commit": "17a021b54",
+    "byte_identical_paths": [
+      "pyomo/dae/simulator.py",
+      "pyomo/dae/tests",
+      "doc/OnlineDocs/explanation/modeling/dae.rst",
+      "examples/dae/simulator_sensitivity_example.py",
+      "examples/dae/simulator_control_sensitivity_example.py",
+      "examples/dae/simulator_dae_sensitivity_example.py",
+      "examples/dae/simulator_dae_control_sensitivity_example.py",
+      "examples/dae/sensitivity/check_ode_docs.py"
+    ],
+    "fresh_core_suite_rerun_claimed": false,
+    "reason": "No production/core-test/public-guide/example changes since the passing G6 full suites and document build."
+  },
+  "full_dae_suites": {
+    "3.8.1": {
+      "python": "3.12.14",
+      "casadi": "3.8.1",
+      "numpy": "2.5.4",
+      "scipy": "1.18.1",
+      "platform": "macOS 27.0.1 ARM64",
+      "full_dae_tests_passed": 293,
+      "subtests_passed": 300,
+      "process_exit_code": 0
+    },
+    "3.8.2": {
+      "python": "3.12.14",
+      "casadi": "3.8.2",
+      "numpy": "2.5.4",
+      "scipy": "1.18.1",
+      "platform": "macOS 27.0.1 ARM64",
+      "full_dae_tests_passed": 293,
+      "subtests_passed": 300,
+      "process_exit_code": 0
+    },
+    "3.14": {
+      "python": "3.14.3",
+      "casadi": "3.8.2",
+      "numpy": "2.5.4",
+      "scipy": "1.18.1",
+      "platform": "macOS 27.0.1 ARM64",
+      "full_dae_tests_passed": 293,
+      "subtests_passed": 300,
+      "process_exit_code": 0
+    }
+  },
+  "optional_dependencies_absent": {
+    "run": 155,
+    "passed": 7,
+    "skipped": 148,
+    "process_exit_code": 0
+  },
+  "documentation": {
+    "sphinx": "9.1.1",
+    "focused_build_warnings_as_errors": true,
+    "guide_blocks": 5,
+    "analytic_examples": 4,
+    "download_hashes": 4,
+    "all_examples_three_environments": true,
+    "full_manual_build": false,
+    "external_link_check": false
+  },
+  "coverage": {
+    "modified_executable_lines_since_baseline": 290,
+    "covered_modified_lines": 286,
+    "modified_percent": 98.62068965517241,
+    "uncovered_defensive_lines": [
+      827,
+      831,
+      879,
+      1442
+    ],
+    "module": {
+      "covered_lines": 666,
+      "num_statements": 692,
+      "percent_covered": 96.24277456647398,
+      "percent_covered_display": "96",
+      "missing_lines": 26,
+      "excluded_lines": 0,
+      "percent_statements_covered": 96.24277456647398,
+      "percent_statements_covered_display": "96"
+    },
+    "DAE_helper": {
+      "statements": 60,
+      "covered": 60,
+      "missing": []
+    },
+    "instrumented_shutdown_diagnostic": "Existing multiprocessing semaphore shutdown FileNotFoundError; regular suites clean."
+  },
+  "new_G7_validation": {
+    "DAE_comparison_versions": [
+      "3.8.1",
+      "3.8.2"
+    ],
+    "meshes": [
+      4,
+      8,
+      16
+    ],
+    "continuous_cost_gradient_errors": [
+      9.742490230500378e-07,
+      3.121925973503001e-08,
+      9.888973239511116e-10
+    ],
+    "discrete_FD_maximum_best_error": 8.283853712423582e-11,
+    "public_continuous_maximum_error_bound": 5.6e-11,
+    "ASL_optional_existing_binary": true,
+    "optimization_solver_used": false,
+    "evidence_audit_through": "311630d2f",
+    "historical_hashes_matched": 108,
+    "historical_hashes_claimed": 110,
+    "all_historical_hashes_recovered": false,
+    "unrecovered_historical_claims": [
+      {
+        "record": "examples/dae/sensitivity/results/interface_audit.json",
+        "path": "pyomo/dae/simulator.py",
+        "sha256": "9509a690b599b872656734772a8e5bdbf13653b00167d3609cb35dfe958a5ccc",
+        "matching_commit": null
+      },
+      {
+        "record": "examples/dae/sensitivity/results/interface_audit.json",
+        "path": "doc/OnlineDocs/explanation/modeling/dae.rst",
+        "sha256": "325ce666eecea1a07573c92fcd73ff4c0608daa852804e7107639e0e36871c83",
+        "matching_commit": null
+      }
+    ],
+    "current_runtime_test_document_hashes_verified": true,
+    "standalone_notes_parsed": 13,
+    "black_python_files": 24,
+    "typos_files_before_final_report": 70,
+    "diff_check": true
+  },
+  "requirements": {
+    "handoff": "/Users/adowling/DowlingLab/EARTH/tyler-psa/research/pyomo-dae-sensitivity/2026-10-30/STANDALONE_GOAL.md",
+    "required_test_families_covered": 17,
+    "mapping": "examples/dae/sensitivity/CONTRIBUTION_READINESS.rst",
+    "explicit_equation_track": "examples/dae/sensitivity/EQUATION_SENSITIVITIES.rst",
+    "API_deviations_from_handoff_draft": "Approved native Function interface; mutable ParamData selection, independent x0 with explicit symbolic composition, ordinary integral states, scalar tolerance refusal policy; no wrapper/registry or new transformation framework."
+  },
+  "contribution_packaging": {
+    "review_breakdown": "Legacy Simulator fixes; ODE compile/controls; verified DAE extension; separate research evidence",
+    "release_note_and_PR_description_draft": "examples/dae/sensitivity/CONTRIBUTION_READINESS.rst",
+    "AI_assistance_disclosed": [
+      "production code",
+      "tests and examples",
+      "research probes and numerical analysis",
+      "documentation and draft descriptions"
+    ],
+    "human_review_completed": false,
+    "human_legal_representations_made": false,
+    "PR_or_issue_published": false,
+    "pushed": false,
+    "external_messages_sent": false
+  },
+  "known_limits": [
+    "Native scalar stiff BDF adjoint failure, case-specific verified alternatives retained",
+    "Native tight coupled DAE consistency and near-singular failures retained",
+    "Default native zero-feedback adjoint failure; explicit refined settings verified",
+    "Local branch/regularity only; no universal conditioning or index guarantee",
+    "Scalar positive tolerances; vector/augmentation overrides refused",
+    "CasADi 3.8.1 serial native directions, multiple Function directions verified",
+    "Pure algebraic/high-index systems, resets, event/switch-time and higher derivatives excluded",
+    "Two pre-first-commit historical interface-audit source hashes not retained; final tests use verified current source"
+  ],
+  "release_gate_unexecuted": [
+    "Linux",
+    "Windows",
+    "Other supported Python/CasADi combinations",
+    "Remote CI",
+    "Full manual and external-link check",
+    "Human code/mathematical/API and legal review before submission"
+  ],
+  "reproduction": {
+    "core_and_docs": "See results/dae_controls_validation.json commands",
+    "DAE_collocation": "PYTHONPATH=<checkout> <env-python> examples/dae/sensitivity/dae_comparison.py --output <report.json>",
+    "historical_hash_audit": "<python> examples/dae/sensitivity/audit_evidence.py --through 311630d2f --output <audit.json>"
+  },
+  "repository_files": {
+    "doc/OnlineDocs/explanation/modeling/dae.rst": {
+      "bytes": 52259,
+      "sha256": "f6bfc174c125821817b66201b7aba347e038f32d90330414b3c8045a6ea33231"
+    },
+    "examples/dae/sensitivity/API_DECISION.rst": {
+      "bytes": 18891,
+      "sha256": "5a6fb1c3401d3f88c8761d0679b8d5abcefae1309acbd8c7c640f54a98844f08"
+    },
+    "examples/dae/sensitivity/CONTRIBUTION_READINESS.rst": {
+      "bytes": 15034,
+      "sha256": "ea3ef73e3dfb528f11d68c161a655d9823d448baf86367b16bbaa6492a607591"
+    },
+    "examples/dae/sensitivity/DAE_COMPARISON.rst": {
+      "bytes": 3077,
+      "sha256": "a43b3dc3a8dd6ed7168dc440a479122fce21ac869a874ed8c09bcbc20bafa1a9"
+    },
+    "examples/dae/sensitivity/DAE_CONTROLS.rst": {
+      "bytes": 9378,
+      "sha256": "a7d8c6186edf0dab8fc6a4abc6cc9c7457d286ad3c6e1c13b0db41104cde3fbe"
+    },
+    "examples/dae/sensitivity/DAE_DECISION.rst": {
+      "bytes": 14980,
+      "sha256": "bbf9bddcb3829256cb2df83bffd9a2ab6fa878ccf3525ffae7d6cd68adfb1d34"
+    },
+    "examples/dae/sensitivity/DEVELOPMENT_GOAL.rst": {
+      "bytes": 14653,
+      "sha256": "7e532c71e138ff93589aae7e06001d953b462d26ded58eeb8939fd8288de0896"
+    },
+    "examples/dae/sensitivity/DEVELOPMENT_LOG.rst": {
+      "bytes": 18087,
+      "sha256": "ae0962ae7f5e6ca3afe799f01f197763195e0a98419636efd46c755bc002de5f"
+    },
+    "examples/dae/sensitivity/EQUATION_SENSITIVITIES.rst": {
+      "bytes": 3179,
+      "sha256": "b8d55dd06e66655e1dc4c744ca11ba7e4a26480a6b1dddf01d9188dea7c46cac"
+    },
+    "examples/dae/sensitivity/INTERFACE_AUDIT.rst": {
+      "bytes": 8282,
+      "sha256": "b3b2a73a6d59f7befbd090051d0afd35b0c27e697ec14e8a24773bfd5b12c12c"
+    },
+    "examples/dae/sensitivity/ODE_CLOSEOUT.rst": {
+      "bytes": 6603,
+      "sha256": "222ef2d293f8b0dc4b8c6beb24dd698a7ebe7636aed36f265f683205d28452f7"
+    },
+    "examples/dae/sensitivity/ODE_COMPARISON.rst": {
+      "bytes": 5973,
+      "sha256": "59856ff1c34f2d0b6e734f23efca8f933f815f1c07a4a682ca9ddf6611492c45"
+    },
+    "examples/dae/sensitivity/ODE_NUMERICS.rst": {
+      "bytes": 4699,
+      "sha256": "b14b3400cbaf30d01f2c2a87ea267861d558008768acf80f777bb05a545b7d19"
+    },
+    "examples/dae/sensitivity/README.rst": {
+      "bytes": 11567,
+      "sha256": "849ec40d0659127a6e03172368c00b45a0e5cb3f36556e72cc7fdb445c72b7e3"
+    },
+    "examples/dae/sensitivity/audit_evidence.py": {
+      "bytes": 4678,
+      "sha256": "62c2262cd7abeddcb4e9d405376b5ce77696c0b4581833f01719152c5154faf4"
+    },
+    "examples/dae/sensitivity/check_ode_docs.py": {
+      "bytes": 6666,
+      "sha256": "a7f8b8468d73f662ab54c4ad05915aabd538bd738bcb0172a61bbb158eac71bc"
+    },
+    "examples/dae/sensitivity/dae_comparison.py": {
+      "bytes": 10170,
+      "sha256": "7bb9286537707535e1a95c98b47c987b78fad5df864da1766cb7a47ad20043c1"
+    },
+    "examples/dae/sensitivity/dae_control_probe.py": {
+      "bytes": 12942,
+      "sha256": "635d4c631df6f524e3d241b45cd55b817b9d5ffe84dc0ecafc54dfb78ce667fc"
+    },
+    "examples/dae/sensitivity/dae_guard_reproducer.py": {
+      "bytes": 3881,
+      "sha256": "d680de1ae721f98b29a35bc68020655654acd833a8206c86ab0b0aa8529cadad"
+    },
+    "examples/dae/sensitivity/dae_qualification.py": {
+      "bytes": 25718,
+      "sha256": "509c86a79d5d11089b443ae98628d4d27f3e5a7149acef849c1e83fa281f5d5e"
+    },
+    "examples/dae/sensitivity/dae_time_reproducer.py": {
+      "bytes": 6723,
+      "sha256": "2696c845b4bb90a9a6915c2b31dc74866482e6eb09015091102042550fd89584"
+    },
+    "examples/dae/sensitivity/dae_zero_rate_reproducer.py": {
+      "bytes": 4758,
+      "sha256": "ce4ddf0496a44b254fb0e6f0b6497e281ae5059523f4aaf48c82f6718ea41b55"
+    },
+    "examples/dae/sensitivity/dependency_reproducers.py": {
+      "bytes": 16787,
+      "sha256": "8725e697d837541d2ca96fb0847e29c43c7e5c887eafc7c17ee92d144211115b"
+    },
+    "examples/dae/sensitivity/ode_comparison.py": {
+      "bytes": 14659,
+      "sha256": "621f6b2d7b2a21a74045e72b10511f87988a1e05e7fb3240ed3e3168f3cddfda"
+    },
+    "examples/dae/sensitivity/ode_qualification.py": {
+      "bytes": 8444,
+      "sha256": "e68da7e2faef061e9d7de76a09a2b0ae149f130799290c6bfe9c4a596a43b15a"
+    },
+    "examples/dae/sensitivity/probe_sensitivities.py": {
+      "bytes": 12210,
+      "sha256": "5dcc82f700f8147501296143042b39e0b0b837a6bacca2b2da4f58aba5b68179"
+    },
+    "examples/dae/sensitivity/pynumero_collocation_probe.py": {
+      "bytes": 5717,
+      "sha256": "c98d2df7d320930828f59c025831435b5cc4ead936b2462679a40e8aa75387f5"
+    },
+    "examples/dae/sensitivity/results/compile-dependencies-3.8.1.json": {
+      "bytes": 6057,
+      "sha256": "404f0c5d7053c1f9218f4df2a4554048968a8144274a75fc22ff3e066b88c18f"
+    },
+    "examples/dae/sensitivity/results/compile-dependencies-3.8.2.json": {
+      "bytes": 6063,
+      "sha256": "41299347388c4093ec0d7c4632069c2f051d185b1c131a89846fa127b2daae92"
+    },
+    "examples/dae/sensitivity/results/compile_validation.json": {
+      "bytes": 5146,
+      "sha256": "b7414ece7068106e9de215fc8f56948408f3f1244df665dab6346095e6a465c5"
+    },
+    "examples/dae/sensitivity/results/controls_validation.json": {
+      "bytes": 7996,
+      "sha256": "d8cd0c4587b2746a42871402f162382283b5a92f6b87a1868fcef8bce2cb60f1"
+    },
+    "examples/dae/sensitivity/results/dae_comparison-3.8.1.json": {
+      "bytes": 6214,
+      "sha256": "00e648d64ad4b071e94dfeac52836816fd315bd946058061ee89306b6ca25393"
+    },
+    "examples/dae/sensitivity/results/dae_comparison-3.8.2.json": {
+      "bytes": 6215,
+      "sha256": "b9766600f21dd5b5f7b918b15e3fd24e695e4f5caa79d65578606dde9e0cd832"
+    },
+    "examples/dae/sensitivity/results/dae_compile_validation.json": {
+      "bytes": 9425,
+      "sha256": "c424bb260c48c2abd2e9c67dfe60853977d51ce2233d884714687490f8d3a795"
+    },
+    "examples/dae/sensitivity/results/dae_controls_native-3.8.1.json": {
+      "bytes": 24642,
+      "sha256": "44e282e04becb98c39f9f41e9c38a5c6a3c1b7034524bfb4a2a5d639373db7d7"
+    },
+    "examples/dae/sensitivity/results/dae_controls_native-3.8.2.json": {
+      "bytes": 24155,
+      "sha256": "562c846487b0a5b9393519bff5fd42093b86c77417de528790bb39aafa28831a"
+    },
+    "examples/dae/sensitivity/results/dae_controls_validation.json": {
+      "bytes": 7222,
+      "sha256": "086f1449349b4131f5fe9c831a9916b0ba94687f3a5f864b86fe0009520be406"
+    },
+    "examples/dae/sensitivity/results/dae_decision.json": {
+      "bytes": 6088,
+      "sha256": "7a4e33add3f4b8d9488fc9c8713a9f284e4d426e4ea87af654c632d75121baf3"
+    },
+    "examples/dae/sensitivity/results/dae_guard-3.8.1.json": {
+      "bytes": 2158,
+      "sha256": "950280e69da8c3522c119e9a7592b4b9e9aa894864f7edcaa133b7054795f416"
+    },
+    "examples/dae/sensitivity/results/dae_guard-3.8.2.json": {
+      "bytes": 2156,
+      "sha256": "84dde849efe51dd712fc3d9343be4631d162e62b627af6a5c799e8854a817519"
+    },
+    "examples/dae/sensitivity/results/dae_native-3.8.1.json": {
+      "bytes": 137529,
+      "sha256": "64785737f7fde38eebebe3419719cdde794e87cfe768eba7598a39f6bca895b9"
+    },
+    "examples/dae/sensitivity/results/dae_native-3.8.2.json": {
+      "bytes": 136242,
+      "sha256": "fe35dc7ce4ec7199acffce53a97f58dcc053b5f7098c2e8168024e014bbc23a2"
+    },
+    "examples/dae/sensitivity/results/dae_time-3.8.1.json": {
+      "bytes": 13577,
+      "sha256": "debe72fd1717f0c374446ea826c5565b3e5588336c9d732e256f0d89b11bfcb1"
+    },
+    "examples/dae/sensitivity/results/dae_time-3.8.2.json": {
+      "bytes": 13213,
+      "sha256": "d7309df83da8e7cd7ef0f5ddab75767aed9a811cae5758a8438b63dbecfb4f70"
+    },
+    "examples/dae/sensitivity/results/dae_zero_rate-3.8.1.json": {
+      "bytes": 3311,
+      "sha256": "0c0eded1dd5b5c1d7f947524ccd7dc7a855a53ec06fe704d143b4bd4f8910e3d"
+    },
+    "examples/dae/sensitivity/results/dae_zero_rate-3.8.2.json": {
+      "bytes": 3227,
+      "sha256": "166878a8f32e32cb63817a9b8ade1f3e87d70270984755f37710749f83d0b674"
+    },
+    "examples/dae/sensitivity/results/evidence_hash_audit.json": {
+      "bytes": 34208,
+      "sha256": "6a6facb53f7f2c613d96f6b686fb3a33f90cc88c36fd67be5e51fe9069c5ea28"
+    },
+    "examples/dae/sensitivity/results/interface_audit.json": {
+      "bytes": 18667,
+      "sha256": "1892cb2ac614ff6a7a4ca53d97737cda40eb051e3f29f72714803c3eb63cb3d1"
+    },
+    "examples/dae/sensitivity/results/ode_closeout.json": {
+      "bytes": 6536,
+      "sha256": "3234b7fc61fa53586c1071723020d88e1d1af9059fc41e9e86f5797cb6b20e8c"
+    },
+    "examples/dae/sensitivity/results/ode_comparison-3.8.1.json": {
+      "bytes": 13024,
+      "sha256": "d42d3f5711f12c62892646d1e64f8a052440631ff57f94398dd8e30f5ce5872d"
+    },
+    "examples/dae/sensitivity/results/ode_comparison-3.8.2.json": {
+      "bytes": 13033,
+      "sha256": "fa791f3f48481c7830f65afe206f5f4e589f0f7ad0f0f4578adf8ad744de9d7f"
+    },
+    "examples/dae/sensitivity/results/ode_comparison_pilot-3.8.2.json": {
+      "bytes": 13049,
+      "sha256": "9702c96bd69145a208d857df4b4d7d75d5fd997e7f9c6e50c93f3a71b624d765"
+    },
+    "examples/dae/sensitivity/results/ode_numerics-3.8.1.json": {
+      "bytes": 26406,
+      "sha256": "3526ec6e7e699af70d19c7f7aba63afead90febfeaa90ff98b99966cd2c45e96"
+    },
+    "examples/dae/sensitivity/results/ode_numerics-3.8.2.json": {
+      "bytes": 26408,
+      "sha256": "5a59c1bb2dc9de0f90696c6a5e8b22455584d52e7bbbce63e23607968e7cec26"
+    },
+    "examples/dae/sensitivity/results/provenance.json": {
+      "bytes": 13135,
+      "sha256": "b04e22c57a4c25bf6fecc716aef9057e1f94cc9314584e54cda66ddbbe1f05f0"
+    },
+    "examples/dae/sensitivity/results/supplied_probes.json": {
+      "bytes": 51313,
+      "sha256": "98f33f9289635d825cdada9a4f058cfda7ee40a9ca52204c9f4f85b038cda367"
+    },
+    "examples/dae/sensitivity/results/triage-3.8.1.json": {
+      "bytes": 15537,
+      "sha256": "72e9fc090aa6ebf16823e6aa512261a917066ad3a7f7c253c3ad0f34a2c18b7d"
+    },
+    "examples/dae/sensitivity/results/triage-3.8.2.json": {
+      "bytes": 15559,
+      "sha256": "dd1687d95f4ea1a93d5b4756404cf1a640acd0cb255d339f019024b47f2d7122"
+    },
+    "examples/dae/simulator_control_sensitivity_example.py": {
+      "bytes": 3865,
+      "sha256": "a2a9f2d1f43b168b6f2c05b46ba0f120f295102bd9f017cb915fdee034c41061"
+    },
+    "examples/dae/simulator_dae_control_sensitivity_example.py": {
+      "bytes": 3883,
+      "sha256": "43a8a0766d98005e0c311792819fa2086731536c7715960d3aac37ccbc176181"
+    },
+    "examples/dae/simulator_dae_sensitivity_example.py": {
+      "bytes": 4540,
+      "sha256": "56581533ed0cc9c6bb0917d575aad900b3918d3c4f0b7e0b893879f4b2bb4c22"
+    },
+    "examples/dae/simulator_sensitivity_example.py": {
+      "bytes": 3067,
+      "sha256": "545c716442c650f90fd4ca7a90c928117cce9a993557f3f7e4f38acf92e547c4"
+    },
+    "pyomo/dae/simulator.py": {
+      "bytes": 67257,
+      "sha256": "05bf7fd6289c120618403156bb101ddd931b8cc3e91044a8728f030d7e214881"
+    },
+    "pyomo/dae/tests/simulator_ode_multindex_example.scipy.json": {
+      "bytes": 9474,
+      "sha256": "5234f214ab4f037533637c0d6446b258c1e96731a0bb9f7188a92032c0a3bc16"
+    },
+    "pyomo/dae/tests/test_simulator_compile.py": {
+      "bytes": 29621,
+      "sha256": "acfc184714e7313bc5d47c35a76318fedc71c0f78ca3999c26290e0befeb1932"
+    },
+    "pyomo/dae/tests/test_simulator_controls.py": {
+      "bytes": 29969,
+      "sha256": "3c256b471e749a6fb894a5fe82423b153006e3bc469b973fc4de9246750cbf7d"
+    },
+    "pyomo/dae/tests/test_simulator_dae_compile.py": {
+      "bytes": 36071,
+      "sha256": "0e0cc12be2f940b6206ab7529b1243f3351a14ae090c4a23fb6549fe860e49e6"
+    },
+    "pyomo/dae/tests/test_simulator_dae_controls.py": {
+      "bytes": 27561,
+      "sha256": "0eafc37957fd89732c279a8f0c919de926e9112f4c70822b02c58e9add797ae0"
+    },
+    "pyomo/dae/tests/test_simulator_interface.py": {
+      "bytes": 30177,
+      "sha256": "8142d436c3fbc888a99239a307e0eea7ac12f3e5b1dd700255cb13bd0224e51f"
+    },
+    "pyomo/dae/tests/test_simulator_ode_qualification.py": {
+      "bytes": 10098,
+      "sha256": "13b6e84cf557aca4e4b86adaf310a84d20ffe4d3daa6ef04c01a6155d06df995"
+    }
+  },
+  "snapshot_hash_scope": "Current changed/new repository files excluding this report itself. Earlier reports remain immutable historical snapshots; their source claims are audited separately."
+}

@@ -10,6 +10,9 @@ and ``ODE_CLOSEOUT.rst``. Current DAE validation is in
 are in ``DAE_DECISION.rst`` and ``DAE_CONTROLS.rst``. The work package C snapshot is
 ``results/controls_validation.json``. The work package B snapshot is
 ``results/compile_validation.json``, committed in ``74e516a11``.
+The final local support/requirement audit and submission draft are in
+``CONTRIBUTION_READINESS.rst``. The explicit Pyomo sensitivity-equation
+track remains separate, as described in ``EQUATION_SENSITIVITIES.rst``.
 
 Implemented interface
 ---------------------

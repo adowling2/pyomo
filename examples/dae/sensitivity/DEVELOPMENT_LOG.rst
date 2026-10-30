@@ -272,3 +272,45 @@ ASL library and no optimizer. Black, typos, RST and hash checks pass. These
 files are included in an intermediate G7 evidence commit. Next: finish the
 support/requirement matrix and local contribution packaging before declaring
 G7 or the overall goal complete.
+
+30 October 2026: G7 final local contribution readiness
+------------------------------------------------------
+
+Status: passed for the bounded local goal; this entry is included in the
+final packaging commit. The DAE collocation evidence is committed in
+311630d2f, after the passing G6 implementation in 17a021b54. Production,
+core tests, user guide and runnable examples remain byte-identical to the
+G6-validated versions; their full-suite/document results are reused without
+claiming a new execution. The new comparison and audit scripts ran, and
+all final notes, formatting, typo, whitespace and current hash checks pass.
+
+CONTRIBUTION_READINESS.rst contains the final public support table, all
+standalone-goal required-test families mapped to executed evidence, measured
+native limits, release exclusions and a proposed review breakdown. Its
+release text and PR-description draft remain local; human review-process
+and legal acknowledgements are not asserted on behalf of the author.
+EQUATION_SENSITIVITIES.rst describes the separate direct/adjoint equation
+transformation track and explains why no transformation framework is needed
+inside compile. AI assistance is disclosed for code, tests and documentation.
+
+The historical hash audit recovers 108/110 repository source claims through
+311630d2f. Two pre-first-commit interface-audit hashes are not recoverable from
+retained Git snapshots. The audit flags them explicitly; old records are
+unchanged. They are historical observations rather than final qualification
+sources. Every current runtime/test/doc hash is verified. Final modified-line
+coverage is 286/290 (98.62%), with the four defensive guards named in the
+readiness note. Existing instrumented shutdown diagnostics remain qualified.
+
+Checkpoint gates: G0 70fa93fb3; G1 3f66b87d2; G2 5adc03eac; G3 f2fcaa0cc;
+G4 2ad776409; G5 78818eef2; G6 native ddcc1d8d8 and public 17a021b54;
+G7 comparison 311630d2f and final packaging in this commit. A/B 74e516a11
+and C f9a93159b remain the prior implementation checkpoints. G3 preceded
+all production DAE work, and G4/G6 native decisions preceded their public
+extensions. No gate relies on an expected native failure being counted as
+accurate support.
+
+All locally required G0-G7 work is complete. Linux/Windows and the remaining
+supported-Python release matrix, whole-manual/external-link checks, human
+review and any upstream submission remain explicitly unexecuted. They are
+outside this local goal and require the appropriate infrastructure and/or
+user authorization. No push, PR, issue or external message was sent.

@@ -1,0 +1,689 @@
+{
+  "purpose": "Repository source-hash recovery, not a numerical capability test",
+  "baseline_commit": "a6c7d20b27b379e9e54aa25986fcd50202fbf10c",
+  "through_commit": "311630d2f826e45677f50f8078831202fecbd3d8",
+  "claims_count": 110,
+  "matched_count": 108,
+  "all_hashes_recovered": false,
+  "claims": [
+    {
+      "record": "examples/dae/sensitivity/results/compile_validation.json",
+      "path": "pyomo/dae/simulator.py",
+      "sha256": "1efe112a5268928043fbec8751f7f9c0fd6fa14e0b28dbe2cded74240d6475fd",
+      "matching_commit": "74e516a112cef6b95c07f44609f7cddbdbf119ba"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/compile_validation.json",
+      "path": "pyomo/dae/tests/test_simulator_compile.py",
+      "sha256": "d272485433bdb8bed5e7370b44f12d5d124ea0e20094c371c063d5d5c2ee04b1",
+      "matching_commit": "74e516a112cef6b95c07f44609f7cddbdbf119ba"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/compile_validation.json",
+      "path": "pyomo/dae/tests/test_simulator_interface.py",
+      "sha256": "8142d436c3fbc888a99239a307e0eea7ac12f3e5b1dd700255cb13bd0224e51f",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/compile_validation.json",
+      "path": "pyomo/dae/tests/simulator_ode_multindex_example.scipy.json",
+      "sha256": "5234f214ab4f037533637c0d6446b258c1e96731a0bb9f7188a92032c0a3bc16",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/compile_validation.json",
+      "path": "examples/dae/simulator_sensitivity_example.py",
+      "sha256": "545c716442c650f90fd4ca7a90c928117cce9a993557f3f7e4f38acf92e547c4",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/compile_validation.json",
+      "path": "examples/dae/sensitivity/dependency_reproducers.py",
+      "sha256": "8725e697d837541d2ca96fb0847e29c43c7e5c887eafc7c17ee92d144211115b",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/compile_validation.json",
+      "path": "doc/OnlineDocs/explanation/modeling/dae.rst",
+      "sha256": "13ce03c6c34fdc25c326d17614e7bab2a960c76190597a4f46575b1eb5cfa224",
+      "matching_commit": "74e516a112cef6b95c07f44609f7cddbdbf119ba"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/controls_validation.json",
+      "path": "pyomo/dae/simulator.py",
+      "sha256": "be9d88a68a042fc321cd7e3779bddc6f59858fae2bc81af3cdd7506800344d45",
+      "matching_commit": "2ad7764090d0e5bd20fcdba6c03700334fcf3b52"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/controls_validation.json",
+      "path": "pyomo/dae/tests/test_simulator_compile.py",
+      "sha256": "16c39c3a793da8372ecaa46bb9ba43e7597c3664d0f25f26ae9b443f2debb9e2",
+      "matching_commit": "2ad7764090d0e5bd20fcdba6c03700334fcf3b52"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/controls_validation.json",
+      "path": "pyomo/dae/tests/test_simulator_controls.py",
+      "sha256": "3c256b471e749a6fb894a5fe82423b153006e3bc469b973fc4de9246750cbf7d",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/controls_validation.json",
+      "path": "examples/dae/simulator_control_sensitivity_example.py",
+      "sha256": "a2a9f2d1f43b168b6f2c05b46ba0f120f295102bd9f017cb915fdee034c41061",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/controls_validation.json",
+      "path": "doc/OnlineDocs/explanation/modeling/dae.rst",
+      "sha256": "1bcc30c2e0a3df46ba35dc11a1355e8cb68f6d841b19286877d04222466d0e50",
+      "matching_commit": "5adc03eacecd358679485088ce13ae4940ba63c5"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/controls_validation.json",
+      "path": "examples/dae/sensitivity/API_DECISION.rst",
+      "sha256": "211fa2813e911bdee446be4da8423071d0efe70c7d8bd3e8699006a364266842",
+      "matching_commit": "5adc03eacecd358679485088ce13ae4940ba63c5"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/controls_validation.json",
+      "path": "examples/dae/sensitivity/README.rst",
+      "sha256": "70f50022cb08cf47450bbe3ea18e5c026a5daa228d1da1f1add0b9f52816b0d7",
+      "matching_commit": "5adc03eacecd358679485088ce13ae4940ba63c5"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/dae_comparison-3.8.1.json",
+      "path": "examples/dae/sensitivity/dae_comparison.py",
+      "sha256": "7bb9286537707535e1a95c98b47c987b78fad5df864da1766cb7a47ad20043c1",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/dae_comparison-3.8.1.json",
+      "path": "pyomo/dae/simulator.py",
+      "sha256": "05bf7fd6289c120618403156bb101ddd931b8cc3e91044a8728f030d7e214881",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/dae_comparison-3.8.2.json",
+      "path": "examples/dae/sensitivity/dae_comparison.py",
+      "sha256": "7bb9286537707535e1a95c98b47c987b78fad5df864da1766cb7a47ad20043c1",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/dae_comparison-3.8.2.json",
+      "path": "pyomo/dae/simulator.py",
+      "sha256": "05bf7fd6289c120618403156bb101ddd931b8cc3e91044a8728f030d7e214881",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/dae_compile_validation.json",
+      "path": "pyomo/dae/simulator.py",
+      "sha256": "ee1ca3520286742fea26b8bf71e7198ad4199a9d6a13a6197b2dcec7a3af86eb",
+      "matching_commit": "ddcc1d8d8f2a301c24e870827ea00a3df1d4dd46"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/dae_compile_validation.json",
+      "path": "pyomo/dae/tests/test_simulator_compile.py",
+      "sha256": "acfc184714e7313bc5d47c35a76318fedc71c0f78ca3999c26290e0befeb1932",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/dae_compile_validation.json",
+      "path": "pyomo/dae/tests/test_simulator_dae_compile.py",
+      "sha256": "61eef7bc8bf88439332ce15acd4d61e934f02c93e84173400f5bda064053dbf9",
+      "matching_commit": "ddcc1d8d8f2a301c24e870827ea00a3df1d4dd46"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/dae_compile_validation.json",
+      "path": "doc/OnlineDocs/explanation/modeling/dae.rst",
+      "sha256": "ffbcea6ebe3a91fc89954ea736e7a6e0d67124d4b1f4ab08a8c4321775266267",
+      "matching_commit": "ddcc1d8d8f2a301c24e870827ea00a3df1d4dd46"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/dae_compile_validation.json",
+      "path": "examples/dae/simulator_dae_sensitivity_example.py",
+      "sha256": "56581533ed0cc9c6bb0917d575aad900b3918d3c4f0b7e0b893879f4b2bb4c22",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/dae_compile_validation.json",
+      "path": "examples/dae/sensitivity/check_ode_docs.py",
+      "sha256": "00d319ddb38f2863257a3c79a6336229254018545565cc174d0c9de472814315",
+      "matching_commit": "ddcc1d8d8f2a301c24e870827ea00a3df1d4dd46"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/dae_compile_validation.json",
+      "path": "examples/dae/sensitivity/dae_time_reproducer.py",
+      "sha256": "2696c845b4bb90a9a6915c2b31dc74866482e6eb09015091102042550fd89584",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/dae_compile_validation.json",
+      "path": "examples/dae/sensitivity/dae_guard_reproducer.py",
+      "sha256": "d680de1ae721f98b29a35bc68020655654acd833a8206c86ab0b0aa8529cadad",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/dae_compile_validation.json",
+      "path": "examples/dae/sensitivity/DAE_DECISION.rst",
+      "sha256": "f7d9711534891c56a1e85aa46ed862f00c888766b05fadc6a38432b04647719b",
+      "matching_commit": "ddcc1d8d8f2a301c24e870827ea00a3df1d4dd46"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/dae_compile_validation.json",
+      "path": "examples/dae/sensitivity/API_DECISION.rst",
+      "sha256": "59d3fa5d8b1b98b59dc294249897b819ed3119592157dc69758e19664fa9769d",
+      "matching_commit": "ddcc1d8d8f2a301c24e870827ea00a3df1d4dd46"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/dae_compile_validation.json",
+      "path": "examples/dae/sensitivity/README.rst",
+      "sha256": "5e1d184ca2f1e5f4087a587b2273450d38223d20461c59b20ca73789aa468eb2",
+      "matching_commit": "ddcc1d8d8f2a301c24e870827ea00a3df1d4dd46"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/dae_compile_validation.json",
+      "path": "examples/dae/sensitivity/DEVELOPMENT_LOG.rst",
+      "sha256": "0a664690548d2328cd0f752e142ee70745ae8fa9a049ad267c01813cd4168894",
+      "matching_commit": "78818eef22fb2afd97937adea319c6ff4dbe55ed"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/dae_compile_validation.json",
+      "path": "examples/dae/sensitivity/results/dae_time-3.8.1.json",
+      "sha256": "debe72fd1717f0c374446ea826c5565b3e5588336c9d732e256f0d89b11bfcb1",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/dae_compile_validation.json",
+      "path": "examples/dae/sensitivity/results/dae_time-3.8.2.json",
+      "sha256": "d7309df83da8e7cd7ef0f5ddab75767aed9a811cae5758a8438b63dbecfb4f70",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/dae_compile_validation.json",
+      "path": "examples/dae/sensitivity/results/dae_guard-3.8.1.json",
+      "sha256": "950280e69da8c3522c119e9a7592b4b9e9aa894864f7edcaa133b7054795f416",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/dae_compile_validation.json",
+      "path": "examples/dae/sensitivity/results/dae_guard-3.8.2.json",
+      "sha256": "84dde849efe51dd712fc3d9343be4631d162e62b627af6a5c799e8854a817519",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/dae_controls_native-3.8.1.json",
+      "path": "examples/dae/sensitivity/dae_control_probe.py",
+      "sha256": "635d4c631df6f524e3d241b45cd55b817b9d5ffe84dc0ecafc54dfb78ce667fc",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/dae_controls_native-3.8.1.json",
+      "path": "examples/dae/sensitivity/dae_qualification.py",
+      "sha256": "509c86a79d5d11089b443ae98628d4d27f3e5a7149acef849c1e83fa281f5d5e",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/dae_controls_native-3.8.2.json",
+      "path": "examples/dae/sensitivity/dae_control_probe.py",
+      "sha256": "635d4c631df6f524e3d241b45cd55b817b9d5ffe84dc0ecafc54dfb78ce667fc",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/dae_controls_native-3.8.2.json",
+      "path": "examples/dae/sensitivity/dae_qualification.py",
+      "sha256": "509c86a79d5d11089b443ae98628d4d27f3e5a7149acef849c1e83fa281f5d5e",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/dae_controls_validation.json",
+      "path": "pyomo/dae/simulator.py",
+      "sha256": "05bf7fd6289c120618403156bb101ddd931b8cc3e91044a8728f030d7e214881",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/dae_controls_validation.json",
+      "path": "pyomo/dae/tests/test_simulator_dae_compile.py",
+      "sha256": "0e0cc12be2f940b6206ab7529b1243f3351a14ae090c4a23fb6549fe860e49e6",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/dae_controls_validation.json",
+      "path": "pyomo/dae/tests/test_simulator_dae_controls.py",
+      "sha256": "0eafc37957fd89732c279a8f0c919de926e9112f4c70822b02c58e9add797ae0",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/dae_controls_validation.json",
+      "path": "doc/OnlineDocs/explanation/modeling/dae.rst",
+      "sha256": "f6bfc174c125821817b66201b7aba347e038f32d90330414b3c8045a6ea33231",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/dae_controls_validation.json",
+      "path": "examples/dae/simulator_dae_control_sensitivity_example.py",
+      "sha256": "43a8a0766d98005e0c311792819fa2086731536c7715960d3aac37ccbc176181",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/dae_controls_validation.json",
+      "path": "examples/dae/sensitivity/check_ode_docs.py",
+      "sha256": "a7f8b8468d73f662ab54c4ad05915aabd538bd738bcb0172a61bbb158eac71bc",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/dae_controls_validation.json",
+      "path": "examples/dae/sensitivity/dae_zero_rate_reproducer.py",
+      "sha256": "ce4ddf0496a44b254fb0e6f0b6497e281ae5059523f4aaf48c82f6718ea41b55",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/dae_controls_validation.json",
+      "path": "examples/dae/sensitivity/API_DECISION.rst",
+      "sha256": "fcaf81dc294559f453ee767888b141079494370de7d8de5fbf7ded8d0d44a2a5",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/dae_controls_validation.json",
+      "path": "examples/dae/sensitivity/DAE_DECISION.rst",
+      "sha256": "bbf9bddcb3829256cb2df83bffd9a2ab6fa878ccf3525ffae7d6cd68adfb1d34",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/dae_controls_validation.json",
+      "path": "examples/dae/sensitivity/DAE_CONTROLS.rst",
+      "sha256": "a7d8c6186edf0dab8fc6a4abc6cc9c7457d286ad3c6e1c13b0db41104cde3fbe",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/dae_controls_validation.json",
+      "path": "examples/dae/sensitivity/README.rst",
+      "sha256": "8f265219c369c79d0dd60145479257013f32e4eaf934035ae76a432f9e363b92",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/dae_controls_validation.json",
+      "path": "examples/dae/sensitivity/DEVELOPMENT_LOG.rst",
+      "sha256": "4136e653d7eabd8cdc7a79bb270d78b2ee545947fb2aa396189f05d06539793d",
+      "matching_commit": "17a021b5480227fd891278288b6d4be313f12925"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/dae_controls_validation.json",
+      "path": "examples/dae/sensitivity/results/dae_zero_rate-3.8.1.json",
+      "sha256": "0c0eded1dd5b5c1d7f947524ccd7dc7a855a53ec06fe704d143b4bd4f8910e3d",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/dae_controls_validation.json",
+      "path": "examples/dae/sensitivity/results/dae_zero_rate-3.8.2.json",
+      "sha256": "166878a8f32e32cb63817a9b8ade1f3e87d70270984755f37710749f83d0b674",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/dae_decision.json",
+      "path": "pyomo/dae/simulator.py",
+      "sha256": "be9d88a68a042fc321cd7e3779bddc6f59858fae2bc81af3cdd7506800344d45",
+      "matching_commit": "2ad7764090d0e5bd20fcdba6c03700334fcf3b52"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/dae_decision.json",
+      "path": "examples/dae/sensitivity/dae_qualification.py",
+      "sha256": "509c86a79d5d11089b443ae98628d4d27f3e5a7149acef849c1e83fa281f5d5e",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/dae_decision.json",
+      "path": "examples/dae/sensitivity/DAE_DECISION.rst",
+      "sha256": "07642aea4b9046c48e3081e2507abfad7c656641c161069c3676a87b0633991e",
+      "matching_commit": "2ad7764090d0e5bd20fcdba6c03700334fcf3b52"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/dae_decision.json",
+      "path": "examples/dae/sensitivity/DEVELOPMENT_LOG.rst",
+      "sha256": "c1ffda707061ed6bc39bdd954734a4d8a2097355bf64ca20adc471035b394a31",
+      "matching_commit": "2ad7764090d0e5bd20fcdba6c03700334fcf3b52"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/dae_decision.json",
+      "path": "examples/dae/sensitivity/results/dae_native-3.8.1.json",
+      "sha256": "64785737f7fde38eebebe3419719cdde794e87cfe768eba7598a39f6bca895b9",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/dae_decision.json",
+      "path": "examples/dae/sensitivity/results/dae_native-3.8.2.json",
+      "sha256": "fe35dc7ce4ec7199acffce53a97f58dcc053b5f7098c2e8168024e014bbc23a2",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/dae_guard-3.8.1.json",
+      "path": "examples/dae/sensitivity/dae_guard_reproducer.py",
+      "sha256": "d680de1ae721f98b29a35bc68020655654acd833a8206c86ab0b0aa8529cadad",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/dae_guard-3.8.2.json",
+      "path": "examples/dae/sensitivity/dae_guard_reproducer.py",
+      "sha256": "d680de1ae721f98b29a35bc68020655654acd833a8206c86ab0b0aa8529cadad",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/dae_native-3.8.1.json",
+      "path": "examples/dae/sensitivity/dae_qualification.py",
+      "sha256": "509c86a79d5d11089b443ae98628d4d27f3e5a7149acef849c1e83fa281f5d5e",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/dae_native-3.8.2.json",
+      "path": "examples/dae/sensitivity/dae_qualification.py",
+      "sha256": "509c86a79d5d11089b443ae98628d4d27f3e5a7149acef849c1e83fa281f5d5e",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/dae_time-3.8.1.json",
+      "path": "examples/dae/sensitivity/dae_time_reproducer.py",
+      "sha256": "2696c845b4bb90a9a6915c2b31dc74866482e6eb09015091102042550fd89584",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/dae_time-3.8.2.json",
+      "path": "examples/dae/sensitivity/dae_time_reproducer.py",
+      "sha256": "2696c845b4bb90a9a6915c2b31dc74866482e6eb09015091102042550fd89584",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/dae_zero_rate-3.8.1.json",
+      "path": "examples/dae/sensitivity/dae_zero_rate_reproducer.py",
+      "sha256": "ce4ddf0496a44b254fb0e6f0b6497e281ae5059523f4aaf48c82f6718ea41b55",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/dae_zero_rate-3.8.2.json",
+      "path": "examples/dae/sensitivity/dae_zero_rate_reproducer.py",
+      "sha256": "ce4ddf0496a44b254fb0e6f0b6497e281ae5059523f4aaf48c82f6718ea41b55",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/interface_audit.json",
+      "path": "pyomo/dae/simulator.py",
+      "sha256": "9509a690b599b872656734772a8e5bdbf13653b00167d3609cb35dfe958a5ccc",
+      "matching_commit": null
+    },
+    {
+      "record": "examples/dae/sensitivity/results/interface_audit.json",
+      "path": "pyomo/dae/tests/test_simulator_interface.py",
+      "sha256": "8142d436c3fbc888a99239a307e0eea7ac12f3e5b1dd700255cb13bd0224e51f",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/interface_audit.json",
+      "path": "pyomo/dae/tests/simulator_ode_multindex_example.scipy.json",
+      "sha256": "5234f214ab4f037533637c0d6446b258c1e96731a0bb9f7188a92032c0a3bc16",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/interface_audit.json",
+      "path": "doc/OnlineDocs/explanation/modeling/dae.rst",
+      "sha256": "325ce666eecea1a07573c92fcd73ff4c0608daa852804e7107639e0e36871c83",
+      "matching_commit": null
+    },
+    {
+      "record": "examples/dae/sensitivity/results/ode_closeout.json",
+      "path": "pyomo/dae/simulator.py",
+      "sha256": "be9d88a68a042fc321cd7e3779bddc6f59858fae2bc81af3cdd7506800344d45",
+      "matching_commit": "2ad7764090d0e5bd20fcdba6c03700334fcf3b52"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/ode_closeout.json",
+      "path": "pyomo/dae/tests/test_simulator.py",
+      "sha256": "e08cec8b406025e9dea0168e5f8fae5dd949b381be82c3803c395c7134145a63",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/ode_closeout.json",
+      "path": "pyomo/dae/tests/test_simulator_interface.py",
+      "sha256": "8142d436c3fbc888a99239a307e0eea7ac12f3e5b1dd700255cb13bd0224e51f",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/ode_closeout.json",
+      "path": "pyomo/dae/tests/test_simulator_compile.py",
+      "sha256": "16c39c3a793da8372ecaa46bb9ba43e7597c3664d0f25f26ae9b443f2debb9e2",
+      "matching_commit": "2ad7764090d0e5bd20fcdba6c03700334fcf3b52"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/ode_closeout.json",
+      "path": "pyomo/dae/tests/test_simulator_controls.py",
+      "sha256": "3c256b471e749a6fb894a5fe82423b153006e3bc469b973fc4de9246750cbf7d",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/ode_closeout.json",
+      "path": "pyomo/dae/tests/test_simulator_ode_qualification.py",
+      "sha256": "13b6e84cf557aca4e4b86adaf310a84d20ffe4d3daa6ef04c01a6155d06df995",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/ode_closeout.json",
+      "path": "doc/OnlineDocs/explanation/modeling/dae.rst",
+      "sha256": "51d2c080199a848acf4c28915c07dec9b5860ed62887e6dfa2f02578052946f8",
+      "matching_commit": "2ad7764090d0e5bd20fcdba6c03700334fcf3b52"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/ode_closeout.json",
+      "path": "examples/dae/simulator_sensitivity_example.py",
+      "sha256": "545c716442c650f90fd4ca7a90c928117cce9a993557f3f7e4f38acf92e547c4",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/ode_closeout.json",
+      "path": "examples/dae/simulator_control_sensitivity_example.py",
+      "sha256": "a2a9f2d1f43b168b6f2c05b46ba0f120f295102bd9f017cb915fdee034c41061",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/ode_closeout.json",
+      "path": "examples/dae/sensitivity/check_ode_docs.py",
+      "sha256": "a712e0f6a2e95295129fff84e75c5c21728c0ea85e1642b752b61a329c116059",
+      "matching_commit": "2ad7764090d0e5bd20fcdba6c03700334fcf3b52"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/ode_closeout.json",
+      "path": "examples/dae/sensitivity/ODE_CLOSEOUT.rst",
+      "sha256": "222ef2d293f8b0dc4b8c6beb24dd698a7ebe7636aed36f265f683205d28452f7",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/ode_closeout.json",
+      "path": "examples/dae/sensitivity/API_DECISION.rst",
+      "sha256": "c980ed856bfb0383b25ef49b295217a771a565f943c5777e0ec563d72edc8649",
+      "matching_commit": "2ad7764090d0e5bd20fcdba6c03700334fcf3b52"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/ode_closeout.json",
+      "path": "examples/dae/sensitivity/README.rst",
+      "sha256": "55148869f442af883418d82a1cfe4184112a83c3cccee535bad938abe49760b9",
+      "matching_commit": "2ad7764090d0e5bd20fcdba6c03700334fcf3b52"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/ode_closeout.json",
+      "path": "examples/dae/sensitivity/DEVELOPMENT_LOG.rst",
+      "sha256": "aad9f31c5f5716bfe6ed53aee1807b24eb7099febdf2f2774b402775f8389f17",
+      "matching_commit": "f2fcaa0cc51b93b5cfbd199ae919f44081bdce90"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/ode_comparison-3.8.1.json",
+      "path": "pyomo/dae/simulator.py",
+      "sha256": "be9d88a68a042fc321cd7e3779bddc6f59858fae2bc81af3cdd7506800344d45",
+      "matching_commit": "2ad7764090d0e5bd20fcdba6c03700334fcf3b52"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/ode_comparison-3.8.1.json",
+      "path": "examples/dae/sensitivity/ode_comparison.py",
+      "sha256": "621f6b2d7b2a21a74045e72b10511f87988a1e05e7fb3240ed3e3168f3cddfda",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/ode_comparison-3.8.2.json",
+      "path": "pyomo/dae/simulator.py",
+      "sha256": "be9d88a68a042fc321cd7e3779bddc6f59858fae2bc81af3cdd7506800344d45",
+      "matching_commit": "2ad7764090d0e5bd20fcdba6c03700334fcf3b52"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/ode_comparison-3.8.2.json",
+      "path": "examples/dae/sensitivity/ode_comparison.py",
+      "sha256": "621f6b2d7b2a21a74045e72b10511f87988a1e05e7fb3240ed3e3168f3cddfda",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/ode_comparison_pilot-3.8.2.json",
+      "path": "pyomo/dae/simulator.py",
+      "sha256": "be9d88a68a042fc321cd7e3779bddc6f59858fae2bc81af3cdd7506800344d45",
+      "matching_commit": "2ad7764090d0e5bd20fcdba6c03700334fcf3b52"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/ode_comparison_pilot-3.8.2.json",
+      "path": "examples/dae/sensitivity/ode_comparison.py",
+      "sha256": "621f6b2d7b2a21a74045e72b10511f87988a1e05e7fb3240ed3e3168f3cddfda",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/ode_numerics-3.8.1.json",
+      "path": "pyomo/dae/simulator.py",
+      "sha256": "be9d88a68a042fc321cd7e3779bddc6f59858fae2bc81af3cdd7506800344d45",
+      "matching_commit": "2ad7764090d0e5bd20fcdba6c03700334fcf3b52"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/ode_numerics-3.8.1.json",
+      "path": "pyomo/dae/tests/test_simulator_ode_qualification.py",
+      "sha256": "13b6e84cf557aca4e4b86adaf310a84d20ffe4d3daa6ef04c01a6155d06df995",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/ode_numerics-3.8.1.json",
+      "path": "examples/dae/sensitivity/ode_qualification.py",
+      "sha256": "e68da7e2faef061e9d7de76a09a2b0ae149f130799290c6bfe9c4a596a43b15a",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/ode_numerics-3.8.2.json",
+      "path": "pyomo/dae/simulator.py",
+      "sha256": "be9d88a68a042fc321cd7e3779bddc6f59858fae2bc81af3cdd7506800344d45",
+      "matching_commit": "2ad7764090d0e5bd20fcdba6c03700334fcf3b52"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/ode_numerics-3.8.2.json",
+      "path": "pyomo/dae/tests/test_simulator_ode_qualification.py",
+      "sha256": "13b6e84cf557aca4e4b86adaf310a84d20ffe4d3daa6ef04c01a6155d06df995",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/ode_numerics-3.8.2.json",
+      "path": "examples/dae/sensitivity/ode_qualification.py",
+      "sha256": "e68da7e2faef061e9d7de76a09a2b0ae149f130799290c6bfe9c4a596a43b15a",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/provenance.json",
+      "path": "examples/dae/sensitivity/API_DECISION.rst",
+      "sha256": "211fa2813e911bdee446be4da8423071d0efe70c7d8bd3e8699006a364266842",
+      "matching_commit": "5adc03eacecd358679485088ce13ae4940ba63c5"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/provenance.json",
+      "path": "examples/dae/sensitivity/INTERFACE_AUDIT.rst",
+      "sha256": "b3b2a73a6d59f7befbd090051d0afd35b0c27e697ec14e8a24773bfd5b12c12c",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/provenance.json",
+      "path": "examples/dae/sensitivity/README.rst",
+      "sha256": "70f50022cb08cf47450bbe3ea18e5c026a5daa228d1da1f1add0b9f52816b0d7",
+      "matching_commit": "5adc03eacecd358679485088ce13ae4940ba63c5"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/provenance.json",
+      "path": "examples/dae/sensitivity/dependency_reproducers.py",
+      "sha256": "8725e697d837541d2ca96fb0847e29c43c7e5c887eafc7c17ee92d144211115b",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/provenance.json",
+      "path": "examples/dae/sensitivity/probe_sensitivities.py",
+      "sha256": "5dcc82f700f8147501296143042b39e0b0b837a6bacca2b2da4f58aba5b68179",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/provenance.json",
+      "path": "examples/dae/sensitivity/pynumero_collocation_probe.py",
+      "sha256": "c98d2df7d320930828f59c025831435b5cc4ead936b2462679a40e8aa75387f5",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/provenance.json",
+      "path": "examples/dae/sensitivity/results/compile-dependencies-3.8.1.json",
+      "sha256": "404f0c5d7053c1f9218f4df2a4554048968a8144274a75fc22ff3e066b88c18f",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/provenance.json",
+      "path": "examples/dae/sensitivity/results/compile-dependencies-3.8.2.json",
+      "sha256": "41299347388c4093ec0d7c4632069c2f051d185b1c131a89846fa127b2daae92",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/provenance.json",
+      "path": "examples/dae/sensitivity/results/compile_validation.json",
+      "sha256": "b7414ece7068106e9de215fc8f56948408f3f1244df665dab6346095e6a465c5",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/provenance.json",
+      "path": "examples/dae/sensitivity/results/controls_validation.json",
+      "sha256": "d8cd0c4587b2746a42871402f162382283b5a92f6b87a1868fcef8bce2cb60f1",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/provenance.json",
+      "path": "examples/dae/sensitivity/results/interface_audit.json",
+      "sha256": "1892cb2ac614ff6a7a4ca53d97737cda40eb051e3f29f72714803c3eb63cb3d1",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/provenance.json",
+      "path": "examples/dae/sensitivity/results/supplied_probes.json",
+      "sha256": "98f33f9289635d825cdada9a4f058cfda7ee40a9ca52204c9f4f85b038cda367",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/provenance.json",
+      "path": "examples/dae/sensitivity/results/triage-3.8.1.json",
+      "sha256": "72e9fc090aa6ebf16823e6aa512261a917066ad3a7f7c253c3ad0f34a2c18b7d",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    },
+    {
+      "record": "examples/dae/sensitivity/results/provenance.json",
+      "path": "examples/dae/sensitivity/results/triage-3.8.2.json",
+      "sha256": "dd1687d95f4ea1a93d5b4756404cf1a640acd0cb255d339f019024b47f2d7122",
+      "matching_commit": "311630d2f826e45677f50f8078831202fecbd3d8"
+    }
+  ],
+  "unrecovered_claims": [
+    {
+      "record": "examples/dae/sensitivity/results/interface_audit.json",
+      "path": "pyomo/dae/simulator.py",
+      "sha256": "9509a690b599b872656734772a8e5bdbf13653b00167d3609cb35dfe958a5ccc",
+      "matching_commit": null
+    },
+    {
+      "record": "examples/dae/sensitivity/results/interface_audit.json",
+      "path": "doc/OnlineDocs/explanation/modeling/dae.rst",
+      "sha256": "325ce666eecea1a07573c92fcd73ff4c0608daa852804e7107639e0e36871c83",
+      "matching_commit": null
+    }
+  ],
+  "scope_exclusions": [
+    "External wheels, libraries and original supplied-probe hashes",
+    "Uncommitted final packaging files beyond the requested revision"
+  ],
+  "audit_source_sha256": "62c2262cd7abeddcb4e9d405376b5ce77696c0b4581833f01719152c5154faf4"
+}

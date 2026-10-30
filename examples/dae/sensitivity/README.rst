@@ -22,6 +22,12 @@ DAE controls with right-side algebraic observations at switches. Its contract,
 public validation and runnable example are ``DAE_CONTROLS.rst``,
 ``results/dae_controls_validation.json`` and
 ``examples/dae/simulator_dae_control_sensitivity_example.py``.
+Final local support, requirement coverage and proposed contribution packaging
+are in ``CONTRIBUTION_READINESS.rst`` and
+``results/contribution_readiness.json``. ``DAE_COMPARISON.rst`` closes the
+independent refined DAE collocation check. ``EQUATION_SENSITIVITIES.rst``
+keeps a future explicit Pyomo equation transformation separate from the
+implemented native direct/adjoint interface.
 
 The supplied probes reproduce: eight of twelve native cases meet their
 analytic checks with both CasADi versions. Four cases remain outside the
