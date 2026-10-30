@@ -1,0 +1,686 @@
+{
+  "checkpoint": "G1",
+  "casadi": "3.8.1",
+  "numpy": "2.5.4",
+  "python": "3.12.14 (main, Sep  3 2026, 03:46:19) [Clang 21.1.8 ]",
+  "platform": "macOS-27.0.1-arm64-arm-64bit",
+  "scaled_controls": [
+    {
+      "reltol": 0.001,
+      "abstol": 1e-05,
+      "primal_scaled_error": 0.002050792386081652,
+      "direct_scaled_error": 0.000507680210807739,
+      "adjoint_scaled_error": 0.0015625237082106391,
+      "duality_error": 0.00023090354763859178
+    },
+    {
+      "reltol": 1e-07,
+      "abstol": 9.999999999999999e-10,
+      "primal_scaled_error": 1.075728767318651e-06,
+      "direct_scaled_error": 1.7469999979948625e-07,
+      "adjoint_scaled_error": 2.245569885594989e-07,
+      "duality_error": 3.126010042486804e-08
+    },
+    {
+      "reltol": 1e-11,
+      "abstol": 9.999999999999999e-14,
+      "primal_scaled_error": 2.115018432959914e-10,
+      "direct_scaled_error": 9.613731526769698e-11,
+      "adjoint_scaled_error": 6.478817482502564e-11,
+      "duality_error": 4.13606371374442e-11
+    }
+  ],
+  "scaled_total_derivative": {
+    "analytic_gradient": [
+      0.44325962122910045,
+      -0.3818930146271983,
+      -0.5611947930968985
+    ],
+    "direct_error": 1.0670919703414938e-10,
+    "adjoint_error": 8.912093285573519e-11,
+    "finite_differences": [
+      {
+        "step": 0.01,
+        "max_error": 6.910460360920467e-05
+      },
+      {
+        "step": 0.001,
+        "max_error": 6.910173020457933e-07
+      },
+      {
+        "step": 0.0001,
+        "max_error": 6.917969308517513e-09
+      },
+      {
+        "step": 1e-05,
+        "max_error": 1.95300220440231e-10
+      }
+    ]
+  },
+  "stiff_reductions": [
+    {
+      "formulation": "native",
+      "coupled": false,
+      "rate": 1000,
+      "times": [
+        0,
+        0.0001,
+        0.01,
+        0.1,
+        1
+      ],
+      "options": {
+        "reltol": 1e-11,
+        "abstol": 1e-13,
+        "quad_err_con": true
+      },
+      "analytic": -9.093774110122081e-05,
+      "primal_error": 4.6342152337786047e-11,
+      "direct_error": 2.3152008467915847e-13,
+      "adjoint_accurate": false,
+      "error": "Error in Function::call for 'adjoint' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adjoint' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj1_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens1_F' [CvodesInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/cvodes_interface.cpp:403: CVodeB returned \"CV_TOO_MUCH_WORK\". Consult CVODES documentation.",
+      "process_exit_code": 0,
+      "stderr_first_line": "At t = 0.992434, mxstep steps taken before reaching tout."
+    },
+    {
+      "formulation": "public",
+      "coupled": false,
+      "rate": 1000,
+      "times": [
+        0,
+        0.0001,
+        0.01,
+        0.1,
+        1
+      ],
+      "options": {
+        "reltol": 1e-11,
+        "abstol": 1e-13,
+        "quad_err_con": true
+      },
+      "analytic": -9.093774110122081e-05,
+      "primal_error": 4.6342152337786047e-11,
+      "direct_error": 2.3152008467915847e-13,
+      "adjoint_accurate": false,
+      "error": "Error in Function::call for 'adjoint' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adjoint' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj1_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens1_F' [CvodesInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/cvodes_interface.cpp:403: CVodeB returned \"CV_TOO_MUCH_WORK\". Consult CVODES documentation.",
+      "process_exit_code": 0,
+      "stderr_first_line": "At t = 0.992434, mxstep steps taken before reaching tout."
+    },
+    {
+      "formulation": "native",
+      "coupled": false,
+      "rate": 1000,
+      "times": [
+        0,
+        0.0001,
+        0.01,
+        0.1,
+        1
+      ],
+      "options": {
+        "reltol": 1e-11,
+        "abstol": 1e-13,
+        "quad_err_con": true,
+        "linear_multistep_method": "adams"
+      },
+      "analytic": -9.093774110122081e-05,
+      "primal_error": 4.090283667324002e-12,
+      "direct_error": 9.259086553026208e-16,
+      "actual": -9.093774101309626e-05,
+      "adjoint_error": 8.812454889081667e-14,
+      "adjoint_accurate": true,
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    },
+    {
+      "formulation": "public",
+      "coupled": false,
+      "rate": 1000,
+      "times": [
+        0,
+        0.0001,
+        0.01,
+        0.1,
+        1
+      ],
+      "options": {
+        "reltol": 1e-11,
+        "abstol": 1e-13,
+        "quad_err_con": true,
+        "linear_multistep_method": "adams"
+      },
+      "analytic": -9.093774110122081e-05,
+      "primal_error": 4.090283667324002e-12,
+      "direct_error": 9.259086553026208e-16,
+      "actual": -9.093774101309626e-05,
+      "adjoint_error": 8.812454889081667e-14,
+      "adjoint_accurate": true,
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    },
+    {
+      "formulation": "native",
+      "coupled": false,
+      "rate": 1000,
+      "times": [
+        0,
+        0.0001,
+        0.01,
+        0.1,
+        1
+      ],
+      "options": {
+        "reltol": 1e-11,
+        "abstol": 1e-13,
+        "quad_err_con": true,
+        "interpolation_type": "polynomial"
+      },
+      "analytic": -9.093774110122081e-05,
+      "primal_error": 4.6342152337786047e-11,
+      "direct_error": 2.3152008467915847e-13,
+      "adjoint_accurate": false,
+      "error": "Error in Function::call for 'adjoint' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adjoint' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj1_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens1_F' [CvodesInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/cvodes_interface.cpp:403: CVodeB returned \"CV_TOO_MUCH_WORK\". Consult CVODES documentation.",
+      "process_exit_code": 0,
+      "stderr_first_line": "At t = 0.992434, mxstep steps taken before reaching tout."
+    },
+    {
+      "formulation": "public",
+      "coupled": false,
+      "rate": 1000,
+      "times": [
+        0,
+        0.0001,
+        0.01,
+        0.1,
+        1
+      ],
+      "options": {
+        "reltol": 1e-11,
+        "abstol": 1e-13,
+        "quad_err_con": true,
+        "interpolation_type": "polynomial"
+      },
+      "analytic": -9.093774110122081e-05,
+      "primal_error": 4.6342152337786047e-11,
+      "direct_error": 2.3152008467915847e-13,
+      "adjoint_accurate": false,
+      "error": "Error in Function::call for 'adjoint' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adjoint' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj1_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens1_F' [CvodesInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/cvodes_interface.cpp:403: CVodeB returned \"CV_TOO_MUCH_WORK\". Consult CVODES documentation.",
+      "process_exit_code": 0,
+      "stderr_first_line": "At t = 0.992434, mxstep steps taken before reaching tout."
+    },
+    {
+      "formulation": "native",
+      "coupled": false,
+      "rate": 1000,
+      "times": [
+        0,
+        0.0001,
+        0.01,
+        0.1,
+        1
+      ],
+      "options": {
+        "reltol": 1e-11,
+        "abstol": 1e-13,
+        "quad_err_con": true,
+        "steps_per_checkpoint": 1
+      },
+      "analytic": -9.093774110122081e-05,
+      "primal_error": 4.6342152337786047e-11,
+      "direct_error": 2.3152008467915847e-13,
+      "adjoint_accurate": false,
+      "error": "Error in Function::call for 'adjoint' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adjoint' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj1_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens1_F' [CvodesInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/cvodes_interface.cpp:403: CVodeB returned \"CV_TOO_MUCH_WORK\". Consult CVODES documentation.",
+      "process_exit_code": 0,
+      "stderr_first_line": "At t = 0.992434, mxstep steps taken before reaching tout."
+    },
+    {
+      "formulation": "public",
+      "coupled": false,
+      "rate": 1000,
+      "times": [
+        0,
+        0.0001,
+        0.01,
+        0.1,
+        1
+      ],
+      "options": {
+        "reltol": 1e-11,
+        "abstol": 1e-13,
+        "quad_err_con": true,
+        "steps_per_checkpoint": 1
+      },
+      "analytic": -9.093774110122081e-05,
+      "primal_error": 4.6342152337786047e-11,
+      "direct_error": 2.3152008467915847e-13,
+      "adjoint_accurate": false,
+      "error": "Error in Function::call for 'adjoint' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adjoint' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj1_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens1_F' [CvodesInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/cvodes_interface.cpp:403: CVodeB returned \"CV_TOO_MUCH_WORK\". Consult CVODES documentation.",
+      "process_exit_code": 0,
+      "stderr_first_line": "At t = 0.992434, mxstep steps taken before reaching tout."
+    },
+    {
+      "formulation": "native",
+      "coupled": false,
+      "rate": 1000,
+      "times": [
+        0,
+        0.0001,
+        0.01,
+        0.1,
+        1
+      ],
+      "options": {
+        "reltol": 1e-11,
+        "abstol": 1e-13,
+        "quad_err_con": true,
+        "max_num_steps": 50000
+      },
+      "analytic": -9.093774110122081e-05,
+      "primal_error": 4.6342152337786047e-11,
+      "direct_error": 2.3152008467915847e-13,
+      "adjoint_accurate": false,
+      "error": "Error in Function::call for 'adjoint' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adjoint' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj1_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens1_F' [CvodesInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/cvodes_interface.cpp:403: CVodeB returned \"CV_TOO_MUCH_WORK\". Consult CVODES documentation.",
+      "process_exit_code": 0,
+      "stderr_first_line": "At t = 0.992434, mxstep steps taken before reaching tout."
+    },
+    {
+      "formulation": "public",
+      "coupled": false,
+      "rate": 1000,
+      "times": [
+        0,
+        0.0001,
+        0.01,
+        0.1,
+        1
+      ],
+      "options": {
+        "reltol": 1e-11,
+        "abstol": 1e-13,
+        "quad_err_con": true,
+        "max_num_steps": 50000
+      },
+      "analytic": -9.093774110122081e-05,
+      "primal_error": 4.6342152337786047e-11,
+      "direct_error": 2.3152008467915847e-13,
+      "adjoint_accurate": false,
+      "error": "Error in Function::call for 'adjoint' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adjoint' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj1_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens1_F' [CvodesInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/cvodes_interface.cpp:403: CVodeB returned \"CV_TOO_MUCH_WORK\". Consult CVODES documentation.",
+      "process_exit_code": 0,
+      "stderr_first_line": "At t = 0.992434, mxstep steps taken before reaching tout."
+    },
+    {
+      "formulation": "native",
+      "coupled": false,
+      "rate": 1000,
+      "times": [
+        0,
+        0.0001,
+        0.01,
+        0.1,
+        1
+      ],
+      "options": {
+        "reltol": 1e-11,
+        "abstol": 1e-13,
+        "quad_err_con": true,
+        "max_step_size": 0.001
+      },
+      "analytic": -9.093774110122081e-05,
+      "primal_error": 4.6342152337786047e-11,
+      "direct_error": 2.3152008467915847e-13,
+      "adjoint_accurate": false,
+      "error": "Error in Function::call for 'adjoint' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adjoint' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj1_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens1_F' [CvodesInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/cvodes_interface.cpp:403: CVodeB returned \"CV_TOO_MUCH_WORK\". Consult CVODES documentation.",
+      "process_exit_code": 0,
+      "stderr_first_line": "At t = 0.986674, mxstep steps taken before reaching tout."
+    },
+    {
+      "formulation": "public",
+      "coupled": false,
+      "rate": 1000,
+      "times": [
+        0,
+        0.0001,
+        0.01,
+        0.1,
+        1
+      ],
+      "options": {
+        "reltol": 1e-11,
+        "abstol": 1e-13,
+        "quad_err_con": true,
+        "max_step_size": 0.001
+      },
+      "analytic": -9.093774110122081e-05,
+      "primal_error": 4.6342152337786047e-11,
+      "direct_error": 2.3152008467915847e-13,
+      "adjoint_accurate": false,
+      "error": "Error in Function::call for 'adjoint' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adjoint' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj1_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens1_F' [CvodesInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/cvodes_interface.cpp:403: CVodeB returned \"CV_TOO_MUCH_WORK\". Consult CVODES documentation.",
+      "process_exit_code": 0,
+      "stderr_first_line": "At t = 0.986674, mxstep steps taken before reaching tout."
+    },
+    {
+      "formulation": "native",
+      "coupled": true,
+      "rate": 1000,
+      "times": [
+        0,
+        0.0001,
+        0.01,
+        0.1,
+        1
+      ],
+      "options": {
+        "reltol": 1e-11,
+        "abstol": 1e-13,
+        "quad_err_con": true
+      },
+      "analytic": -9.093774110122081e-05,
+      "primal_error": 7.216834416309478e-13,
+      "direct_error": 3.4538897349806197e-13,
+      "adjoint_accurate": false,
+      "error": "Error in Function::call for 'adjoint' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adjoint' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj1_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens1_F' [CvodesInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/cvodes_interface.cpp:403: CVodeB returned \"CV_TOO_MUCH_WORK\". Consult CVODES documentation.",
+      "process_exit_code": 0,
+      "stderr_first_line": "At t = 0.990927, mxstep steps taken before reaching tout."
+    },
+    {
+      "formulation": "public",
+      "coupled": true,
+      "rate": 1000,
+      "times": [
+        0,
+        0.0001,
+        0.01,
+        0.1,
+        1
+      ],
+      "options": {
+        "reltol": 1e-11,
+        "abstol": 1e-13,
+        "quad_err_con": true
+      },
+      "analytic": -9.093774110122081e-05,
+      "primal_error": 7.216834416309478e-13,
+      "direct_error": 3.4538897349806197e-13,
+      "adjoint_accurate": false,
+      "error": "Error in Function::call for 'adjoint' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adjoint' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj1_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens1_F' [CvodesInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/cvodes_interface.cpp:403: CVodeB returned \"CV_TOO_MUCH_WORK\". Consult CVODES documentation.",
+      "process_exit_code": 0,
+      "stderr_first_line": "At t = 0.990927, mxstep steps taken before reaching tout."
+    },
+    {
+      "formulation": "native",
+      "coupled": true,
+      "rate": 1000,
+      "times": [
+        0,
+        0.0001,
+        0.01,
+        0.1,
+        1
+      ],
+      "options": {
+        "reltol": 1e-11,
+        "abstol": 1e-13,
+        "quad_err_con": true,
+        "linear_multistep_method": "adams"
+      },
+      "analytic": -9.093774110122081e-05,
+      "primal_error": 5.346834086594754e-12,
+      "direct_error": 8.804888427962596e-15,
+      "actual": -9.093774101764281e-05,
+      "adjoint_error": 8.357800129060733e-14,
+      "adjoint_accurate": true,
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    },
+    {
+      "formulation": "public",
+      "coupled": true,
+      "rate": 1000,
+      "times": [
+        0,
+        0.0001,
+        0.01,
+        0.1,
+        1
+      ],
+      "options": {
+        "reltol": 1e-11,
+        "abstol": 1e-13,
+        "quad_err_con": true,
+        "linear_multistep_method": "adams"
+      },
+      "analytic": -9.093774110122081e-05,
+      "primal_error": 5.346834086594754e-12,
+      "direct_error": 8.804888427962596e-15,
+      "actual": -9.093774101764281e-05,
+      "adjoint_error": 8.357800129060733e-14,
+      "adjoint_accurate": true,
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    },
+    {
+      "formulation": "native",
+      "coupled": true,
+      "rate": 1000,
+      "times": [
+        0,
+        0.0001,
+        0.01,
+        0.1,
+        1
+      ],
+      "options": {
+        "reltol": 1e-11,
+        "abstol": 1e-13,
+        "quad_err_con": true,
+        "interpolation_type": "polynomial"
+      },
+      "analytic": -9.093774110122081e-05,
+      "primal_error": 7.216834416309478e-13,
+      "direct_error": 3.4538897349806197e-13,
+      "adjoint_accurate": false,
+      "error": "Error in Function::call for 'adjoint' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adjoint' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj1_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens1_F' [CvodesInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/cvodes_interface.cpp:403: CVodeB returned \"CV_TOO_MUCH_WORK\". Consult CVODES documentation.",
+      "process_exit_code": 0,
+      "stderr_first_line": "At t = 0.990927, mxstep steps taken before reaching tout."
+    },
+    {
+      "formulation": "public",
+      "coupled": true,
+      "rate": 1000,
+      "times": [
+        0,
+        0.0001,
+        0.01,
+        0.1,
+        1
+      ],
+      "options": {
+        "reltol": 1e-11,
+        "abstol": 1e-13,
+        "quad_err_con": true,
+        "interpolation_type": "polynomial"
+      },
+      "analytic": -9.093774110122081e-05,
+      "primal_error": 7.216834416309478e-13,
+      "direct_error": 3.4538897349806197e-13,
+      "adjoint_accurate": false,
+      "error": "Error in Function::call for 'adjoint' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adjoint' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj1_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens1_F' [CvodesInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/cvodes_interface.cpp:403: CVodeB returned \"CV_TOO_MUCH_WORK\". Consult CVODES documentation.",
+      "process_exit_code": 0,
+      "stderr_first_line": "At t = 0.990927, mxstep steps taken before reaching tout."
+    },
+    {
+      "formulation": "native",
+      "coupled": true,
+      "rate": 1000,
+      "times": [
+        0,
+        0.0001,
+        0.01,
+        0.1,
+        1
+      ],
+      "options": {
+        "reltol": 1e-11,
+        "abstol": 1e-13,
+        "quad_err_con": true,
+        "steps_per_checkpoint": 1
+      },
+      "analytic": -9.093774110122081e-05,
+      "primal_error": 7.216834416309478e-13,
+      "direct_error": 3.4538897349806197e-13,
+      "actual": -9.093774110364446e-05,
+      "adjoint_error": 2.4236526414284087e-15,
+      "adjoint_accurate": true,
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    },
+    {
+      "formulation": "public",
+      "coupled": true,
+      "rate": 1000,
+      "times": [
+        0,
+        0.0001,
+        0.01,
+        0.1,
+        1
+      ],
+      "options": {
+        "reltol": 1e-11,
+        "abstol": 1e-13,
+        "quad_err_con": true,
+        "steps_per_checkpoint": 1
+      },
+      "analytic": -9.093774110122081e-05,
+      "primal_error": 7.216834416309478e-13,
+      "direct_error": 3.4538897349806197e-13,
+      "actual": -9.093774110364446e-05,
+      "adjoint_error": 2.4236526414284087e-15,
+      "adjoint_accurate": true,
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    },
+    {
+      "formulation": "native",
+      "coupled": true,
+      "rate": 1000,
+      "times": [
+        0,
+        0.0001,
+        0.01,
+        0.1,
+        1
+      ],
+      "options": {
+        "reltol": 1e-11,
+        "abstol": 1e-13,
+        "quad_err_con": true,
+        "max_num_steps": 50000
+      },
+      "analytic": -9.093774110122081e-05,
+      "primal_error": 7.216834416309478e-13,
+      "direct_error": 3.4538897349806197e-13,
+      "adjoint_accurate": false,
+      "error": "Error in Function::call for 'adjoint' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adjoint' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj1_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens1_F' [CvodesInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/cvodes_interface.cpp:403: CVodeB returned \"CV_TOO_MUCH_WORK\". Consult CVODES documentation.",
+      "process_exit_code": 0,
+      "stderr_first_line": "At t = 0.990927, mxstep steps taken before reaching tout."
+    },
+    {
+      "formulation": "public",
+      "coupled": true,
+      "rate": 1000,
+      "times": [
+        0,
+        0.0001,
+        0.01,
+        0.1,
+        1
+      ],
+      "options": {
+        "reltol": 1e-11,
+        "abstol": 1e-13,
+        "quad_err_con": true,
+        "max_num_steps": 50000
+      },
+      "analytic": -9.093774110122081e-05,
+      "primal_error": 7.216834416309478e-13,
+      "direct_error": 3.4538897349806197e-13,
+      "adjoint_accurate": false,
+      "error": "Error in Function::call for 'adjoint' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adjoint' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj1_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens1_F' [CvodesInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/cvodes_interface.cpp:403: CVodeB returned \"CV_TOO_MUCH_WORK\". Consult CVODES documentation.",
+      "process_exit_code": 0,
+      "stderr_first_line": "At t = 0.990927, mxstep steps taken before reaching tout."
+    },
+    {
+      "formulation": "native",
+      "coupled": true,
+      "rate": 1000,
+      "times": [
+        0,
+        0.0001,
+        0.01,
+        0.1,
+        1
+      ],
+      "options": {
+        "reltol": 1e-11,
+        "abstol": 1e-13,
+        "quad_err_con": true,
+        "max_step_size": 0.001
+      },
+      "analytic": -9.093774110122081e-05,
+      "primal_error": 7.216834416309478e-13,
+      "direct_error": 3.4538897349806197e-13,
+      "adjoint_accurate": false,
+      "error": "Error in Function::call for 'adjoint' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adjoint' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj1_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens1_F' [CvodesInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/cvodes_interface.cpp:403: CVodeB returned \"CV_TOO_MUCH_WORK\". Consult CVODES documentation.",
+      "process_exit_code": 0,
+      "stderr_first_line": "At t = 0.990927, mxstep steps taken before reaching tout."
+    },
+    {
+      "formulation": "public",
+      "coupled": true,
+      "rate": 1000,
+      "times": [
+        0,
+        0.0001,
+        0.01,
+        0.1,
+        1
+      ],
+      "options": {
+        "reltol": 1e-11,
+        "abstol": 1e-13,
+        "quad_err_con": true,
+        "max_step_size": 0.001
+      },
+      "analytic": -9.093774110122081e-05,
+      "primal_error": 7.216834416309478e-13,
+      "direct_error": 3.4538897349806197e-13,
+      "adjoint_accurate": false,
+      "error": "Error in Function::call for 'adjoint' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adjoint' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj1_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens1_F' [CvodesInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/cvodes_interface.cpp:403: CVodeB returned \"CV_TOO_MUCH_WORK\". Consult CVODES documentation.",
+      "process_exit_code": 0,
+      "stderr_first_line": "At t = 0.990927, mxstep steps taken before reaching tout."
+    }
+  ],
+  "option_references": [
+    "https://web.casadi.org/python-api/index.html",
+    "https://sundials.readthedocs.io/en/latest/cvodes/Mathematics_link.html"
+  ],
+  "source_files": {
+    "pyomo/dae/simulator.py": {
+      "bytes": 58540,
+      "sha256": "be9d88a68a042fc321cd7e3779bddc6f59858fae2bc81af3cdd7506800344d45"
+    },
+    "pyomo/dae/tests/test_simulator_ode_qualification.py": {
+      "bytes": 10098,
+      "sha256": "13b6e84cf557aca4e4b86adaf310a84d20ffe4d3daa6ef04c01a6155d06df995"
+    },
+    "examples/dae/sensitivity/ode_qualification.py": {
+      "bytes": 8444,
+      "sha256": "e68da7e2faef061e9d7de76a09a2b0ae149f130799290c6bfe9c4a596a43b15a"
+    }
+  },
+  "commands": [
+    "PYTHONPATH=<checkout> <env-python> examples/dae/sensitivity/ode_qualification.py --output <report.json>",
+    "PYTHONPATH=<checkout> <env-python> -m pytest pyomo/dae/tests -q"
+  ]
+}
