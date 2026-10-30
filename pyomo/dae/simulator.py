@@ -10,7 +10,7 @@
 import logging
 from collections.abc import Mapping
 from copy import deepcopy
-from numbers import Integral, Real
+from numbers import Complex, Integral, Real
 
 from pyomo.core.base import Constraint, Param, Var, value, Suffix, Block
 from pyomo.core.base.param import ParamData
@@ -1081,22 +1081,33 @@ class Simulator:
             'data', packed.numel()
         )
         solution = root(guess, data)
-        check = casadi.Function(
-            'check',
-            [z, packed],
-            # QR avoids factorial symbolic expansion for dense algebraic Jacobians.
-            [casadi.det(casadi.jacobian(dae['alg'], z), 'symbolicqr'), dae['alg']],
+        jacobian = casadi.jacobian(dae['alg'], z)
+        # Equilibrate rows and columns before QR; determinants can overflow or
+        # underflow even for a perfectly conditioned algebraic block.
+        row_scale = casadi.vertcat(
+            *(casadi.mmax(casadi.fabs(jacobian[i, :])) for i in range(z.numel()))
         )
-        determinant, residual = check(solution, data)
+        scaled = jacobian / casadi.repmat(
+            casadi.if_else(row_scale > 0, row_scale, 1), 1, z.numel()
+        )
+        column_scale = casadi.horzcat(
+            *(casadi.mmax(casadi.fabs(scaled[:, i])) for i in range(z.numel()))
+        )
+        scaled /= casadi.repmat(
+            casadi.if_else(column_scale > 0, column_scale, 1), z.numel(), 1
+        )
+        diagonal = casadi.diag(casadi.qr(scaled)[1])
+        check = casadi.Function('check', [z, packed], [diagonal, jacobian, dae['alg']])
+        diagonal, jacobian, residual = check(solution, data)
         valid = casadi.logic_and(
-            casadi.logic_and(
-                casadi.sum1(casadi.fabs(solution)) < casadi.inf,
-                casadi.logic_and(
-                    casadi.fabs(determinant) > 0, casadi.fabs(determinant) < casadi.inf
-                ),
+            casadi.mmin(
+                casadi.fabs(
+                    casadi.vertcat(solution, casadi.vec(jacobian), diagonal, residual)
+                )
+                < casadi.inf
             ),
             casadi.logic_and(
-                casadi.sum1(casadi.fabs(residual)) < casadi.inf,
+                casadi.mmin(casadi.fabs(diagonal)) > z.numel() * np.finfo(float).eps,
                 casadi.mmax(casadi.fabs(residual)) <= options['abstol'],
             ),
         )
@@ -1239,13 +1250,15 @@ class Simulator:
             piecewise constant profiles to be used for certain time-varying
             algebraic variables.
 
-        initcon : list of floats
+        initcon : sequence of numbers
             The initial conditions for the the differential variables. This
             is an optional argument. If not specified then the simulator
             will use the current value of the differential variables at the
             lower bound of the ContinuousSet for the initial condition.
             Algebraic variable values at that point are used as guesses for
             CasADi's consistent initialization; unset guesses default to zero.
+            Complex initial values and input amplitudes are supported by the
+            Scipy zvode integrator; other integrators require real values.
 
         integrator_options : dict
             Dictionary containing options that should be passed to the
@@ -1291,6 +1304,7 @@ class Simulator:
                 " an integrator from %s"
                 % (self._intpackage, integrator, valid_integrators)
             )
+        complex_integrator = self._intpackage == 'scipy' and integrator == 'zvode'
 
         # Set the time step or the number of points for the lists
         # returned by the integrator
@@ -1361,7 +1375,8 @@ class Simulator:
                             "Varying input switching times must be finite numbers"
                         )
                     if any(
-                        not isinstance(v, Real) or not np.isfinite(v)
+                        not isinstance(v, Complex if complex_integrator else Real)
+                        or not np.isfinite(v)
                         for v in profile.values()
                     ):
                         raise ValueError("Varying input values must be finite numbers")
@@ -1404,7 +1419,12 @@ class Simulator:
             # Keep exact switch times when the output grid differs only by roundoff.
             for switch in switchpts:
                 tolerance = 4 * np.finfo(float).eps * max(1, abs(switch))
-                tsim[np.abs(tsim - switch) <= tolerance] = switch
+                movable = (
+                    (tsim > self._contset.first())
+                    & (tsim < self._contset.last())
+                    & ~np.isin(tsim, switchpts)
+                )
+                tsim[movable & (np.abs(tsim - switch) <= tolerance)] = switch
             tsim = np.union1d(tsim, switchpts)
         else:
             simalgvars = self._algvars
@@ -1427,7 +1447,11 @@ class Simulator:
         else:
             initcon = self._get_initial_conditions(self._diffvars)
 
-        initcon = np.asarray(initcon, dtype=float)
+        if np.iscomplexobj(initcon) and not complex_integrator:
+            raise ValueError(
+                "Complex initial conditions require the Scipy zvode integrator"
+            )
+        initcon = np.asarray(initcon, dtype=complex if complex_integrator else float)
         if initcon.ndim != 1 or not np.isfinite(initcon).all():
             raise ValueError(
                 "Initial conditions must be a one-dimensional sequence of finite numbers"
@@ -1483,14 +1507,20 @@ class Simulator:
     def _simulate_with_scipy(
         self, initcon, tsim, switchpts, varying_inputs, integrator, integrator_options
     ):
-        scipyint = scipy.integrate.ode(self._rhsfun).set_integrator(
+        start = tsim[0]
+
+        def rhs(t, x):
+            """Evaluate physical time from the current phase's local time."""
+            return self._rhsfun(start + t, x)
+
+        scipyint = scipy.integrate.ode(rhs).set_integrator(
             integrator, **integrator_options
         )
-        scipyint.set_initial_value(initcon, tsim[0])
+        scipyint.set_initial_value(initcon, 0)
 
         profile = np.array(initcon)
         i = 1
-        while scipyint.successful() and scipyint.t < tsim[-1]:
+        while scipyint.successful() and i < len(tsim):
             # check if tsim[i-1] is a switching time and update value
             if tsim[i - 1] in switchpts:
                 for v in self._siminputvars.keys():
@@ -1498,9 +1528,10 @@ class Simulator:
                         p = self._templatemap[self._siminputvars[v]]
                         p.set_value(varying_inputs[v][tsim[i - 1]])
                 # Discard multistep history and cached RHS values at a discontinuity.
-                scipyint.set_initial_value(scipyint.y, scipyint.t)
+                start = tsim[i - 1]
+                scipyint.set_initial_value(scipyint.y, 0)
 
-            profilestep = scipyint.integrate(tsim[i])
+            profilestep = scipyint.integrate(tsim[i] - start)
             profile = np.vstack([profile, profilestep])
             i += 1
 

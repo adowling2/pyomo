@@ -1,0 +1,884 @@
+{
+  "date": "2026-10-30",
+  "purpose": "Post-qualification independent full-diff audit and regression fixes for one targeted Pyomo.DAE PR",
+  "source_parent_commit": "35c6d4884020af4d7a64b53f8f85a7144938ce9a",
+  "baseline_commit": "a6c7d20b27b379e9e54aa25986fcd50202fbf10c",
+  "snapshot_context": "Exact corrected implementation working tree on the committed draft; historical G0-G7 records are unchanged. Included in the audit-fix commit.",
+  "all_available_checks_passed": true,
+  "independent_audit": {
+    "reviewer": "Separate Codex worker; read-only, did not implement fixes",
+    "scope": [
+      "Entire production diff",
+      "SciPy reference fixture",
+      "All new core tests and independent oracles",
+      "Public user guide and four runnable examples",
+      "Combined PR description"
+    ],
+    "findings_reproduced_and_resolved": [
+      "Endpoint/switch observation snapping and tiny physical-time phases",
+      "Algebraic determinant overflow/underflow and dependent-root false acceptance",
+      "zvode complex initial states and varying input amplitudes"
+    ],
+    "outstanding_actionable_findings": [],
+    "full_suite": {
+      "casadi": "3.8.2",
+      "passed": 302,
+      "subtests_passed": 320,
+      "process_exit": 0,
+      "source_unchanged_during_run": true,
+      "source_sha256": {
+        "pyomo/dae/simulator.py": "fba872e69865b18385df97442d14e17889b2bda45478d0b08f7ee779eda6747b",
+        "pyomo/dae/tests/test_simulator_interface.py": "0bfb5b883209d1e1bae278a8b90fd00a5f612f770b7909176ed1611fa348b52f",
+        "pyomo/dae/tests/test_simulator_dae_compile.py": "30e926b6712262067a930016c6d3359347bc1091b91e6f90367effc4b2bd4512",
+        "doc/OnlineDocs/explanation/modeling/dae.rst": "defa475eac363b5d77bf27444e00dd69c3b65d419066d34af3b5fab2c7028caf"
+      }
+    },
+    "additional_checks": {
+      "3.8.1": {
+        "casadi": "3.8.1",
+        "checks": [
+          {
+            "case": "endpoint-adjacent-pulse",
+            "package": "scipy",
+            "times": [
+              0.0,
+              0.5,
+              0.9999999999999999,
+              1.0
+            ],
+            "final": 2.1102230246251565
+          },
+          {
+            "case": "endpoint-adjacent-pulse",
+            "package": "scipy",
+            "times": [
+              1.0,
+              1.0000000000000002,
+              1.5,
+              2.0
+            ],
+            "final": 3.220446049250312
+          },
+          {
+            "case": "endpoint-adjacent-pulse",
+            "package": "scipy",
+            "times": [
+              0.0,
+              0.5,
+              0.5000000000000001,
+              1.0
+            ],
+            "final": 2.1102230246251565
+          },
+          {
+            "case": "endpoint-adjacent-pulse",
+            "package": "casadi",
+            "times": [
+              0.0,
+              0.5,
+              0.9999999999999999,
+              1.0
+            ],
+            "final": 2.1102230246251565
+          },
+          {
+            "case": "endpoint-adjacent-pulse",
+            "package": "casadi",
+            "times": [
+              1.0,
+              1.0000000000000002,
+              1.5,
+              2.0
+            ],
+            "final": 3.2204460492503135
+          },
+          {
+            "case": "endpoint-adjacent-pulse",
+            "package": "casadi",
+            "times": [
+              0.0,
+              0.5,
+              0.5000000000000001,
+              1.0
+            ],
+            "final": 2.1102230246251565
+          },
+          {
+            "case": "complex-IC",
+            "type": "list",
+            "final": "(0.36787975213557883+0.36787975213557883j)"
+          },
+          {
+            "case": "complex-IC",
+            "type": "ndarray",
+            "final": "(0.36787975213557883+0.36787975213557883j)"
+          },
+          {
+            "case": "complex-controls",
+            "final": "(1+1.5j)"
+          },
+          {
+            "case": "outside-det-range",
+            "n": 180,
+            "scale": 0.01,
+            "adjoint_x0": 180.0
+          },
+          {
+            "case": "outside-det-range",
+            "n": 160,
+            "scale": 100,
+            "adjoint_x0": 160.0
+          },
+          {
+            "case": "dependent-rows-refused",
+            "scale": 1
+          },
+          {
+            "case": "dependent-rows-refused",
+            "scale": 3
+          },
+          {
+            "case": "dependent-rows-refused",
+            "scale": 1e-08
+          },
+          {
+            "case": "dependent-rows-refused",
+            "scale": 100000000.0
+          }
+        ],
+        "passed": true
+      },
+      "3.8.2": {
+        "casadi": "3.8.2",
+        "checks": [
+          {
+            "case": "endpoint-adjacent-pulse",
+            "package": "scipy",
+            "times": [
+              0.0,
+              0.5,
+              0.9999999999999999,
+              1.0
+            ],
+            "final": 2.1102230246251565
+          },
+          {
+            "case": "endpoint-adjacent-pulse",
+            "package": "scipy",
+            "times": [
+              1.0,
+              1.0000000000000002,
+              1.5,
+              2.0
+            ],
+            "final": 3.220446049250312
+          },
+          {
+            "case": "endpoint-adjacent-pulse",
+            "package": "scipy",
+            "times": [
+              0.0,
+              0.5,
+              0.5000000000000001,
+              1.0
+            ],
+            "final": 2.1102230246251565
+          },
+          {
+            "case": "endpoint-adjacent-pulse",
+            "package": "casadi",
+            "times": [
+              0.0,
+              0.5,
+              0.9999999999999999,
+              1.0
+            ],
+            "final": 2.1102230246251565
+          },
+          {
+            "case": "endpoint-adjacent-pulse",
+            "package": "casadi",
+            "times": [
+              1.0,
+              1.0000000000000002,
+              1.5,
+              2.0
+            ],
+            "final": 3.2204460492503135
+          },
+          {
+            "case": "endpoint-adjacent-pulse",
+            "package": "casadi",
+            "times": [
+              0.0,
+              0.5,
+              0.5000000000000001,
+              1.0
+            ],
+            "final": 2.1102230246251565
+          },
+          {
+            "case": "complex-IC",
+            "type": "list",
+            "final": "(0.36787975213557883+0.36787975213557883j)"
+          },
+          {
+            "case": "complex-IC",
+            "type": "ndarray",
+            "final": "(0.36787975213557883+0.36787975213557883j)"
+          },
+          {
+            "case": "complex-controls",
+            "final": "(1+1.5j)"
+          },
+          {
+            "case": "outside-det-range",
+            "n": 180,
+            "scale": 0.01,
+            "adjoint_x0": 180.0
+          },
+          {
+            "case": "outside-det-range",
+            "n": 160,
+            "scale": 100,
+            "adjoint_x0": 160.0
+          },
+          {
+            "case": "dependent-rows-refused",
+            "scale": 1
+          },
+          {
+            "case": "dependent-rows-refused",
+            "scale": 3
+          },
+          {
+            "case": "dependent-rows-refused",
+            "scale": 1e-08
+          },
+          {
+            "case": "dependent-rows-refused",
+            "scale": 100000000.0
+          }
+        ],
+        "passed": true
+      }
+    },
+    "human_review_completed": false
+  },
+  "validation": {
+    "3.8.1": {
+      "python": "3.12.14",
+      "casadi": "3.8.1",
+      "numpy": "2.5.4",
+      "scipy": "1.18.1",
+      "platform": "macOS 27.0.1 ARM64",
+      "full_dae_tests_passed": 302,
+      "subtests_passed": 320,
+      "process_exit_code": 0,
+      "instrumented": true,
+      "harness_cleanup_diagnostic": true
+    },
+    "3.8.2": {
+      "python": "3.12.14",
+      "casadi": "3.8.2",
+      "numpy": "2.5.4",
+      "scipy": "1.18.1",
+      "platform": "macOS 27.0.1 ARM64",
+      "full_dae_tests_passed": 302,
+      "subtests_passed": 320,
+      "process_exit_code": 0,
+      "instrumented": false,
+      "harness_cleanup_diagnostic": false
+    },
+    "3.14": {
+      "python": "3.14.3",
+      "casadi": "3.8.2",
+      "numpy": "2.5.4",
+      "scipy": "1.18.1",
+      "platform": "macOS 27.0.1 ARM64",
+      "full_dae_tests_passed": 302,
+      "subtests_passed": 320,
+      "process_exit_code": 0,
+      "instrumented": false,
+      "harness_cleanup_diagnostic": false
+    }
+  },
+  "coverage": {
+    "module": {
+      "covered_lines": 680,
+      "num_statements": 706,
+      "percent_covered": 96.3172804532578,
+      "percent_covered_display": "96",
+      "missing_lines": 26,
+      "excluded_lines": 0,
+      "percent_statements_covered": 96.3172804532578,
+      "percent_statements_covered_display": "96"
+    },
+    "source_sha256": "fba872e69865b18385df97442d14e17889b2bda45478d0b08f7ee779eda6747b",
+    "since_baseline": {
+      "modified_executable": 308,
+      "modified_covered": 304,
+      "missing_modified": [
+        827,
+        831,
+        879,
+        1466
+      ],
+      "percent": 98.7012987012987
+    },
+    "audit_fixes": {
+      "modified_executable": 24,
+      "modified_covered": 24,
+      "missing_modified": [],
+      "percent": 100.0
+    },
+    "compile": {
+      "statements": 122,
+      "covered": 119,
+      "missing": [
+        827,
+        831,
+        879
+      ]
+    },
+    "_compile_casadi_dae": {
+      "statements": 66,
+      "covered": 66,
+      "missing": []
+    },
+    "_simulate_with_scipy": {
+      "statements": 22,
+      "covered": 21,
+      "missing": [
+        1539
+      ]
+    }
+  },
+  "optional_dependencies_absent": {
+    "run": 164,
+    "passed": 7,
+    "skipped": 157,
+    "process_exit_code": 0
+  },
+  "documentation": {
+    "sphinx": "9.1.1",
+    "focused_guide_API_warnings_as_errors": true,
+    "guide_blocks": 5,
+    "analytic_examples": 4,
+    "download_hashes": 4,
+    "examples_all_three_environments": true,
+    "full_manual": false,
+    "external_link_check": false
+  },
+  "DAE_collocation_recheck": {
+    "3.8.1": {
+      "purpose": "G7 public DAE versus implicit Radau direct/adjoint sensitivities",
+      "passed": true,
+      "model": "x'=-k*z, q'=x, z=a*x, x0=k^2, q0=0; J=2*xT+3*qT+4*zT+k^2+.2*a^2",
+      "point": [
+        0.7,
+        1.4
+      ],
+      "public": {
+        "terminal": [
+          0.1511700543893788,
+          0.3457448424598176,
+          0.21163807614513025
+        ],
+        "cost": 3.068126940738731,
+        "direct_gradient": [
+          5.011620102593522,
+          -0.15254821788647033
+        ],
+        "adjoint_gradient": [
+          5.011620102182656,
+          -0.15254821794601792
+        ],
+        "errors": {
+          "terminal": 7.926492221425453e-12,
+          "cost": 7.653640885550123e-12,
+          "terminal_direct": 2.3387415441833917e-11,
+          "cost_direct": 5.541856982799932e-11,
+          "cost_adjoint": 5.103123178909177e-11
+        }
+      },
+      "meshes": [
+        {
+          "elements": 4,
+          "ncp": 3,
+          "states": 64,
+          "equalities": 64,
+          "residual": 1.0547118733938987e-15,
+          "cost": 3.068127175694378,
+          "terminal": [
+            0.1511701061556886,
+            0.3457447896370483,
+            0.211638148617964
+          ],
+          "direct_gradient": [
+            5.011622605432838,
+            -0.15254709508136755
+          ],
+          "adjoint_gradient": [
+            5.011622605432839,
+            -0.15254709508136755
+          ],
+          "discrete_duality_error": 1.477435424667973e-16,
+          "continuous_errors": {
+            "cost": 5.776289353552347e-08,
+            "terminal": 5.982185541160909e-08,
+            "terminal_sensitivity": 5.621545199377424e-07,
+            "cost_gradient": 9.742490230500378e-07
+          },
+          "finite_differences": [
+            {
+              "step": 0.01,
+              "gradient": [
+                5.011544408577717,
+                -0.15253884514776495
+              ],
+              "discrete_error": 1.3007612129581306e-05
+            },
+            {
+              "step": 0.001,
+              "gradient": [
+                5.011621823569179,
+                -0.15254701258293757
+              ],
+              "discrete_error": 1.3005867308484456e-07
+            },
+            {
+              "step": 0.0001,
+              "gradient": [
+                5.0116225976104545,
+                -0.15254709425427393
+              ],
+              "discrete_error": 1.3012100298279692e-09
+            },
+            {
+              "step": 1e-05,
+              "gradient": [
+                5.011622605333166,
+                -0.15254709508916164
+              ],
+              "discrete_error": 1.657992807916646e-11
+            }
+          ]
+        },
+        {
+          "elements": 8,
+          "ncp": 3,
+          "states": 124,
+          "equalities": 124,
+          "residual": 2.1094237467877974e-15,
+          "cost": 3.068126948215985,
+          "terminal": [
+            0.15117005603680053,
+            0.345744840778767,
+            0.21163807845152074
+          ],
+          "direct_gradient": [
+            5.011620182671125,
+            -0.15254818196864073
+          ],
+          "adjoint_gradient": [
+            5.011620182671125,
+            -0.15254818196864028
+          ],
+          "discrete_duality_error": 3.8531075472395815e-16,
+          "continuous_errors": {
+            "cost": 1.8456627493042998e-09,
+            "terminal": 1.911457373828302e-09,
+            "terminal_sensitivity": 1.8013216545489863e-08,
+            "cost_gradient": 3.121925973503001e-08
+          },
+          "finite_differences": [
+            {
+              "step": 0.01,
+              "gradient": [
+                5.011541983398726,
+                -0.15253993219612738
+              ],
+              "discrete_error": 1.3008019472727348e-05
+            },
+            {
+              "step": 0.001,
+              "gradient": [
+                5.011619400783873,
+                -0.15254809947085057
+              ],
+              "discrete_error": 1.3006265001349434e-07
+            },
+            {
+              "step": 0.0001,
+              "gradient": [
+                5.011620174852904,
+                -0.15254818114041058
+              ],
+              "discrete_error": 1.300518079970045e-09
+            },
+            {
+              "step": 1e-05,
+              "gradient": [
+                5.0116201826044815,
+                -0.15254818206411613
+              ],
+              "discrete_error": 8.283853712423582e-11
+            }
+          ]
+        },
+        {
+          "elements": 16,
+          "ncp": 3,
+          "states": 244,
+          "equalities": 244,
+          "residual": 8.1601392309949e-15,
+          "cost": 3.068126940944962,
+          "terminal": [
+            0.15117005443482687,
+            0.3457448424134259,
+            0.2116380762087576
+          ],
+          "direct_gradient": [
+            5.011620105028664,
+            -0.15254821681059105
+          ],
+          "adjoint_gradient": [
+            5.011620105028666,
+            -0.15254821681059072
+          ],
+          "discrete_duality_error": 4.432308117526448e-16,
+          "continuous_errors": {
+            "cost": 5.834798628265059e-11,
+            "terminal": 6.043998997232994e-11,
+            "terminal_sensitivity": 5.705544046047704e-10,
+            "cost_gradient": 9.888973239511116e-10
+          },
+          "finite_differences": [
+            {
+              "step": 0.01,
+              "gradient": [
+                5.011541905678141,
+                -0.15253996704329698
+              ],
+              "discrete_error": 1.3008032636258487e-05
+            },
+            {
+              "step": 0.001,
+              "gradient": [
+                5.01161932314087,
+                -0.1525481343147561
+              ],
+              "discrete_error": 1.3006274181690351e-07
+            },
+            {
+              "step": 0.0001,
+              "gradient": [
+                5.011620097208347,
+                -0.15254821598809087
+              ],
+              "discrete_error": 1.300866771671998e-09
+            },
+            {
+              "step": 1e-05,
+              "gradient": [
+                5.011620104933279,
+                -0.1525482168140968
+              ],
+              "discrete_error": 1.5866776599121185e-11
+            }
+          ]
+        }
+      ],
+      "environment": {
+        "python": "3.12.14 (main, Sep  3 2026, 03:46:19) [Clang 21.1.8 ]",
+        "pyomo": "6.10.2.dev0",
+        "casadi": "3.8.1",
+        "numpy": "2.5.4",
+        "scipy": "1.18.1",
+        "platform": "macOS-27.0.1-arm64-arm-64bit"
+      },
+      "ASL": {
+        "path": "/Users/adowling/.idaes/bin/libpynumero_ASL.dylib",
+        "sha256": "d7d1877f8768b863185944b40a00de6e5bba19874c56541e0c81f32b47997bf8",
+        "fresh_build": false,
+        "optimization_solver_used": false
+      },
+      "source_sha256": {
+        "examples/dae/sensitivity/dae_comparison.py": "7bb9286537707535e1a95c98b47c987b78fad5df864da1766cb7a47ad20043c1",
+        "pyomo/dae/simulator.py": "fba872e69865b18385df97442d14e17889b2bda45478d0b08f7ee779eda6747b"
+      }
+    },
+    "3.8.2": {
+      "purpose": "G7 public DAE versus implicit Radau direct/adjoint sensitivities",
+      "passed": true,
+      "model": "x'=-k*z, q'=x, z=a*x, x0=k^2, q0=0; J=2*xT+3*qT+4*zT+k^2+.2*a^2",
+      "point": [
+        0.7,
+        1.4
+      ],
+      "public": {
+        "terminal": [
+          0.1511700543893788,
+          0.3457448424598176,
+          0.21163807614513025
+        ],
+        "cost": 3.068126940738731,
+        "direct_gradient": [
+          5.011620102552627,
+          -0.15254821789964856
+        ],
+        "adjoint_gradient": [
+          5.011620102182656,
+          -0.15254821794601792
+        ],
+        "errors": {
+          "terminal": 7.926492221425453e-12,
+          "cost": 7.653640885550123e-12,
+          "terminal_direct": 1.4214661797998559e-11,
+          "cost_direct": 4.3984569866215576e-11,
+          "cost_adjoint": 5.103123178909177e-11
+        }
+      },
+      "meshes": [
+        {
+          "elements": 4,
+          "ncp": 3,
+          "states": 64,
+          "equalities": 64,
+          "residual": 1.0547118733938987e-15,
+          "cost": 3.068127175694378,
+          "terminal": [
+            0.1511701061556886,
+            0.3457447896370483,
+            0.211638148617964
+          ],
+          "direct_gradient": [
+            5.011622605432838,
+            -0.15254709508136755
+          ],
+          "adjoint_gradient": [
+            5.011622605432839,
+            -0.15254709508136755
+          ],
+          "discrete_duality_error": 1.477435424667973e-16,
+          "continuous_errors": {
+            "cost": 5.776289353552347e-08,
+            "terminal": 5.982185541160909e-08,
+            "terminal_sensitivity": 5.621545199377424e-07,
+            "cost_gradient": 9.742490230500378e-07
+          },
+          "finite_differences": [
+            {
+              "step": 0.01,
+              "gradient": [
+                5.011544408577717,
+                -0.15253884514776495
+              ],
+              "discrete_error": 1.3007612129581306e-05
+            },
+            {
+              "step": 0.001,
+              "gradient": [
+                5.011621823569179,
+                -0.15254701258293757
+              ],
+              "discrete_error": 1.3005867308484456e-07
+            },
+            {
+              "step": 0.0001,
+              "gradient": [
+                5.0116225976104545,
+                -0.15254709425427393
+              ],
+              "discrete_error": 1.3012100298279692e-09
+            },
+            {
+              "step": 1e-05,
+              "gradient": [
+                5.011622605333166,
+                -0.15254709508916164
+              ],
+              "discrete_error": 1.657992807916646e-11
+            }
+          ]
+        },
+        {
+          "elements": 8,
+          "ncp": 3,
+          "states": 124,
+          "equalities": 124,
+          "residual": 2.1094237467877974e-15,
+          "cost": 3.068126948215985,
+          "terminal": [
+            0.15117005603680053,
+            0.345744840778767,
+            0.21163807845152074
+          ],
+          "direct_gradient": [
+            5.011620182671125,
+            -0.15254818196864073
+          ],
+          "adjoint_gradient": [
+            5.011620182671125,
+            -0.15254818196864028
+          ],
+          "discrete_duality_error": 3.8531075472395815e-16,
+          "continuous_errors": {
+            "cost": 1.8456627493042998e-09,
+            "terminal": 1.911457373828302e-09,
+            "terminal_sensitivity": 1.8013216545489863e-08,
+            "cost_gradient": 3.121925973503001e-08
+          },
+          "finite_differences": [
+            {
+              "step": 0.01,
+              "gradient": [
+                5.011541983398726,
+                -0.15253993219612738
+              ],
+              "discrete_error": 1.3008019472727348e-05
+            },
+            {
+              "step": 0.001,
+              "gradient": [
+                5.011619400783873,
+                -0.15254809947085057
+              ],
+              "discrete_error": 1.3006265001349434e-07
+            },
+            {
+              "step": 0.0001,
+              "gradient": [
+                5.011620174852904,
+                -0.15254818114041058
+              ],
+              "discrete_error": 1.300518079970045e-09
+            },
+            {
+              "step": 1e-05,
+              "gradient": [
+                5.0116201826044815,
+                -0.15254818206411613
+              ],
+              "discrete_error": 8.283853712423582e-11
+            }
+          ]
+        },
+        {
+          "elements": 16,
+          "ncp": 3,
+          "states": 244,
+          "equalities": 244,
+          "residual": 8.1601392309949e-15,
+          "cost": 3.068126940944962,
+          "terminal": [
+            0.15117005443482687,
+            0.3457448424134259,
+            0.2116380762087576
+          ],
+          "direct_gradient": [
+            5.011620105028664,
+            -0.15254821681059105
+          ],
+          "adjoint_gradient": [
+            5.011620105028666,
+            -0.15254821681059072
+          ],
+          "discrete_duality_error": 4.432308117526448e-16,
+          "continuous_errors": {
+            "cost": 5.834798628265059e-11,
+            "terminal": 6.043998997232994e-11,
+            "terminal_sensitivity": 5.705544046047704e-10,
+            "cost_gradient": 9.888973239511116e-10
+          },
+          "finite_differences": [
+            {
+              "step": 0.01,
+              "gradient": [
+                5.011541905678141,
+                -0.15253996704329698
+              ],
+              "discrete_error": 1.3008032636258487e-05
+            },
+            {
+              "step": 0.001,
+              "gradient": [
+                5.01161932314087,
+                -0.1525481343147561
+              ],
+              "discrete_error": 1.3006274181690351e-07
+            },
+            {
+              "step": 0.0001,
+              "gradient": [
+                5.011620097208347,
+                -0.15254821598809087
+              ],
+              "discrete_error": 1.300866771671998e-09
+            },
+            {
+              "step": 1e-05,
+              "gradient": [
+                5.011620104933279,
+                -0.1525482168140968
+              ],
+              "discrete_error": 1.5866776599121185e-11
+            }
+          ]
+        }
+      ],
+      "environment": {
+        "python": "3.12.14 (main, Sep  3 2026, 03:46:19) [Clang 21.1.8 ]",
+        "pyomo": "6.10.2.dev0",
+        "casadi": "3.8.2",
+        "numpy": "2.5.4",
+        "scipy": "1.18.1",
+        "platform": "macOS-27.0.1-arm64-arm-64bit"
+      },
+      "ASL": {
+        "path": "/Users/adowling/.idaes/bin/libpynumero_ASL.dylib",
+        "sha256": "d7d1877f8768b863185944b40a00de6e5bba19874c56541e0c81f32b47997bf8",
+        "fresh_build": false,
+        "optimization_solver_used": false
+      },
+      "source_sha256": {
+        "examples/dae/sensitivity/dae_comparison.py": "7bb9286537707535e1a95c98b47c987b78fad5df864da1766cb7a47ad20043c1",
+        "pyomo/dae/simulator.py": "fba872e69865b18385df97442d14e17889b2bda45478d0b08f7ee779eda6747b"
+      }
+    }
+  },
+  "checks": {
+    "black": true,
+    "typos": true,
+    "diff_check": true
+  },
+  "new_collected_regression_methods": 9,
+  "source_sha256": {
+    "pyomo/dae/simulator.py": "fba872e69865b18385df97442d14e17889b2bda45478d0b08f7ee779eda6747b",
+    "pyomo/dae/tests/test_simulator_interface.py": "0bfb5b883209d1e1bae278a8b90fd00a5f612f770b7909176ed1611fa348b52f",
+    "pyomo/dae/tests/test_simulator_dae_compile.py": "30e926b6712262067a930016c6d3359347bc1091b91e6f90367effc4b2bd4512",
+    "doc/OnlineDocs/explanation/modeling/dae.rst": "defa475eac363b5d77bf27444e00dd69c3b65d419066d34af3b5fab2c7028caf",
+    "examples/dae/sensitivity/PR_AUDIT.rst": "cc8311cf125f5cc7c42739d79d52193d495ac79ebe74bd67087f68e98de5613e",
+    "examples/dae/sensitivity/check_ode_docs.py": "a7f8b8468d73f662ab54c4ad05915aabd538bd738bcb0172a61bbb158eac71bc",
+    "examples/dae/simulator_control_sensitivity_example.py": "a2a9f2d1f43b168b6f2c05b46ba0f120f295102bd9f017cb915fdee034c41061",
+    "examples/dae/simulator_dae_control_sensitivity_example.py": "43a8a0766d98005e0c311792819fa2086731536c7715960d3aac37ccbc176181",
+    "examples/dae/simulator_sensitivity_example.py": "545c716442c650f90fd4ca7a90c928117cce9a993557f3f7e4f38acf92e547c4",
+    "examples/dae/simulator_dae_sensitivity_example.py": "56581533ed0cc9c6bb0917d575aad900b3918d3c4f0b7e0b893879f4b2bb4c22"
+  },
+  "commands": {
+    "full_suites": "cd <unique-test-dir>; PYTHONPATH=<checkout> <env-python> -m pytest <checkout>/pyomo/dae/tests -q",
+    "coverage": "cd <unique-test-dir>; PYTHONPATH=<checkout> COVERAGE_FILE=<fresh-file> <env-python> -m coverage run --source=pyomo.dae.simulator -m pytest <checkout>/pyomo/dae/tests -q",
+    "lean": "<lean-python> -m unittest discover -s pyomo/dae/tests -p 'test_simulator*.py'",
+    "docs": "PYTHONPATH=<checkout> <sphinx-env-python> examples/dae/sensitivity/check_ode_docs.py",
+    "examples_other_environments": "PYTHONPATH=<checkout> <env-python> examples/dae/sensitivity/check_ode_docs.py --skip-build",
+    "DAE_collocation": "PYTHONPATH=<checkout> <env-python> examples/dae/sensitivity/dae_comparison.py --output <report.json>"
+  },
+  "retained_limits": [
+    "Documented native stiff/zero-rate/tight-consistency failures",
+    "Local numerical rank and fixed branch only; no global index/conditioning proof",
+    "Linux/Windows and other supported Python combinations unexecuted",
+    "Full manual/external links and human review still pending",
+    "Development artifacts remain until user approves cleanup; no push or PR publication"
+  ]
+}

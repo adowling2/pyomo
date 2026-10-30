@@ -248,6 +248,44 @@ class SimulatorChecks:
             with self.subTest(grid=grid), self.assertRaises(ValueError):
                 sim.simulate(**grid)
 
+    def test_switches_adjacent_to_endpoints(self):
+        """Exact interval endpoints and close switches retain finite pulse areas."""
+        for start, end, switch, amplitude in (
+            (0, 1, np.nextafter(1.0, 0.0), 1e16),
+            (1, 2, np.nextafter(1.0, 2.0), 1e16),
+        ):
+            with self.subTest(start=start):
+                model = create_model(start, end)
+                model.u = pyo.Var(model.t)
+                model.ode = pyo.Constraint(model.t, rule=lambda m, t: m.dx[t] == m.u[t])
+                model.inputs = pyo.Suffix()
+                profile = (
+                    {start: 0, switch: amplitude}
+                    if start == 0
+                    else {start: amplitude, switch: 0}
+                )
+                model.inputs[model.u] = profile
+                _, (times, profiles) = self.simulate(
+                    model, numpoints=2, varying_inputs=model.inputs
+                )
+                np.testing.assert_array_equal(times, [start, switch, end])
+                self.assert_profile(times, profiles, piecewise_solution(times, profile))
+
+    def test_distinct_adjacent_switches(self):
+        """Grid snapping cannot merge distinct user-specified switching times."""
+        model = create_model()
+        model.u = pyo.Var(model.t)
+        model.ode = pyo.Constraint(model.t, rule=lambda m, t: m.dx[t] == m.u[t])
+        model.inputs = pyo.Suffix()
+        switch = np.nextafter(0.5, 1.0)
+        profile = {0: 0, 0.5: 1e16, switch: 0}
+        model.inputs[model.u] = profile
+        _, (times, profiles) = self.simulate(
+            model, numpoints=3, varying_inputs=model.inputs
+        )
+        np.testing.assert_array_equal(times, [0, 0.5, switch, 1])
+        self.assert_profile(times, profiles, piecewise_solution(times, profile))
+
     def test_initial_conditions(self):
         """Explicit initial conditions override values without modifying the model."""
         model = create_model()
@@ -262,7 +300,7 @@ class SimulatorChecks:
         model = create_model()
         model.ode = pyo.Constraint(model.t, rule=lambda m, t: m.dx[t] == -m.x[t])
         sim = Simulator(model, package=self.package)
-        for initial in ([], [1, 2], [[1]], [float('nan')], [float('inf')]):
+        for initial in ([], [1, 2], [[1]], [float('nan')], [float('inf')], [1 + 1j]):
             with self.subTest(initial=initial), self.assertRaises(ValueError):
                 sim.simulate(initcon=initial)
 
@@ -481,6 +519,40 @@ class TestScipyInterface(SimulatorChecks, unittest.TestCase):
     """Run shared public interface checks through SciPy."""
 
     package = 'scipy'
+
+    def test_complex_initial_conditions(self):
+        """zvode preserves complex ICs supplied as lists or NumPy arrays."""
+        model = create_model()
+        model.ode = pyo.Constraint(model.t, rule=lambda m, t: m.dx[t] == -m.x[t])
+        for initial in ([1 + 1j], np.array([1 + 1j])):
+            with self.subTest(initial_type=type(initial).__name__):
+                _, (times, profiles) = self.simulate(
+                    model, integrator='zvode', initcon=initial
+                )
+                self.assert_profile(times, profiles, (1 + 1j) * np.exp(-times))
+                self.assertEqual(model.x[0].value, 1)
+        for initial in ([complex(float('nan'), 1)], [complex(1, float('inf'))]):
+            with self.assertRaises(ValueError):
+                self.simulate(model, integrator='zvode', initcon=initial)
+
+    def test_complex_input_profiles(self):
+        """zvode retains finite complex amplitudes through constant and switched inputs."""
+        model = create_model(2, 3)
+        model.u = pyo.Var(model.t)
+        model.ode = pyo.Constraint(model.t, rule=lambda m, t: m.dx[t] == m.u[t])
+        model.inputs = pyo.Suffix()
+        for profile in ({2: 1j}, {2: 1j, 2.5: 2j}):
+            with self.subTest(profile=profile):
+                model.inputs[model.u] = profile
+                before = deepcopy(profile)
+                _, (times, profiles) = self.simulate(
+                    model, integrator='zvode', varying_inputs=model.inputs
+                )
+                self.assert_profile(times, profiles, piecewise_solution(times, profile))
+                self.assertEqual(profile, before)
+        model.inputs[model.u] = {2: complex(1, float('inf'))}
+        with self.assertRaisesRegex(ValueError, 'finite numbers'):
+            self.simulate(model, integrator='zvode', varying_inputs=model.inputs)
 
     def test_piecewise_pendulum_reference(self):
         """Check the existing pendulum example against an independent segmented solve."""

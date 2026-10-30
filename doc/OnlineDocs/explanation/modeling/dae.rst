@@ -1153,7 +1153,12 @@ DAE maps require ``quad_err_con=True``, ``calc_ic=True``, ``calc_icB=True``
 and ``suppress_algebraic=False``. Unsupported overrides raise an error.
 Scalar ``abstol`` also sets the algebraic residual target; its DAE default
 is 1e-8. Newton iteration uses a residual stopping test, finite-value checks,
-a nonzero local Jacobian determinant and a 100-iteration limit. Nonsquare,
+a local numerical-rank check and a 100-iteration limit. The rank check uses
+native QR after row/column equilibration; every absolute diagonal entry must
+exceed the algebraic dimension times double-precision machine epsilon.
+Per-entry finite checks avoid rejecting large finite vectors due to an
+overflowing sum. These checks leave the original residual and solver
+tolerances unchanged. Nonsquare,
 structurally singular or failed consistency solves raise errors. These are
 local checks, not global index or branch analysis. Scale state and residual
 equations appropriately and verify convergence for the complete map.

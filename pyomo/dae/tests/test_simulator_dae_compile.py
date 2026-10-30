@@ -718,6 +718,104 @@ class TestDAECompile(unittest.TestCase):
         with self.assertRaisesRegex(DAE_Error, 'at least one differential equation'):
             self.compile(model)
 
+    def test_large_scaled_algebraic_block(self):
+        """Regular blocks retain primal/direct/adjoint values beyond determinant range."""
+        n = 160
+        for scale in (0.001, 100):
+            with self.subTest(scale=scale):
+                model = pyo.ConcreteModel()
+                model.t = ContinuousSet(bounds=(0, 1))
+                model.a = pyo.Param(mutable=True, initialize=1.4)
+                model.x = pyo.Var(model.t)
+                model.dx = DerivativeVar(model.x)
+                model.z = pyo.Var(model.t, range(n))
+                model.ode = pyo.Constraint(
+                    model.t, rule=lambda m, t: m.dx[t] == -m.x[t]
+                )
+                model.alg = pyo.Constraint(
+                    model.t,
+                    range(n),
+                    rule=lambda m, t, i: scale * (m.z[t, i] - m.a * m.x[t]) == 0,
+                )
+                flow = self.compile(model, times=[0], parameters=[model.a])
+                point = {'x0': 1.3, 'p': 1.4, 'z0': np.full(n, 1.82)}
+                result = flow(**point)
+                self.assert_close(result['zf'], np.full((n, 1), 1.82))
+                tangent = flow.factory(
+                    'direct',
+                    ['x0', 'p', 'z0', 'fwd:x0', 'fwd:p', 'fwd:z0'],
+                    ['fwd:xf', 'fwd:zf'],
+                )(**point, fwd_x0=0.3, fwd_p=0.2, fwd_z0=np.ones(n))
+                self.assert_close(tangent['fwd_xf'], [[0.3]])
+                self.assert_close(
+                    tangent['fwd_zf'], np.full((n, 1), 1.4 * 0.3 + 1.3 * 0.2)
+                )
+                weights = np.linspace(-0.1, 0.2, n).reshape(n, 1)
+                adjoint = flow.factory(
+                    'adjoint',
+                    ['x0', 'p', 'z0', 'adj:xf', 'adj:zf'],
+                    ['adj:x0', 'adj:p', 'adj:z0'],
+                )(**point, adj_xf=0.7, adj_zf=weights)
+                self.assert_close(adjoint['adj_x0'], [[0.7 + 1.4 * weights.sum()]])
+                self.assert_close(adjoint['adj_p'], [[1.3 * weights.sum()]])
+                self.assert_close(adjoint['adj_z0'], np.zeros((n, 1)))
+
+    def test_consistent_but_dependent_algebraic_rows(self):
+        """A zero residual cannot make a numerically singular root acceptable."""
+        model = pyo.ConcreteModel()
+        model.t = ContinuousSet(bounds=(0, 1))
+        model.a = pyo.Param(mutable=True, initialize=1)
+        model.x = pyo.Var(model.t)
+        model.dx = DerivativeVar(model.x)
+        model.z = pyo.Var(model.t, range(2))
+        model.ode = pyo.Constraint(model.t, rule=lambda m, t: m.dx[t] == -m.x[t])
+        model.first = pyo.Constraint(
+            model.t, rule=lambda m, t: m.z[t, 0] + m.z[t, 1] == m.x[t]
+        )
+        for scale in (1, 3, 1e-8, 1e8):
+            with self.subTest(scale=scale):
+                if hasattr(model, 'second'):
+                    model.del_component(model.second)
+                model.second = pyo.Constraint(
+                    model.t,
+                    rule=lambda m, t: scale * (m.a * m.z[t, 0] + m.z[t, 1] - m.x[t])
+                    == 0,
+                )
+                flow = self.compile(model, parameters=[model.a], times=[0])
+                with self.assertRaisesRegex(RuntimeError, 'locally regular'):
+                    flow(x0=1, p=1, z0=[0.5, 0.5])
+                result = flow(x0=1, p=1 + 1e-5, z0=[0, 1])
+                self.assert_close(result['zf'], [[0], [1]])
+
+    def test_algebraic_guard_with_mixed_units_and_large_finite_roots(self):
+        """Row/column units and sums of finite roots do not create false singularities."""
+        for matrix, initial in (
+            (np.diag([1e-8, 1e8]), 1),
+            (np.array([[1e-8, 1e-8], [1e8, -1e8]]), 1),
+            (np.array([[1, 1e-16], [1e16, -1]]), 1),
+            (np.eye(2), 1e308),
+        ):
+            with self.subTest(matrix=matrix.tolist(), initial=initial):
+                model = pyo.ConcreteModel()
+                model.t = ContinuousSet(bounds=(0, 1))
+                model.x = pyo.Var(model.t)
+                model.dx = DerivativeVar(model.x)
+                model.z = pyo.Var(model.t, range(2))
+                model.ode = pyo.Constraint(
+                    model.t, rule=lambda m, t: m.dx[t] == -m.x[t]
+                )
+                model.alg = pyo.Constraint(
+                    model.t,
+                    range(2),
+                    rule=lambda m, t, i: sum(
+                        matrix[i, j] * (m.z[t, j] - m.x[t]) for j in range(2)
+                    )
+                    == 0,
+                )
+                flow = self.compile(model, parameters=[], times=[0])
+                result = flow(x0=initial, p=[], z0=[initial, initial])
+                self.assert_close(result['zf'], [[initial], [initial]])
+
     def test_invalid_options_and_default_absolute_tolerance(self):
         """Require consistent forward/backward initialization and algebraic error control."""
         model = dae_model()
