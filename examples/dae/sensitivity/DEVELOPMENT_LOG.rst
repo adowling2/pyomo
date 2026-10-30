@@ -217,3 +217,37 @@ The probe, convention note and versioned native records are included in
 this intermediate G6 evidence commit. Production DAE controls are still
 refused. Next action: extend the existing DAE helper and add independent
 public tests, preserving the committed switch convention and ODE behavior.
+
+30 October 2026: G6 public segmented DAE controls
+-------------------------------------------------
+
+Status: passed; this entry is included in the G6 implementation commit.
+The convention/native gate was committed first in ddcc1d8d8. The public DAE
+helper now reuses phase consistency and implicit observation reconstruction
+with selected amplitudes. No compile keyword, result class, solver fallback
+or change to simulate was added. The source diff is bounded to control
+packing, phase selection and right-side algebraic observation reconstruction.
+
+Ten new public test methods cover the planned switch/branch/IC/control
+cases, derivative products and analytic/FD checks. Full suites pass 293
+tests and 300 subtests in each of the three numerical environments. The lean
+run passes seven tests with 148 skips. Modified executable coverage is 26/26;
+the DAE helper is 60/60, and Simulator is 666/692 (96.24%). Instrumented
+semaphore cleanup diagnostics remain recorded separately from passing tests.
+
+A zero-rate affine case exposed a native IDAS adjoint iteration failure.
+The one-interval pure native reduction and both versioned result files retain
+that failure. Explicit tighter tolerances and normalized step control pass
+the complete public zero-rate derivative test; production has no conditional
+option change. See DAE_CONTROLS.rst for the failed and verified configurations.
+
+Five guide blocks and four executable analytic examples pass on all three
+environments. The focused Sphinx build passes with warnings treated as
+errors and four download hashes verified. Black, typos, RST parsing and
+diff checks pass. results/dae_controls_validation.json identifies this exact
+snapshot and reproduction commands. Historical records are preserved.
+
+Next action: G7 final support matrix, contribution/release draft and disclosure,
+full standalone-goal requirement audit (including DAE collocation comparison),
+then final local validation and a focused packaging commit. No publication
+or remote CI is authorized or claimed.

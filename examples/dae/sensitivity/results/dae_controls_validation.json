@@ -1,0 +1,177 @@
+{
+  "checkpoint": "G6",
+  "date": "2026-10-30",
+  "source_parent_commit": "ddcc1d8d8f2a301c24e870827ea00a3df1d4dd46",
+  "gate_passed": true,
+  "snapshot_context": "Public DAE controls working tree on committed native G6 gate. Exact hashes identify this snapshot; prior records remain historical.",
+  "api": {
+    "signature_changed": false,
+    "integrator": "idas",
+    "inputs": [
+      "x0",
+      "p",
+      "z0",
+      "u"
+    ],
+    "outputs": [
+      "xf",
+      "zf"
+    ],
+    "u_layout": "selected-control rows, fixed-interval columns",
+    "switch_convention": "Continuous x; right-held algebraic observations at internal switches, last interval at terminal boundary",
+    "guess_semantics": "z0 solver guess/branch seed, local physical derivative zero",
+    "future_inputs": "Strictly later intervals have zero partials for independent x0; interval starting at last observation can affect z immediately",
+    "required_options": {
+      "quad_err_con": true,
+      "calc_ic": true,
+      "calc_icB": true,
+      "suppress_algebraic": false
+    },
+    "runtime_fallback": false
+  },
+  "validation": {
+    "3.8.1": {
+      "python": "3.12.14",
+      "casadi": "3.8.1",
+      "numpy": "2.5.4",
+      "scipy": "1.18.1",
+      "platform": "macOS 27.0.1 ARM64",
+      "full_dae_tests_passed": 293,
+      "subtests_passed": 300,
+      "process_exit_code": 0
+    },
+    "3.8.2": {
+      "python": "3.12.14",
+      "casadi": "3.8.2",
+      "numpy": "2.5.4",
+      "scipy": "1.18.1",
+      "platform": "macOS 27.0.1 ARM64",
+      "full_dae_tests_passed": 293,
+      "subtests_passed": 300,
+      "process_exit_code": 0
+    },
+    "3.14": {
+      "python": "3.14.3",
+      "casadi": "3.8.2",
+      "numpy": "2.5.4",
+      "scipy": "1.18.1",
+      "platform": "macOS 27.0.1 ARM64",
+      "full_dae_tests_passed": 293,
+      "subtests_passed": 300,
+      "process_exit_code": 0
+    }
+  },
+  "optional_dependencies_absent": {
+    "run": 155,
+    "passed": 7,
+    "skipped": 148,
+    "process_exit_code": 0
+  },
+  "coverage": {
+    "module": {
+      "covered_lines": 666,
+      "num_statements": 692,
+      "percent_covered": 96.24277456647398,
+      "percent_covered_display": "96",
+      "missing_lines": 26,
+      "excluded_lines": 0,
+      "percent_statements_covered": 96.24277456647398,
+      "percent_statements_covered_display": "96"
+    },
+    "modified_executable": 26,
+    "modified_covered": 26,
+    "missing_modified": [],
+    "compile": {
+      "statements": 122,
+      "covered": 119,
+      "missing": [
+        827,
+        831,
+        879
+      ]
+    },
+    "_compile_casadi_dae": {
+      "statements": 60,
+      "covered": 60,
+      "missing": []
+    }
+  },
+  "instrumented_suite": {
+    "passed": 293,
+    "subtests_passed": 300,
+    "process_exit_code": 0,
+    "harness_cleanup_diagnostic": "Existing multiprocessing semaphore shutdown FileNotFoundError; regular suites clean."
+  },
+  "documentation": {
+    "sphinx": "9.1.1",
+    "focused_build_warnings_as_errors": true,
+    "guide_blocks": 5,
+    "analytic_examples": 4,
+    "download_hashes": 4,
+    "all_examples_three_environments": true,
+    "full_manual_build": false,
+    "external_link_check": false
+  },
+  "checks": {
+    "black": true,
+    "typos": true,
+    "rst_notes": 5,
+    "diff_check": true
+  },
+  "analytic_evidence": {
+    "new_public_test_methods": 10,
+    "comparison_rtol": 3e-07,
+    "comparison_atol": 3e-07,
+    "products": "Two JVPs, two VJPs, four duality identities against exact independent phase formulas",
+    "total_derivatives": "Nonlinear IC/shared control composition, integral/algebraic-terminal objective, explicit parameter/control energy terms, four FD steps",
+    "grids": "Initial only, truncated switch, full terminal, sparse/dense, adjacent floats, narrow finite-area pulse",
+    "branches": "Positive and negative nonlinear branches; recovery after failed switch consistency",
+    "ASL_or_optimizer_required": false
+  },
+  "dependency_limit": {
+    "reproducer": "examples/dae/sensitivity/dae_zero_rate_reproducer.py",
+    "native_default": "Single-interval zero-feedback adjoint IDA_TOO_MUCH_WORK on both versions",
+    "single_interval_refined_scaled_errors": {
+      "3.8.1": 2.0259203956842915e-08,
+      "3.8.2": 2.365305560285575e-08
+    },
+    "full_public_zero_rate_verified_options": {
+      "reltol": 1e-11,
+      "abstol": 1e-13,
+      "max_step_size": 0.001,
+      "max_num_steps": 50000
+    },
+    "options_explicit_in_test": true,
+    "general_native_robustness_claimed": false
+  },
+  "commands": {
+    "full_suite": "cd <unique-test-cwd>; PYTHONPATH=<checkout> <env-python> -m pytest <checkout>/pyomo/dae/tests -q",
+    "lean": "<lean-python> -m unittest discover -s pyomo/dae/tests -p 'test_simulator*.py'",
+    "coverage": "cd <unique-test-cwd>; PYTHONPATH=<checkout> COVERAGE_FILE=<fresh-file> <env-python> -m coverage run --source=pyomo.dae.simulator -m pytest <checkout>/pyomo/dae/tests -q",
+    "docs": "PYTHONPATH=<checkout> <sphinx-env-python> examples/dae/sensitivity/check_ode_docs.py",
+    "examples_other_envs": "PYTHONPATH=<checkout> <env-python> examples/dae/sensitivity/check_ode_docs.py --skip-build",
+    "native": "<env-python> examples/dae/sensitivity/dae_zero_rate_reproducer.py --output <report.json>"
+  },
+  "release_limits": [
+    "macOS 27.0.1 ARM64 only",
+    "Linux/Windows/remote CI unexecuted",
+    "Other native limits retained in ODE_NUMERICS.rst and DAE_DECISION.rst",
+    "G7 final contribution packaging and requirements audit still pending"
+  ],
+  "source_sha256": {
+    "pyomo/dae/simulator.py": "05bf7fd6289c120618403156bb101ddd931b8cc3e91044a8728f030d7e214881",
+    "pyomo/dae/tests/test_simulator_dae_compile.py": "0e0cc12be2f940b6206ab7529b1243f3351a14ae090c4a23fb6549fe860e49e6",
+    "pyomo/dae/tests/test_simulator_dae_controls.py": "0eafc37957fd89732c279a8f0c919de926e9112f4c70822b02c58e9add797ae0",
+    "doc/OnlineDocs/explanation/modeling/dae.rst": "f6bfc174c125821817b66201b7aba347e038f32d90330414b3c8045a6ea33231",
+    "examples/dae/simulator_dae_control_sensitivity_example.py": "43a8a0766d98005e0c311792819fa2086731536c7715960d3aac37ccbc176181",
+    "examples/dae/sensitivity/check_ode_docs.py": "a7f8b8468d73f662ab54c4ad05915aabd538bd738bcb0172a61bbb158eac71bc",
+    "examples/dae/sensitivity/dae_zero_rate_reproducer.py": "ce4ddf0496a44b254fb0e6f0b6497e281ae5059523f4aaf48c82f6718ea41b55",
+    "examples/dae/sensitivity/API_DECISION.rst": "fcaf81dc294559f453ee767888b141079494370de7d8de5fbf7ded8d0d44a2a5",
+    "examples/dae/sensitivity/DAE_DECISION.rst": "bbf9bddcb3829256cb2df83bffd9a2ab6fa878ccf3525ffae7d6cd68adfb1d34",
+    "examples/dae/sensitivity/DAE_CONTROLS.rst": "a7d8c6186edf0dab8fc6a4abc6cc9c7457d286ad3c6e1c13b0db41104cde3fbe",
+    "examples/dae/sensitivity/README.rst": "8f265219c369c79d0dd60145479257013f32e4eaf934035ae76a432f9e363b92",
+    "examples/dae/sensitivity/DEVELOPMENT_LOG.rst": "4136e653d7eabd8cdc7a79bb270d78b2ee545947fb2aa396189f05d06539793d",
+    "examples/dae/sensitivity/results/dae_zero_rate-3.8.1.json": "0c0eded1dd5b5c1d7f947524ccd7dc7a855a53ec06fe704d143b4bd4f8910e3d",
+    "examples/dae/sensitivity/results/dae_zero_rate-3.8.2.json": "166878a8f32e32cb63817a9b8ade1f3e87d70270984755f37710749f83d0b674"
+  }
+}

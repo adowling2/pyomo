@@ -1104,7 +1104,8 @@ Compiling reads neither initial state values nor guesses from the model.
 
 Both outputs have one column per requested observation. Differential rows
 follow ``get_variable_order()``; algebraic rows follow
-``get_variable_order('time-varying')``. Selected mutable parameters remain
+``get_variable_order('time-varying')`` after selected controls are removed.
+Selected mutable parameters remain
 symbolic in both differential and algebraic equations, including parameters
 appearing only in g. Integral costs can still be ordinary differential states.
 
@@ -1124,7 +1125,24 @@ an integral state and a cost involving the final algebraic state:
 :download:`simulator_dae_sensitivity_example.py
 <../../../../examples/dae/simulator_dae_sensitivity_example.py>`.
 
-The implementation composes normalized IDAS intervals over observations.
+Fixed-grid DAE controls use the same ``controls``, ``control_times`` and
+``u`` layout as ODE controls. A control may appear in the differential
+equations, algebraic residuals, or both. Differential states remain
+continuous across a switch. Algebraic observations at internal switches
+use the new, right-held amplitude; at the terminal boundary they use the
+last interval's amplitude. An amplitude starting at the final observation
+may already affect its algebraic value, even though its dynamics have not
+yet contributed. Later amplitudes have zero partial derivatives for
+independent initial states. Observation times and switch times remain fixed.
+
+The controlled example composes a shared design variable into differential
+initial states, physical parameters and interval amplitudes, then checks
+both total derivative modes against exact phase formulas:
+:download:`simulator_dae_control_sensitivity_example.py
+<../../../../examples/dae/simulator_dae_control_sensitivity_example.py>`.
+
+The implementation composes normalized IDAS intervals over observations
+and control switches.
 It uses implicit reconstruction to avoid measured inaccuracies in native
 algebraic-output adjoints. Equations with explicit time use an internal
 clock state so IDAS integrates an equivalent autonomous system; that state
@@ -1140,12 +1158,15 @@ structurally singular or failed consistency solves raise errors. These are
 local checks, not global index or branch analysis. Scale state and residual
 equations appropriately and verify convergence for the complete map.
 
-The initial DAE extension supports independent initial states, selected
-parameters and multiple observations/directions; fixed-grid DAE controls
-are not yet supported. Native IDAS convergence failures remain possible,
+The DAE extension supports independent initial states, selected parameters,
+fixed-grid controls and multiple observations/directions.
+Native IDAS convergence failures remain possible,
 including a recorded tight-tolerance adjoint consistency failure and a
 near-singular example. Such failures propagate without relaxing tolerances
-or changing the initial state. Higher-index DAEs and event-time derivatives
+or changing the initial state. Even zero feedback can require explicit
+step-size control and tighter tolerances for accurate native adjoints;
+verify derivative convergence for the chosen settings.
+Higher-index DAEs and event-time derivatives
 remain outside this interface.
 
 Specifying Time-Varying Inputs

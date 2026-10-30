@@ -749,8 +749,9 @@ class TestDAECompile(unittest.TestCase):
         model.ode = pyo.Constraint(
             model.t, rule=lambda m, t: m.dx[t] == -m.k * m.z[t] + m.u[t]
         )
-        with self.assertRaisesRegex(DAE_Error, 'DAE controls'):
-            self.compile(model, controls=[model.u], control_times=[0, 1.2])
+        # An omitted independent input leaves a nonsquare algebraic closure.
+        with self.assertRaisesRegex(DAE_Error, 'square'):
+            self.compile(model)
 
     def test_model_options_and_previous_simulation_preserved(self):
         """Successful and failed graph/evaluation calls preserve all caller-owned state."""

@@ -17,8 +17,11 @@ in ``ODE_CLOSEOUT.rst`` and ``results/ode_closeout.json``. See
 G5 now implements the index-one DAE bridge described in ``DAE_DECISION.rst``;
 its public-interface evidence is ``results/dae_compile_validation.json``
 and its runnable example is
-``examples/dae/simulator_dae_sensitivity_example.py``. DAE controls remain
-the next gated extension.
+``examples/dae/simulator_dae_sensitivity_example.py``. G6 enables fixed-grid
+DAE controls with right-side algebraic observations at switches. Its contract,
+public validation and runnable example are ``DAE_CONTROLS.rst``,
+``results/dae_controls_validation.json`` and
+``examples/dae/simulator_dae_control_sensitivity_example.py``.
 
 The supplied probes reproduce: eight of twelve native cases meet their
 analytic checks with both CasADi versions. Four cases remain outside the
@@ -222,9 +225,12 @@ record retains its original results and source hashes.
 
 This matrix covers one Python version, operating system, architecture, and
 ASL binary. Older CasADi releases, Windows/Linux, singular or high-index
-DAE support, and DAE control sensitivities remain unqualified. G5 adds
+DAE support remain unqualified. G5 adds
 public-interface checks for parameter-dependent differential ICs and
 consistent algebraic initialization on tested index-one branches, including
 reverse products. The versioned native and public records distinguish
 accurate derivative paths from numerical failures; they do not establish
-arbitrary stiff-system or branch robustness.
+arbitrary stiff-system or branch robustness. The G6 public control checks
+extend this historical work package A matrix; they do not change its original
+native probe results. See DAE_CONTROLS.rst for the additional zero-rate IDAS
+adjoint limitation and an explicitly configured, verified alternative.

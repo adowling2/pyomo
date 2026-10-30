@@ -103,3 +103,60 @@ This qualifies the native phase/observation construction for the bounded
 G6 public extension. It does not by itself complete the public-interface
 exit evidence or alter the G5 implementation. No solver setting, seed or
 switch convention was changed to obtain agreement.
+
+G6 public implementation and qualification
+------------------------------------------
+
+The public extension is implemented without new compile keywords or result
+classes. The DAE helper packs the selected amplitudes into each IDAS phase,
+then applies the existing implicit consistency function at observations with
+the specified right-held amplitude. Structural-use checks include both f
+and g. The ODE control path retains its existing construction.
+
+Ten new public test methods exercise the planned exit cases, including
+multiple controls in reversed order; time-indexed Var, mutable and immutable
+Param controls; no selected parameters; nonlinear positive/negative branches;
+initial-only, sparse/dense and adjacent floating-point observations; narrow
+finite-area pulses; shifted physical time; total derivatives through shared
+controls and nonlinear ICs; and recovery after failed switch consistency.
+Two direct directions and two adjoint directions are checked against hand
+phase derivatives, with four duality identities. The composed integral/
+algebraic terminal cost also passes a four-step FD convergence check.
+
+All full DAE suites pass 293 tests and 300 subtests on Python 3.12.14 with
+CasADi 3.8.1/3.8.2 and Python 3.14.3 with 3.8.2. The lean run has seven
+passes and 148 appropriate skips. Coverage is 26/26 modified executable
+lines, 60/60 DAE-helper statements, and 96.24% of Simulator overall. The
+instrumented suite passes with the existing semaphore shutdown diagnostic;
+regular suites are clean. Five guide blocks, four analytic examples and the
+focused Sphinx guide/API build pass, including four download hash checks.
+See results/dae_controls_validation.json for commands and source hashes.
+
+Additional native limit: zero feedback
+---------------------------------------
+
+Extending the affine test to k=0 exposes IDASolveB/IDA_TOO_MUCH_WORK on both
+versions at reltol=1e-10, abstol=1e-12. A single native interval without Pyomo,
+root reconstruction or phase composition reproduces it. Serial directions,
+second-order integration, one step per checkpoint and polynomial checkpoint
+interpolation do not resolve the scratch reduction. Raising the step budget
+can finish one interval but does not resolve the tested multi-phase map.
+
+The bounded retained reduction is dae_zero_rate_reproducer.py. It reports
+process completion separately from accuracy. Explicit max_step_size=0.001
+(normalized interval units) and max_num_steps=50000 finish its single-interval
+adjoints on both versions. The full mixed-observation public zero-rate test
+also needs reltol=1e-11, abstol=1e-13 to meet the unchanged analytic target;
+step control alone misses it by about 8e-7 in a parameter adjoint. With both
+settings, all primal/direct/adjoint and identity assertions pass in all three
+environments. The unit test supplies these options explicitly; production
+code neither detects zero feedback nor changes numerical settings for it.
+These case-specific settings do not establish a universal IDAS remedy.
+Quadrature control remains enabled in every case. Native defaults can fail
+on a simple regular DAE, so users must verify derivative convergence.
+
+The new executable example simulator_dae_control_sensitivity_example.py
+uses a nonlinear DAE and a shared design variable in x0, p and all u columns.
+It checks an integral/algebraic terminal cost against independent exact phase
+formulas without ASL or an optimization solver. G6 is passed for the bounded
+contract above. G7 final packaging and the full requirements audit remain.

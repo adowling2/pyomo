@@ -8,6 +8,8 @@ results/dae_compile_validation.json. The historical G4 native evidence is
 in results/dae_native-3.8.1.json
 and results/dae_native-3.8.2.json, with an aggregate in
 results/dae_decision.json. Those records retain their original source hashes.
+G6 adds fixed-grid controls under the convention in DAE_CONTROLS.rst;
+results/dae_controls_validation.json is the later public validation snapshot.
 
 Decision
 --------

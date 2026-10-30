@@ -31,7 +31,7 @@ from pyomo.common.fileutils import import_file
 
 
 def check_examples(root):
-    """Execute all five map guide blocks and three analytic examples."""
+    """Execute all five map guide blocks and four analytic examples."""
     source = (root / 'doc/OnlineDocs/explanation/modeling/dae.rst').read_text()
     section = source.split('Differentiable ODE Simulation\n', 1)[1].split(
         'Specifying Time-Varying Inputs\n', 1
@@ -79,9 +79,10 @@ def check_examples(root):
         'simulator_sensitivity_example.py',
         'simulator_control_sensitivity_example.py',
         'simulator_dae_sensitivity_example.py',
+        'simulator_dae_control_sensitivity_example.py',
     ):
         import_file(str(root / 'examples/dae' / name)).run_example()
-    print('Five guide snippets and three analytic examples passed.')
+    print('Five guide snippets and four analytic examples passed.')
 
 
 def build_guide(root, target):
@@ -146,6 +147,7 @@ Compiled map API
         'simulator_sensitivity_example.py',
         'simulator_control_sensitivity_example.py',
         'simulator_dae_sensitivity_example.py',
+        'simulator_dae_control_sensitivity_example.py',
     ):
         matches = list((target / 'html/_downloads').rglob(name))
         expected = hashlib.sha256(
@@ -155,7 +157,7 @@ Compiled map API
             len(matches) == 1
             and hashlib.sha256(matches[0].read_bytes()).hexdigest() == expected
         )
-    print('Guide/API HTML and three download hashes passed:', target / 'html')
+    print('Guide/API HTML and four download hashes passed:', target / 'html')
 
 
 def main():

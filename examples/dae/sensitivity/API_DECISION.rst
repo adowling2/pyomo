@@ -1,12 +1,13 @@
 Simulator sensitivity API decision
 ==================================
 
-30 October 2026. Work packages B/C and the G5 index-one DAE bridge are
+30 October 2026. Work packages B/C and the G5/G6 index-one DAE bridge are
 implemented locally; upstream maintainer review is pending. The ODE API
 was provisionally frozen after G3, recorded in ``results/ode_closeout.json``
 and ``ODE_CLOSEOUT.rst``. Current DAE validation is in
-``results/dae_compile_validation.json``; the contract and native qualifications
-are in ``DAE_DECISION.rst``. The work package C snapshot is
+``results/dae_controls_validation.json``; G5's autonomous snapshot is
+``results/dae_compile_validation.json``. The contract and native qualifications
+are in ``DAE_DECISION.rst`` and ``DAE_CONTROLS.rst``. The work package C snapshot is
 ``results/controls_validation.json``. The work package B snapshot is
 ``results/compile_validation.json``, committed in ``74e516a11``.
 
@@ -30,8 +31,11 @@ G5 extends the same method to index-one DAEs with explicit integrator='idas'.
 The additional native z0 input is a branch/solver guess; zf is reconstructed
 from the original algebraic residual using an implicit root solve. Native
 IDAS intervals provide derivative integration. Explicit time uses an internal
-clock. No new compile keyword or result wrapper is introduced. DAE controls
-remain gated on G6; the fixed-grid controls below currently apply to ODEs.
+clock. No new compile keyword or result wrapper is introduced. G6 extends
+the existing fixed-grid controls to DAEs: differential states are continuous,
+internal-switch algebraic observations use the new amplitude, and terminal
+observations use the last interval's amplitude. The native layout is
+x0, p, z0, u -> xf, zf. See DAE_CONTROLS.rst for numerical qualifications.
 
 The supplied handoff proposed a compiler/result wrapper with ``evaluate``,
 ``jvp`` and ``vjp`` methods. Defer those conveniences until a demonstrated

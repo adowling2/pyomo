@@ -1,0 +1,128 @@
+{
+  "purpose": "G6 zero-feedback native IDAS adjoint reduction",
+  "python": "3.12.14 (main, Sep  3 2026, 03:46:19) [Clang 21.1.8 ]",
+  "casadi": "3.8.2",
+  "numpy": "2.5.4",
+  "platform": "macOS-27.0.1-arm64-arm-64bit",
+  "cases": {
+    "default": {
+      "options": {
+        "reltol": 1e-10,
+        "abstol": 1e-12,
+        "quad_err_con": true,
+        "calc_ic": true,
+        "calc_icB": true,
+        "suppress_algebraic": false
+      },
+      "accurate": false,
+      "error": "Error in Function::call for 'adj2_flow' [MXFunction] at .../casadi/core/function.cpp:1655:\nError in Function::call for 'adj2_flow' [MXFunction] at .../casadi/core/function.cpp:514:\nError in Function::operator() for 'adj2_F' [MXFunction] at .../casadi/core/function.cpp:1736:\nError in Function::operator() for 'asens2_F' [IdasInterface] at .../casadi/core/function.cpp:1736:\n.../casadi/interfaces/sundials/idas_interface.cpp:620: IDASolveB returned \"IDA_TOO_MUCH_WORK\". Consult IDAS documentation.",
+      "process_exit_code": 0,
+      "stderr_first_line": "At t = 0.766294, , mxstep steps taken before reaching tout."
+    },
+    "step-limited": {
+      "options": {
+        "reltol": 1e-10,
+        "abstol": 1e-12,
+        "quad_err_con": true,
+        "calc_ic": true,
+        "calc_icB": true,
+        "suppress_algebraic": false,
+        "max_step_size": 0.001,
+        "max_num_steps": 50000
+      },
+      "accurate": true,
+      "parameter_adjoint": [
+        [
+          0.04253874439379545,
+          -0.05705530318415502
+        ],
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.02200004374447389,
+          -0.029499989063881592
+        ]
+      ],
+      "analytic_adjoint": [
+        [
+          0.042538666666666676,
+          -0.05705533333333333
+        ],
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.022000000000000006,
+          -0.0295
+        ]
+      ],
+      "scaled_error": 7.455563161362767e-08,
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    },
+    "refined": {
+      "options": {
+        "reltol": 1e-11,
+        "abstol": 1e-13,
+        "quad_err_con": true,
+        "calc_ic": true,
+        "calc_icB": true,
+        "suppress_algebraic": false,
+        "max_step_size": 0.001,
+        "max_num_steps": 50000
+      },
+      "accurate": true,
+      "parameter_adjoint": [
+        [
+          0.04253869132589173,
+          -0.0570553237683357
+        ],
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.02200001387832268,
+          -0.02949999653041938
+        ]
+      ],
+      "analytic_adjoint": [
+        [
+          0.042538666666666676,
+          -0.05705533333333333
+        ],
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.022000000000000006,
+          -0.0295
+        ]
+      ],
+      "scaled_error": 2.365305560285575e-08,
+      "process_exit_code": 0,
+      "stderr_first_line": ""
+    }
+  },
+  "source_sha256": "ce4ddf0496a44b254fb0e6f0b6497e281ae5059523f4aaf48c82f6718ea41b55"
+}

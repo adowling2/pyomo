@@ -772,14 +772,15 @@ class Simulator:
             ContinuousSet bounds. The initial time may be included.
         controls : iterable of time-indexed Var or Param components, optional
             Ordered scalar controls, each indexed solely by the ContinuousSet.
-            All independent time-varying inputs must be selected. DAE controls
-            are not yet supported.
+            All independent time-varying inputs must be selected.
         control_times : sequence of float, optional
             Fixed, strictly increasing interval boundaries, including both
             ContinuousSet bounds. Required when controls are selected. Input
             'u' has one row per control and one column per interval. Amplitudes
             apply on [control_times[j], control_times[j+1]); the terminal state
-            is reached with the last interval's amplitude.
+            is reached with the last interval's amplitude. DAE algebraic
+            observations use the right-side amplitude at internal switches,
+            and the last interval's amplitude at the terminal boundary.
         integrator : str
             Use 'cvodes' for ODEs or explicitly select 'idas' for DAEs.
             Requires package='casadi' and CasADi 3.8.1 or later.
@@ -886,8 +887,6 @@ class Simulator:
             raise DAE_Error(
                 "Algebraic equations must form a square system; select independent inputs through controls"
             )
-        if self._alglist and controls:
-            raise DAE_Error("Simulator.compile does not yet support DAE controls")
         if controls:
             control_times = np.asarray(control_times, dtype=float)
             if (
@@ -1008,19 +1007,21 @@ class Simulator:
                 raise ValueError(
                     "Selected parameter %s is unused in the equations" % parameter.name
                 )
+        control_symbols = casadi.vertcat(
+            *(self._templatemap[v] for v in control_variables)
+        )
+        for index, control in enumerate(controls):
+            if not casadi.depends_on(equations, control_symbols[index]):
+                raise ValueError(
+                    "Selected control %s is unused in the equations" % control.name
+                )
         if self._alglist:
-            return self._compile_casadi_dae(dae, times, options)
+            return self._compile_casadi_dae(
+                dae, times, options, control_symbols, control_times
+            )
         x0 = casadi.MX.sym('x0', len(self._diffvars))
         p = casadi.MX.sym('p', len(parameters))
         if controls:
-            control_symbols = casadi.vertcat(
-                *(self._templatemap[v] for v in control_variables)
-            )
-            for index, control in enumerate(controls):
-                if not casadi.depends_on(ode, control_symbols[index]):
-                    raise ValueError(
-                        "Selected control %s is unused in the ODE" % control.name
-                    )
             u = casadi.MX.sym('u', len(controls), len(control_times) - 1)
             grid = np.union1d(times, control_times[control_times <= times[-1]])
             profile = x0
@@ -1058,9 +1059,11 @@ class Simulator:
             'simulator', [x0, p], [integrate(x0=x0, p=p)['xf']], ['x0', 'p'], ['xf']
         )
 
-    def _compile_casadi_dae(self, dae, times, options):
+    def _compile_casadi_dae(self, dae, times, options, control_symbols, control_times):
         """Compose implicit IDAS intervals and differentiable consistent outputs."""
         time, x, z, p = (dae[k] for k in ('t', 'x', 'z', 'p'))
+        parameter_count, control_count = p.numel(), control_symbols.numel()
+        p = casadi.vertcat(p, control_symbols)
         packed = casadi.vertcat(time, x, p)
         root = casadi.rootfinder(
             'root',
@@ -1110,11 +1113,16 @@ class Simulator:
         x0, z0, parameters = (
             casadi.MX.sym('x0', x.numel()),
             casadi.MX.sym('z0', z.numel()),
-            casadi.MX.sym('p', p.numel()),
+            casadi.MX.sym('p', parameter_count),
         )
         initial_time = self._contset.first()
-        initial_z = consistent(z0, casadi.vertcat(initial_time, x0, parameters))
         grid = np.union1d([initial_time], times)
+        initial_parameters = parameters
+        if control_count:
+            u = casadi.MX.sym('u', control_count, len(control_times) - 1)
+            initial_parameters = casadi.vertcat(parameters, u[:, 0])
+            grid = np.union1d(times, control_times[control_times <= times[-1]])
+        initial_z = consistent(z0, casadi.vertcat(initial_time, x0, initial_parameters))
         intervals = len(grid) - 1
         xf, zf = x0, initial_z
         if intervals:
@@ -1161,23 +1169,40 @@ class Simulator:
                 ['x0', 'z0', 'p'],
                 ['xf', 'zf'],
             )
+            interval_parameters = casadi.repmat(parameters, 1, intervals)
+            if control_count:
+                phases = np.searchsorted(control_times, grid[:-1], side='right') - 1
+                interval_parameters = casadi.vertcat(
+                    interval_parameters, u[:, phases.tolist()]
+                )
             inputs = casadi.vertcat(
-                casadi.repmat(parameters, 1, intervals),
-                casadi.DM(grid[:-1]).T,
-                casadi.DM(np.diff(grid)).T,
+                interval_parameters, casadi.DM(grid[:-1]).T, casadi.DM(np.diff(grid)).T
             )
             out = phase.mapaccum('intervals', intervals, ['x0', 'z0'], ['xf', 'zf'])(
                 x0=x0, z0=initial_z, p=inputs
             )
             xf, zf = casadi.horzcat(x0, out['xf']), casadi.horzcat(initial_z, out['zf'])
         columns = np.searchsorted(grid, times).tolist()
-        return casadi.Function(
-            'simulator',
-            [x0, parameters, z0],
-            [xf[:, columns], zf[:, columns]],
-            ['x0', 'p', 'z0'],
-            ['xf', 'zf'],
-        )
+        xf, zf = xf[:, columns], zf[:, columns]
+        arguments, names = [x0, parameters, z0], ['x0', 'p', 'z0']
+        if control_count:
+            # Reproject observations with the new input at an internal switch.
+            phases = np.minimum(
+                np.searchsorted(control_times, times, side='right') - 1,
+                len(control_times) - 2,
+            )
+            zf = consistent.map(len(times))(
+                zf,
+                casadi.vertcat(
+                    casadi.DM(times).T,
+                    xf,
+                    casadi.repmat(parameters, 1, len(times)),
+                    u[:, phases.tolist()],
+                ),
+            )
+            arguments.append(u)
+            names.append('u')
+        return casadi.Function('simulator', arguments, [xf, zf], names, ['xf', 'zf'])
 
     def simulate(
         self,
