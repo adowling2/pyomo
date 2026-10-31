@@ -10,8 +10,8 @@
 <!-- DO NOT DELETE OR IGNORE THIS TEMPLATE. Failing to adhere to this template and provide the necessary information may lead to your Pull Request being closed without consideration. -->
 
 <!-- Proposed PR title: DAE: fix Simulator behavior and add differentiable ODE/DAE maps -->
-<!-- Local draft. Independent correctness audit completed; generic conditional follow-up
-     is included in beead5917.
+<!-- Local draft. Independent correctness audits completed; current implementation
+     includes the missing-input correction in 085a14557.
      Keep the development
      evidence until the author approves cleanup.
      The human submitter must complete the review-process and legal declarations. -->
@@ -55,7 +55,7 @@ algebraic switch values intentionally differ from results affected by the bugs.
 | Algebraic initialization | Pass model algebraic values as IDAS guesses in `simulate()`. Verify positive and negative nonlinear branches while preserving differential initial states. |
 | Algebraic switch outputs | Return algebraic values consistent with the newly active input at a switch while keeping differential states continuous. |
 | Complex SciPy data | Preserve finite complex ICs supplied as lists or arrays and complex control amplitudes with `zvode`; reject complex data for real-only paths. Test analytic decay and constant/switched complex inputs on shifted domains. |
-| Invalid input | Validate observation grids, initial-state shapes/finiteness, integrator selection, and used input profiles before integration. Permit an empty input suffix. |
+| Invalid input | Validate observation grids, initial-state shapes/finiteness, integrator selection, and used input profiles before integration. SciPy requires every input profile on every call, including after a previous successful simulation; omission raises before cached amplitudes can be reused. An empty suffix remains valid when the model has no time-varying inputs. |
 | Caller and Simulator state | Copy option dictionaries and preserve model values/fixity, caller options, ordering, and previous simulation results after failed calls. Test reuse after failure. |
 
 The SciPy piecewise-pendulum fixture is updated because it encoded the input-switch
@@ -200,28 +200,28 @@ analytic results without ASL or an optimization solver:
 
 ### Validation
 
-The complete `pyomo/dae/tests` runs pass **310 tests and 349 subtests in each
-environment** below on the implementation committed in `beead5917`.
+The complete `pyomo/dae/tests` runs pass **311 tests and 353 subtests in each
+environment** below on the implementation committed in `085a14557`.
 A separate worker reviewed the combined production diff, fixture, tests/oracles,
 guide/examples and draft, including a follow-up review of conditional conversion.
-Independent verification includes a full CasADi 3.8.2 run on `8cbe3070d`, fifteen
-additional regression checks per version, and targeted expression/boolean checks
-for the conditional follow-up. The final full matrix below was run on the updated
+Independent verification includes a full CasADi 3.8.2 run on `669cd15b1`, fifteen
+additional regression checks per version, targeted expression/boolean checks,
+and a follow-up of missing-input refusal and repeated-call state preservation. The final full matrix below was run on the updated
 implementation. No actionable production findings remain in the reviewed scope;
 human author review and cross-platform qualification remain pending.
 
 | Platform | Python | CasADi | NumPy | SciPy | Result |
 | --- | --- | --- | --- | --- | --- |
-| macOS 27.0.1 ARM64 | 3.12.14 | 3.8.1 | 2.5.4 | 1.18.1 | 310 tests + 349 subtests pass |
-| macOS 27.0.1 ARM64 | 3.12.14 | 3.8.2 | 2.5.4 | 1.18.1 | 310 tests + 349 subtests pass |
-| macOS 27.0.1 ARM64 | 3.14.3 | 3.8.2 | 2.5.4 | 1.18.1 | 310 tests + 349 subtests pass |
+| macOS 27.0.1 ARM64 | 3.12.14 | 3.8.1 | 2.5.4 | 1.18.1 | 311 tests + 353 subtests pass |
+| macOS 27.0.1 ARM64 | 3.12.14 | 3.8.2 | 2.5.4 | 1.18.1 | 311 tests + 353 subtests pass |
+| macOS 27.0.1 ARM64 | 3.14.3 | 3.8.2 | 2.5.4 | 1.18.1 | 311 tests + 353 subtests pass |
 
 Tests use `pyomo.common.unittest`, guarded optional dependencies, actual numerical
 integration, and independent references without mocks.
 
 | Check | Method and result |
 | --- | --- |
-| Existing Simulator behavior | Equivalent equations, constant/coupled/stiff ODEs, indexed states, explicit/shifted time, asynchronous controls, endpoints, initialization, repeated calls, and forced-failure recovery. |
+| Existing Simulator behavior | Equivalent equations, constant/coupled/stiff ODEs, indexed states, explicit/shifted time, asynchronous controls, endpoints, initialization, repeated calls, and forced-failure recovery. Missing SciPy inputs are checked on fresh and reused simulators with omitted/empty suffixes; prior results/order and `initialize_model()` remain usable, and explicit-profile reuse still succeeds. |
 | ODE derivatives | Exact exponential, affine and nonlinear solutions; a coupled matrix-exponential reference; initial/parameter/control derivatives; integral/terminal costs; two directions and scaled random weights. |
 | DAE derivatives | Exact linear, nonlinear and coupled algebraic models; both regular branches; guess invariance; parameters used only in algebraic residuals; initial-only and multiple observations; algebraic/integral terminal costs; full initial/parameter partials. |
 | Audit-derived edge cases | One-ULP finite-area pulses at either endpoint and inside the interval; complex `zvode` ICs/controls; 160-variable scaled algebraic blocks outside determinant range with analytic JVP/VJP; mixed units, finite roots of size `1e308`, and dependent-row refusal at consistent guesses with nonsingular neighbors. |
@@ -231,8 +231,8 @@ integration, and independent references without mocks.
 | Numerical convergence | Scalar tolerance sweeps, state scales separated by six orders of magnitude, explicitly scaled directions/weights, and unchanged analytic comparison targets, generally `rtol=atol=3e-7`. Selected total FD checks require best scaled error below `1e-6`. |
 | Direct/adjoint agreement | Independent analytic products plus forward-adjoint identities; agreement between the two modes alone is not the correctness criterion. |
 | Independent collocation | ODE and DAE Radau3 meshes with 4/8/16 elements. Discrete implicit derivatives agree with discrete FD, and continuous errors decrease under refinement. DAE total-cost gradient error decreases from `9.74e-7` to `3.12e-8` to `9.89e-10`; the public DAE analytic checks are below `5.6e-11`. These optional checks use PyNumero/ASL sparse solves, with no NLP solver. |
-| Dependency absence | Without NumPy, SciPy or CasADi, 172 Simulator tests run: seven pass and 165 appropriately skip. Core sensitivities and all four examples do not require ASL. |
-| Coverage | `308/312` modified executable Simulator lines covered (`98.72%`); module coverage `96.33%`; DAE helper `66/66` statements. All `24/24` executable audit-fix lines and `4/4` conditional-change statements are covered. Four uncovered statements are identified defensive guards. |
+| Dependency absence | Without NumPy, SciPy or CasADi, 173 Simulator tests run: seven pass and 166 appropriately skip. Core sensitivities and all four examples do not require ASL. |
+| Coverage | `309/313` modified executable Simulator lines covered (`98.72%`); module coverage `96.47%`; DAE helper `66/66` statements. All `24/24` executable audit-fix lines, `4/4` conditional-change statements and `2/2` moved input-validation statements are covered. Four uncovered statements are identified defensive guards. |
 | Documentation and style | Focused Sphinx 9.1.1 guide/API build with warnings as errors; five executed guide blocks; four executed analytic examples and verified download hashes; Black, repository-configured typos, and whitespace checks pass. |
 
 The coverage-instrumented run passes with an existing multiprocessing semaphore
