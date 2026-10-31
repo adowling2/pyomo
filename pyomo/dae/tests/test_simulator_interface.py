@@ -496,7 +496,7 @@ class SimulatorChecks:
                     else {'integrator_options': {'invalid_option': 1}}
                 )
                 with self.assertRaises((ValueError, TypeError, RuntimeError)):
-                    sim.simulate(**kwds)
+                    sim.simulate(varying_inputs=model.inputs, **kwds)
                 self.assertEqual(
                     [id(v) for v in sim.get_variable_order('input')], input_order
                 )
@@ -519,6 +519,44 @@ class TestScipyInterface(SimulatorChecks, unittest.TestCase):
     """Run shared public interface checks through SciPy."""
 
     package = 'scipy'
+
+    def test_missing_input_profiles_after_simulation(self):
+        """Omitted inputs fail consistently without reusing a previous amplitude."""
+        model = create_model()
+        model.u = pyo.Var(model.t, initialize=99)
+        model.ode = pyo.Constraint(model.t, rule=lambda m, t: m.dx[t] == m.u[t])
+        model.inputs, model.empty = pyo.Suffix(), pyo.Suffix()
+        model.inputs[model.u] = {0: 1, 0.5: 3}
+        simulator, (times, profiles) = self.simulate(model, varying_inputs=model.inputs)
+        prior_inputs, prior_algebraics = (
+            simulator._siminputvars,
+            simulator._simalgvars,
+        )
+        for reused in (False, True):
+            for inputs in (None, model.empty):
+                with self.subTest(reused=reused, omitted=inputs is None):
+                    candidate = (
+                        simulator if reused else Simulator(model, package='scipy')
+                    )
+                    with self.assertRaisesRegex(DAE_Error, 'provide values for all'):
+                        candidate.simulate(varying_inputs=inputs)
+                    if reused:
+                        self.assertIs(candidate._siminputvars, prior_inputs)
+                        self.assertIs(candidate._simalgvars, prior_algebraics)
+                        np.testing.assert_array_equal(candidate._tsim, times)
+                        np.testing.assert_array_equal(candidate._simsolution, profiles)
+                        candidate.initialize_model()
+                        self.assertAlmostEqual(model.x[1].value, 3, delta=2e-7)
+        repeated_times, repeated_profile = simulator.simulate(
+            numpoints=11, varying_inputs=model.inputs, integrator_options=self.options()
+        )
+        self.assert_profile(
+            repeated_times,
+            repeated_profile,
+            piecewise_solution(repeated_times, model.inputs[model.u]),
+        )
+        self.assertEqual(model.u[0].value, 99)
+        self.assertEqual(model.u[1].value, 99)
 
     def test_complex_initial_conditions(self):
         """zvode preserves complex ICs supplied as lists or NumPy arrays."""

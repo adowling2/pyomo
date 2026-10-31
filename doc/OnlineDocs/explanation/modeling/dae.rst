@@ -1211,6 +1211,13 @@ applies from its switching time to the next switch. Differential states
 remain continuous; reported algebraic states at a switch use the new input
 values, including at a switch at the final time.
 
+For SciPy, supply profiles for all time-varying inputs on every simulation
+call. Omitted or incomplete input specifications raise an error before
+integration; a later call does not implicitly reuse earlier amplitudes.
+Failed input validation preserves the last successful simulation and its
+variable ordering. An empty suffix remains valid when the model has no
+time-varying inputs.
+
 .. doctest::
 
     >>> m = pyo.ConcreteModel()

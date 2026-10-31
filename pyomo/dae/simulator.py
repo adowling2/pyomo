@@ -1392,17 +1392,6 @@ class Simulator:
                 else:
                     simalgvars.append(alg)
 
-            if self._intpackage == 'scipy' and len(simalgvars) != 0:
-                raise DAE_Error(
-                    "When simulating with Scipy you must "
-                    "provide values for all parameters "
-                    "and algebraic variables that are indexed "
-                    "by the ContinuoutSet using the "
-                    "'varying_inputs' keyword argument. "
-                    "Please refer to the simulator documentation "
-                    "for more information."
-                )
-
             # Get the set of unique points
             switchpts = list(set(switchpts))
             switchpts.sort()
@@ -1433,6 +1422,17 @@ class Simulator:
             tsim = np.union1d(tsim, switchpts)
         else:
             simalgvars = self._algvars
+
+        if self._intpackage == 'scipy' and len(simalgvars) != 0:
+            raise DAE_Error(
+                "When simulating with Scipy you must "
+                "provide values for all parameters "
+                "and algebraic variables that are indexed "
+                "by the ContinuousSet using the "
+                "'varying_inputs' keyword argument. "
+                "Please refer to the simulator documentation "
+                "for more information."
+            )
 
         # Check if initial conditions were provided, otherwise obtain
         # them from the current variable values
