@@ -17,7 +17,7 @@ from pyomo.core.base.param import ParamData
 from pyomo.dae import ContinuousSet, DerivativeVar
 from pyomo.dae.diffvar import DAE_Error
 import pyomo.core.expr as EXPR
-from pyomo.core.expr.numvalue import native_numeric_types
+from pyomo.core.expr.numvalue import native_logical_types, native_numeric_types
 from pyomo.core.expr.template_expr import IndexTemplate, _GetItemIndexer
 from pyomo.common.dependencies import (
     numpy as np,
@@ -332,6 +332,8 @@ class Convert_Pyomo2Casadi_Visitor(EXPR.ExpressionValueVisitor):
 
     def visit(self, node, values):
         """Visit nodes that have been expanded"""
+        if isinstance(node, EXPR.Expr_ifExpression):
+            return casadi.if_else(*values)
         return node._apply_operation(values)
 
     def visiting_potential_leaf(self, node):
@@ -340,7 +342,10 @@ class Convert_Pyomo2Casadi_Visitor(EXPR.ExpressionValueVisitor):
 
         Return True if the node is not expanded.
         """
-        if node.__class__ in native_numeric_types:
+        if (
+            node.__class__ in native_numeric_types
+            or node.__class__ in native_logical_types
+        ):
             return True, node
 
         if node.__class__ is casadi.SX:

@@ -965,6 +965,20 @@ in its `sensitivity guide
 <https://web.casadi.org/docs/#initial-value-problems-and-sensitivity-analysis>`_.
 It does not construct separate Pyomo components for sensitivity equations.
 
+The CasADi backend translates declarative Pyomo ``Expr_if`` expressions
+through ``casadi.if_else`` in both ``simulate()`` and ``compile()``. Numeric
+conditions, native boolean conditions and single relational comparisons are
+supported; compound logical expressions and three-term ranged comparisons
+require additional converter support. Nested conditionals and parameter-only
+conditional nodes retain their symbolic
+dependencies; selected parameter values can choose a branch at evaluation.
+Derivatives describe the selected branch locally. A finite derivative returned
+at a nonsmooth or singular branch boundary does not establish mathematical
+differentiability there. This translation adds no event detection or
+switching-time sensitivities and makes no general short-circuit evaluation
+guarantee for inactive branch domains. Check the model's domains and derivative
+convergence on the branches of interest.
+
 Fixed-Grid Controls and Total Derivatives
 *****************************************
 
