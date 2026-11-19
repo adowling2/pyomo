@@ -191,44 +191,75 @@ can be computed without relying on strong distributional assumptions. This metho
 Likelihood Ratio Test
 ---------------------
 
-The likelihood ratio test is a non-intrusive method that compares how well two parameter sets explain the
-observed data: an unconstrained set and a constrained set defined by the null hypothesis. It is commonly used
-to assess whether restricting parameters significantly degrades model fit. This method is summarized as follows:
+Use :meth:`~pyomo.contrib.parmest.parmest.Estimator.theta_est` to fit the model,
+:meth:`~pyomo.contrib.parmest.parmest.Estimator.objective_at_theta` to evaluate
+candidate parameter vectors on the same data, and
+:meth:`~pyomo.contrib.parmest.parmest.Estimator.likelihood_ratio_test` to
+classify the candidates. The output gives a Boolean column for each
+confidence level in ``alphas``. For example, ``0.95`` represents 95% confidence.
+With ``return_thresholds=True``, the method also returns the cutoffs in the
+same units as the input objective.
 
-1. Step 1: State the hypothesis
+Let :math:`Q(\theta)` be the objective returned by parmest, a mean of the
+per-experiment objectives over :math:`S` experiments, and :math:`\hat\theta`
+be the unrestricted fit. The likelihood-ratio statistic is twice the
+difference between the unrestricted and restricted maximized log-likelihoods.
+Under regularity conditions it is asymptotically :math:`\chi^2_p`, where
+:math:`p` is the number of fitted scalar parameters fixed by the candidate.
+This method fixes the full parameter vector. It does not profile subsets of
+the fitted parameters.
 
-    Null hypothesis: :math:`\theta \in \Theta_0` vs. Alternative hypothesis: :math:`\theta \notin \Theta_0`
+* For unregularized ``SSE`` with independent Gaussian errors of unknown common
+  variance, let :math:`n` be the number of scalar residuals in the objective.
+  Profiling the variance gives
 
-2. Step 2: Define the test statistic
+  .. math::
 
-    The test statistic is the ratio of the maximum likelihood under the full parameter space to that under the
-    constrained space:
+     T(\theta) = n\log\!\left(\frac{Q(\theta)}{Q(\hat\theta)}\right).
 
-    .. math::
-        \lambda_n =
-        \frac{\sup_{\theta \in \Theta} L(\theta; y_1, \dots, y_n)}{
-        \sup_{\theta \in \Theta_0} L(\theta; y_1, \dots, y_n)}
+  Thus the cutoff at confidence level :math:`a` is
+  :math:`Q(\hat\theta)\exp(\chi^2_{p,a}/n)`. This calculation requires a
+  positive fitted SSE and :math:`n>p`.
 
-3. Step 3: Define the decision rule
+* For unregularized ``SSE_weighted`` with independent Gaussian errors and
+  known, fixed measurement standard deviations, the summed objective is
+  the negative log-likelihood up to a constant. The statistic is
 
-    Reject the null hypothesis if:
+  .. math::
 
-    .. math::
-        \lambda_n > c_{\alpha}
+     T(\theta) = 2S\left[Q(\theta)-Q(\hat\theta)\right].
 
-    Equivalently, using maximum likelihood estimates:
+  The cutoff is :math:`Q(\hat\theta) + \chi^2_{p,a}/(2S)`. A shared, known
+  standard deviation can be supplied for every measurement to use this
+  case.
 
-    .. math::
-        \lambda_n =
-        \frac{L(\hat{\theta}; y_1, \dots, y_n)}{L(\hat{\theta}_0; y_1, \dots, y_n)} > c_{\alpha}
+For custom objectives and the deprecated estimator interface, parmest
+retains the historical chi-squared approximation using
+:math:`Q(\hat\theta)[1+\chi^2_{p,a}/(S-p)]`. This rule assumes a constant
+multiple of SSE with one independent scalar residual per experiment and
+unknown common variance. A generic loss or a user-supplied negative
+log-likelihood need not have this interpretation. A nonzero L2 penalty is
+incompatible with these likelihood-ratio calculations.
 
-.. note::
-
-    The example code for this method will soon be provided.
+The chi-squared approximation assumes an identifiable model, an interior
+true parameter, and comparable minimized objectives on the same data. In
+small samples, at parameter boundaries, or with weak identifiability, the
+reported region may differ from the intended coverage. See
+`Wilks (1938) <https://doi.org/10.1214/aoms/1177732360>`_,
+`Seber and Wild, Section 5.2.3 <https://doi.org/10.1002/0471725315.ch5>`_,
+and `Self and Liang (1987) <https://doi.org/10.1080/01621459.1987.10478472>`_.
 
 Leave-N-Out
 -----------
 
-.. note::
+:meth:`~pyomo.contrib.parmest.parmest.Estimator.theta_est_leaveNout` fits each
+complement after leaving out ``lNo`` experiments.
+:meth:`~pyomo.contrib.parmest.parmest.Estimator.leaveNout_bootstrap_test` fits
+the held-out experiments themselves and compares that fit with the bootstrap
+cloud from the complementary training set. Both subsets must support their
+respective fits. This comparison is a sensitivity diagnostic. In particular,
+the held-out estimator and the training estimator can have different
+sampling variances, so the membership flags do not give a calibrated
+hypothesis test.
 
-    Detailed descriptions and example code for this method will be added in a future update.
+A random seed controls the split and training draws together. The training draws retain the existing bootstrap requirement for more distinct experiments than fitted parameters.

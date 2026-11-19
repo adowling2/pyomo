@@ -105,8 +105,8 @@ def SSE(model):
 def SSE_weighted(model):
     """
     Returns an expression that is used to compute the 'SSE_weighted' objective,
-    assuming Gaussian i.i.d. errors, with measurement error standard deviation
-    defined in the annotated Pyomo model
+    assuming independent Gaussian errors with known measurement standard
+    deviations defined in the annotated Pyomo model
 
     Parameters
     ----------
@@ -538,6 +538,159 @@ class ObjectiveType(Enum):
 
 class RegularizationType(Enum):
     L2 = "L2"
+
+
+def _count_residuals(experiment_list):
+    """Count the scalar observations appearing in the built-in SSE."""
+    return sum(
+        len(_get_labeled_model(exp).experiment_outputs) for exp in experiment_list
+    )
+
+
+def _likelihood_ratio_region(
+    obj_at_theta,
+    obj_value,
+    alphas,
+    return_thresholds,
+    p,
+    num_experiments,
+    *,
+    num_residuals=None,
+    known_variance=False,
+):
+    """Classify candidates using thresholds in the input objective's units."""
+    assert isinstance(obj_at_theta, pd.DataFrame)
+    assert isinstance(obj_value, (int, float))
+    assert isinstance(alphas, list)
+    assert isinstance(return_thresholds, bool)
+
+    if p < 1:
+        raise ValueError(
+            "A likelihood-ratio region requires at least one fitted parameter."
+        )
+    if not all(0 <= a <= 1 for a in alphas):
+        raise ValueError("Confidence levels must be between 0 and 1.")
+
+    if not np.isfinite(obj_value) or obj_value < 0:
+        raise ValueError("The fitted objective must be finite and nonnegative.")
+    if not known_variance:
+        n = num_experiments if num_residuals is None else num_residuals
+        if n <= p or obj_value == 0:
+            raise ValueError(
+                "An unknown-variance likelihood-ratio region requires a positive "
+                "fitted objective and more observations than fitted parameters."
+            )
+
+    result = obj_at_theta.copy()
+    thresholds = {}
+    for a in alphas:
+        critical_value = scipy.stats.chi2.ppf(a, p)
+        if known_variance:
+            threshold = obj_value + critical_value / (2 * num_experiments)
+        elif num_residuals is not None:
+            threshold = obj_value * np.exp(critical_value / num_residuals)
+        else:
+            threshold = obj_value * (1 + critical_value / (num_experiments - p))
+        thresholds[a] = threshold
+        result[a] = np.isfinite(result['obj']) & (result['obj'] <= threshold)
+
+    if return_thresholds:
+        return result, pd.Series(thresholds)
+    return result
+
+
+def _leave_n_out_bootstrap(
+    estimator,
+    num_experiments,
+    lNo,
+    lNo_samples,
+    bootstrap_samples,
+    distribution,
+    alphas,
+    seed,
+):
+    """Fit held-out experiments and bootstrap their complementary training sets."""
+    if not 0 < lNo < num_experiments:
+        raise ValueError("Leave-N-out requires nonempty test and training sets.")
+    if bootstrap_samples < 1 or (lNo_samples is not None and lNo_samples < 1):
+        raise ValueError("The number of samples must be positive.")
+    if num_experiments - lNo <= len(estimator._return_theta_names()):
+        raise ValueError(
+            "The training set must contain more experiments than fitted "
+            "parameters for the existing bootstrap sampling rule."
+        )
+
+    mpi = utils.MPIInterface()
+    if mpi.have_mpi and mpi.size > 1 and seed is None:
+        seed = mpi.comm.bcast(
+            np.random.randint(2**31) if mpi.rank == 0 else None, root=0
+        )
+    rng = np.random if seed is None else np.random.RandomState(seed)
+    population = range(num_experiments)
+    if lNo_samples is None:
+        splits = (np.asarray(sample) for sample in combinations(population, lNo))
+    else:
+        splits = [
+            sorted(rng.choice(population, lNo, replace=False).tolist())
+            for _ in range(lNo_samples)
+        ]
+
+    # A diagnostic on subsets must not replace the full-data solution.
+    fit_attributes = (
+        'ef_instance',
+        'obj_value',
+        'estimated_theta',
+        'obj_probability_constant',
+        'parmest_model',
+    )
+    saved_fit = {
+        name: vars(estimator)[name]
+        for name in fit_attributes
+        if name in vars(estimator)
+    }
+
+    results = []
+    try:
+        for held_out in splits:
+            theta = _fit_leave_n_out_samples(estimator, [held_out], mpi)
+            remaining = sorted(set(population).difference(held_out))
+            samples = estimator._get_sample_list(
+                len(remaining), bootstrap_samples, population=remaining, rng=rng
+            )
+            fits = _fit_leave_n_out_samples(
+                estimator, [sample for _, sample in samples], mpi
+            )
+            training, test = estimator.confidence_region_test(
+                fits, distribution=distribution, alphas=alphas, test_theta_values=theta
+            )
+            results.append((held_out, test, training))
+    finally:
+        for name in fit_attributes:
+            vars(estimator).pop(name, None)
+        vars(estimator).update(saved_fit)
+    return results
+
+
+def _fit_leave_n_out_samples(estimator, samples, mpi):
+    """Fit the selected experiments and gather outcomes in sample order."""
+    task_mgr = utils.ParallelTaskManager(len(samples), mpi)
+    fits = []
+    for sample in task_mgr.global_to_local_data(samples):
+        indices = [int(i) for i in sample]
+        try:
+            _, theta = estimator._Q_opt(bootlist=indices)
+        except Exception as error:
+            if not mpi.have_mpi or mpi.size == 1:
+                raise
+            # All ranks must reach the collective, even if one fit fails.
+            fits.append((None, f"Sample {indices}: {type(error).__name__}: {error}"))
+        else:
+            fits.append((theta, None))
+    fits = task_mgr.allgather_global_data(fits)
+    for _, error in fits:
+        if error is not None:
+            raise RuntimeError(error)
+    return pd.DataFrame([theta for theta, _ in fits])
 
 
 # Compute the Jacobian matrix of measured variables with respect to the parameters
@@ -1364,7 +1517,9 @@ class Estimator:
         """
         model = pyo.ConcreteModel()
 
-        template_model = self._create_parmest_model(0)
+        template_model = self._create_parmest_model(
+            0 if bootlist is None else bootlist[0]
+        )
         expanded_theta_names, expanded_theta_cuids = self._expanded_theta_info(
             template_model
         )
@@ -1907,10 +2062,15 @@ class Estimator:
 
         return cov
 
-    def _get_sample_list(self, samplesize, num_samples, replacement=True):
+    def _get_sample_list(
+        self, samplesize, num_samples, replacement=True, *, population=None, rng=None
+    ):
         samplelist = list()
 
-        scenario_numbers = list(range(len(self.exp_list)))
+        scenario_numbers = (
+            list(range(len(self.exp_list))) if population is None else population
+        )
+        rng = np.random if rng is None else rng
 
         if num_samples is None:
             # This could get very large
@@ -1924,7 +2084,7 @@ class Estimator:
                 while (unique_samples <= len(self._return_theta_names())) and (
                     not duplicate
                 ):
-                    sample = np.random.choice(
+                    sample = rng.choice(
                         scenario_numbers, samplesize, replace=replacement
                     )
                     sample = np.sort(sample).tolist()
@@ -2183,20 +2343,19 @@ class Estimator:
         self, lNo, lNo_samples, bootstrap_samples, distribution, alphas, seed=None
     ):
         """
-        Leave-N-out bootstrap test to compare theta values where N data points are
-        left out to a bootstrap analysis using the remaining data,
-        results indicate if theta is within a confidence region
-        determined by the bootstrap analysis
+        Compare a held-out fit to the bootstrap cloud from the remaining experiments.
+
+        This is a sensitivity diagnostic. It does not calibrate the membership
+        flags for the sample size of the held-out fit.
 
         Parameters
         ----------
         lNo: int
-            Number of data points to leave out for parameter estimation
+            Number of whole experiments to hold out.
         lNo_samples: int
-            Leave-N-out sample size. If lNo_samples=None, the maximum number
-            of combinations will be used
-        bootstrap_samples: int:
-            Bootstrap sample size
+            Number of splits to sample. If None, use every split.
+        bootstrap_samples: int
+            Number of bootstrap fits per split.
         distribution: string
             Statistical distribution used to define a confidence region,
             options = 'MVN' for multivariate_normal, 'KDE' for gaussian_kde,
@@ -2236,29 +2395,16 @@ class Estimator:
         assert isinstance(alphas, list)
         assert isinstance(seed, (type(None), int))
 
-        if seed is not None:
-            np.random.seed(seed)
-
-        global_list = self._get_sample_list(lNo, lNo_samples, replacement=False)
-
-        results = []
-        for idx, sample in global_list:
-
-            obj, theta = self.theta_est()
-
-            bootstrap_theta = self.theta_est_bootstrap(bootstrap_samples, seed=seed)
-
-            training, test = self.confidence_region_test(
-                bootstrap_theta,
-                distribution=distribution,
-                alphas=alphas,
-                test_theta_values=theta,
-                seed=seed,
-            )
-
-            results.append((sample, test, training))
-
-        return results
+        return _leave_n_out_bootstrap(
+            self,
+            len(self.exp_list),
+            lNo,
+            lNo_samples,
+            bootstrap_samples,
+            distribution,
+            alphas,
+            seed,
+        )
 
     def _normalize_theta_dataframe(self, theta_values):
         """
@@ -2384,6 +2530,11 @@ class Estimator:
         Likelihood ratio test to identify theta values within a confidence
         region using the :math:`\chi^2` distribution
 
+        For unregularized SSE, the unknown common Gaussian variance is
+        profiled out. For SSE_weighted, the measurement variances are treated
+        as known. Custom objectives use the historical SSE approximation,
+        assuming one independent scalar residual per experiment.
+
         Parameters
         ----------
         obj_at_theta: pd.DataFrame, columns = theta_names + 'obj'
@@ -2392,7 +2543,7 @@ class Estimator:
         obj_value: int or float
             Objective value from parameter estimation using all data
         alphas: list
-            List of alpha values to use in the chi2 test
+            Confidence levels in [0, 1], for example 0.95 for 95% confidence.
         return_thresholds: bool, optional
             Return the threshold value for each alpha. Default is False.
 
@@ -2402,7 +2553,7 @@ class Estimator:
             Objective values for each theta value along with True or False for
             each alpha
         thresholds: pd.Series
-            If return_threshold = True, the thresholds are also returned.
+            Objective-scale cutoffs, returned when return_thresholds is True.
         """
 
         # check if we are using deprecated parmest
@@ -2411,25 +2562,27 @@ class Estimator:
                 obj_at_theta, obj_value, alphas, return_thresholds=return_thresholds
             )
 
-        assert isinstance(obj_at_theta, pd.DataFrame)
-        assert isinstance(obj_value, (int, float))
-        assert isinstance(alphas, list)
-        assert isinstance(return_thresholds, bool)
+        if self.regularization is not None and self.regularization_weight:
+            raise ValueError(
+                "Likelihood-ratio tests require an unregularized objective."
+            )
 
-        LR = obj_at_theta.copy()
-        S = len(self.exp_list)
-        thresholds = {}
-        for a in alphas:
-            chi2_val = scipy.stats.chi2.ppf(a, 2)
-            thresholds[a] = obj_value * ((chi2_val / (S - 2)) + 1)
-            LR[a] = LR['obj'] < thresholds[a]
-
-        thresholds = pd.Series(thresholds)
-
-        if return_thresholds:
-            return LR, thresholds
-        else:
-            return LR
+        num_residuals = None
+        if self.obj_function == ObjectiveType.SSE or self.obj_function is SSE:
+            num_residuals = _count_residuals(self.exp_list)
+        return _likelihood_ratio_region(
+            obj_at_theta,
+            obj_value,
+            alphas,
+            return_thresholds,
+            len(self._return_theta_names()),
+            len(self.exp_list),
+            num_residuals=num_residuals,
+            known_variance=(
+                self.obj_function == ObjectiveType.SSE_weighted
+                or self.obj_function is SSE_weighted
+            ),
+        )
 
     def confidence_region_test(
         self, theta_values, distribution, alphas, test_theta_values=None, seed=None
@@ -3265,10 +3418,15 @@ class _DeprecatedEstimator:
 
         return retval, thetavals, WorstStatus
 
-    def _get_sample_list(self, samplesize, num_samples, replacement=True):
+    def _get_sample_list(
+        self, samplesize, num_samples, replacement=True, *, population=None, rng=None
+    ):
         samplelist = list()
 
-        scenario_numbers = list(range(len(self.callback_data)))
+        scenario_numbers = (
+            list(range(len(self.callback_data))) if population is None else population
+        )
+        rng = np.random if rng is None else rng
 
         if num_samples is None:
             # This could get very large
@@ -3282,7 +3440,7 @@ class _DeprecatedEstimator:
                 while (unique_samples <= len(self._return_theta_names())) and (
                     not duplicate
                 ):
-                    sample = np.random.choice(
+                    sample = rng.choice(
                         scenario_numbers, samplesize, replace=replacement
                     )
                     sample = np.sort(sample).tolist()
@@ -3470,20 +3628,19 @@ class _DeprecatedEstimator:
         self, lNo, lNo_samples, bootstrap_samples, distribution, alphas, seed=None
     ):
         """
-        Leave-N-out bootstrap test to compare theta values where N data points are
-        left out to a bootstrap analysis using the remaining data,
-        results indicate if theta is within a confidence region
-        determined by the bootstrap analysis
+        Compare a held-out fit to the bootstrap cloud from the remaining experiments.
+
+        This is a sensitivity diagnostic. It does not calibrate the membership
+        flags for the sample size of the held-out fit.
 
         Parameters
         ----------
         lNo: int
-            Number of data points to leave out for parameter estimation
+            Number of whole experiments to hold out.
         lNo_samples: int
-            Leave-N-out sample size. If lNo_samples=None, the maximum number
-            of combinations will be used
-        bootstrap_samples: int:
-            Bootstrap sample size
+            Number of splits to sample. If None, use every split.
+        bootstrap_samples: int
+            Number of bootstrap fits per split.
         distribution: string
             Statistical distribution used to define a confidence region,
             options = 'MVN' for multivariate_normal, 'KDE' for gaussian_kde,
@@ -3516,38 +3673,16 @@ class _DeprecatedEstimator:
         assert isinstance(alphas, list)
         assert isinstance(seed, (type(None), int))
 
-        if seed is not None:
-            np.random.seed(seed)
-
-        data = self.callback_data.copy()
-
-        global_list = self._get_sample_list(lNo, lNo_samples, replacement=False)
-
-        results = []
-        for idx, sample in global_list:
-            # Reset callback_data to only include the sample
-            self.callback_data = [data[i] for i in sample]
-
-            obj, theta = self.theta_est()
-
-            # Reset callback_data to include all scenarios except the sample
-            self.callback_data = [data[i] for i in range(len(data)) if i not in sample]
-
-            bootstrap_theta = self.theta_est_bootstrap(bootstrap_samples)
-
-            training, test = self.confidence_region_test(
-                bootstrap_theta,
-                distribution=distribution,
-                alphas=alphas,
-                test_theta_values=theta,
-            )
-
-            results.append((sample, test, training))
-
-        # Reset callback_data (back to full data set)
-        self.callback_data = data
-
-        return results
+        return _leave_n_out_bootstrap(
+            self,
+            len(self.callback_data),
+            lNo,
+            lNo_samples,
+            bootstrap_samples,
+            distribution,
+            alphas,
+            seed,
+        )
 
     def objective_at_theta(self, theta_values=None, initialize_parmest_model=False):
         """
@@ -3671,7 +3806,7 @@ class _DeprecatedEstimator:
         obj_value: int or float
             Objective value from parameter estimation using all data
         alphas: list
-            List of alpha values to use in the chi2 test
+            Confidence levels in [0, 1], for example 0.95 for 95% confidence.
         return_thresholds: bool, optional
             Return the threshold value for each alpha
 
@@ -3681,27 +3816,16 @@ class _DeprecatedEstimator:
             Objective values for each theta value along with True or False for
             each alpha
         thresholds: pd.Series
-            If return_threshold = True, the thresholds are also returned.
+            Objective-scale cutoffs, returned when return_thresholds is True.
         """
-        assert isinstance(obj_at_theta, pd.DataFrame)
-        assert isinstance(obj_value, (int, float))
-        assert isinstance(alphas, list)
-        assert isinstance(return_thresholds, bool)
-
-        LR = obj_at_theta.copy()
-        S = len(self.callback_data)
-        thresholds = {}
-        for a in alphas:
-            chi2_val = scipy.stats.chi2.ppf(a, 2)
-            thresholds[a] = obj_value * ((chi2_val / (S - 2)) + 1)
-            LR[a] = LR['obj'] < thresholds[a]
-
-        thresholds = pd.Series(thresholds)
-
-        if return_thresholds:
-            return LR, thresholds
-        else:
-            return LR
+        return _likelihood_ratio_region(
+            obj_at_theta,
+            obj_value,
+            alphas,
+            return_thresholds,
+            len(self._return_theta_names()),
+            len(self.callback_data),
+        )
 
     def confidence_region_test(
         self, theta_values, distribution, alphas, test_theta_values=None

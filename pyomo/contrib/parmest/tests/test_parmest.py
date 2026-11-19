@@ -2017,10 +2017,11 @@ class TestRegularizationCore(unittest.TestCase):
 
 
 class LinearThetaExperiment(Experiment):
-    def __init__(self, x, y, include_second_output=False):
+    def __init__(self, x, y, include_second_output=False, measurement_std=None):
         self.x_data = x
         self.y_data = y
         self.include_second_output = include_second_output
+        self.measurement_std = measurement_std
         self.model = None
 
     def create_model(self):
@@ -2051,7 +2052,7 @@ class LinearThetaExperiment(Experiment):
         m.unknown_parameters.update([(m.theta, pyo.ComponentUID(m.theta))])
 
         m.measurement_error = pyo.Suffix(direction=pyo.Suffix.LOCAL)
-        m.measurement_error.update([(m.y, None)])
+        m.measurement_error.update([(m.y, self.measurement_std)])
 
         if self.include_second_output:
             m.measurement_error.update([(m.z, None)])
@@ -2212,6 +2213,80 @@ def _build_bounded_estimator(data):
     "Cannot test parmest: required dependencies are missing",
 )
 class TestParmestBlockEF(unittest.TestCase):
+
+    def test_likelihood_ratio_profiles_common_variance(self):
+        pest = _build_estimator([(0.0, 1.0), (0.0, 3.0)], include_second_output=True)
+        cutoff = np.exp(3.841458820694124 / 4)
+        candidates = pd.DataFrame({'theta': [1.0, 2.0], 'obj': [2.5, 2.7]})
+
+        region, thresholds = pest.likelihood_ratio_test(
+            candidates, 1.0, [0.95], return_thresholds=True
+        )
+
+        self.assertAlmostEqual(thresholds[0.95], cutoff)
+        self.assertEqual(region[0.95].tolist(), [True, False])
+
+    def test_likelihood_ratio_known_measurement_variance(self):
+        pest = parmest.Estimator(
+            [LinearThetaExperiment(0.0, 1.0, measurement_std=1.0)] * 2,
+            obj_function='SSE_weighted',
+        )
+        candidates = pd.DataFrame({'theta': [1.0, 2.0], 'obj': [0.9, 1.0]})
+
+        region, thresholds = pest.likelihood_ratio_test(
+            candidates, 0.0, [0.95], return_thresholds=True
+        )
+
+        self.assertAlmostEqual(thresholds[0.95], 3.841458820694124 / 4)
+        self.assertEqual(region[0.95].tolist(), [True, False])
+
+    def test_likelihood_ratio_counts_expanded_indexed_parameters(self):
+        pest = _build_indexed_theta_estimator([(0, 0), (1, 1), (2, 3)])
+        candidates = pd.DataFrame({'theta[a]': [1], 'theta[b]': [2], 'obj': [2.0]})
+
+        _, thresholds = pest.likelihood_ratio_test(
+            candidates, 1.0, [0.95], return_thresholds=True
+        )
+
+        # The chi-squared(2) quantile is -2 log(1 - confidence level).
+        self.assertAlmostEqual(thresholds[0.95], 0.05 ** (-2 / 3))
+
+    def test_likelihood_ratio_requires_positive_residual_scale(self):
+        pest = _build_estimator([(0.0, 1.0), (0.0, 1.0)])
+        candidates = pd.DataFrame({'theta': [1.0], 'obj': [0.0]})
+        with self.assertRaisesRegex(ValueError, 'requires a positive fitted objective'):
+            pest.likelihood_ratio_test(candidates, 0.0, [0.95])
+
+    @unittest.skipUnless(ipopt_available, "Test requires ipopt")
+    def test_leave_n_out_bootstrap_uses_disjoint_experiments(self):
+        # With one parameter and two training observations, the historical
+        # bootstrap rule accepts only samples containing both observations.
+        observations = [1.0, 3.0, 9.0]
+        pest = _build_estimator([(0.0, y) for y in observations])
+        _, full_fit = pest.theta_est()
+        full_model = pest.ef_instance
+
+        results = pest.leaveNout_bootstrap_test(1, None, 12, 'Rect', [0.95], seed=0)
+
+        self.assertEqual(len(results), 3)
+        for i, (sample, test, training) in enumerate(results):
+            self.assertEqual(list(sample), [i])
+            self.assertAlmostEqual(test['theta'].iloc[0], observations[i])
+            expected = (sum(observations) - observations[i]) / 2
+            np.testing.assert_allclose(training['theta'], [expected] * 12, atol=1e-6)
+        self.assertIs(pest.ef_instance, full_model)
+        self.assertEqual(pest.obj_probability_constant, len(observations))
+        self.assertEqual(pest.estimated_theta, full_fit)
+
+    @unittest.skipUnless(ipopt_available, "Test requires ipopt")
+    def test_leave_n_out_bootstrap_advances_seed(self):
+        # Compare the first training draw of each split to an independently
+        # enumerated sequence from a single seeded stream.
+        observations = [0.01, 0.1, 1.0, 10.0]
+        pest = _build_estimator([(0.0, y) for y in observations])
+        results = pest.leaveNout_bootstrap_test(1, None, 4, 'Rect', [0.95], seed=0)
+        first_estimates = [training['theta'].iloc[0] for _, _, training in results]
+        np.testing.assert_allclose(first_estimates, [0.4, 7.0, 3.37, 0.67], atol=1e-6)
 
     def test_block_ef_structure_counts(self):
         pest = _build_estimator([(1.0, 2.0), (2.0, 4.0)])
